@@ -47,7 +47,7 @@ define(function(require, exports, module) {
             var actionDesc = actionDescriptions[i];
             var actor = this.actors[actionDesc.actor];
 
-            // Here we skip the useless action(whose actor is not exist)
+            // Here we skip the useless action that associated with a undefined actor
             if(!actor) {
                 continue;
             }

@@ -1,0 +1,89 @@
+html {
+  background: #fff;
+}
+
+body {
+  font-family: "Gill Sans", "Gill Sans MT", Calibri, sans-serif;
+  color: rgb(83,83,83);
+  background-color: rgb(220,220,220);
+  font-weight: lighter;
+}
+
+h1 {
+  font-weight: lighter;
+}
+
+.backfaceVisibility {
+  -webkit-backface-visibility: visible;
+  backface-visibility: visible;
+}
+
+.vertCenter {
+  position: relative;
+  top: 50%;
+  transform: translateY(-50%);
+  -webkit-transform: translateY(-50%);
+  -ms-transform: translateY(-50%);
+}
+
+.code {
+  padding: 1em;
+}
+
+.z1 {
+  z-index: 1;
+}
+.z2 {
+  z-index: 2;
+}
+.z3 {
+  z-index: 3;
+}
+.z3 {
+  z-index: 4;
+}
+.z5 {
+  z-index: 5;
+}
+.z6 {
+  z-index: 6;
+}
+.z7 {
+  z-index: 7;
+}
+.z8 {
+  z-index: 8;
+}
+.z9 {
+  z-index: 9;
+}
+.z10 {
+  z-index: 10;
+}
+
+@media only screen and (max-width: 320px) {
+
+   body { font-size: 0.60em; }
+
+  .vertCenter {
+    position: relative;
+    top: 40%;
+    transform: translateY(-40%);
+    -webkit-transform: translateY(-40%);
+    -ms-transform: translateY(-40%);
+  }
+
+  pre {
+    font-size: 5px;
+    top: 25%;
+    transform: translateY(-40%);
+    -webkit-transform: translateY(-40%);
+    -ms-transform: translateY(-40%);
+  }
+
+  .code {
+    padding: 0em;
+    padding-left: 10px;
+  }
+
+}

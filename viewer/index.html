@@ -1,0 +1,42 @@
+<!DOCTYPE HTML>
+<html>
+    <head>
+        <title>MSHOWX</title>
+        <meta name="viewport" content="width=device-width, maximum-scale=1, user-scalable=no" />
+        <meta name="mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+
+        <!-- build:css(app/) css/famous.css -->
+        <link rel="stylesheet" type="text/css" href="../dist/famous/famous.css" />
+        <!-- endbuild -->
+
+        <!-- build:css(app/) css/app.css -->
+        <link rel="stylesheet" type="text/css" href="styles/app.css" />
+        <!-- bower:css -->
+        <!-- endbower -->
+        <!-- endbuild -->
+
+        <!-- shims for backwards compatibility -->
+        <script type="text/javascript" src="../dist/lib/functionPrototypeBind.js"></script>
+        <script type="text/javascript" src="../dist/lib/classList.js"></script>
+        <script type="text/javascript" src="../dist/lib/requestAnimationFrame.js"></script>
+
+        <!--&lt;!&ndash; module loader &ndash;&gt;-->
+        <script type="text/javascript" src="../dist/lib/require.js"></script>
+
+        <!-- famous -->
+        <!--<script type="text/javascript" src="../dist/famous/famous.js"></script>-->
+        <!-- endbuild -->
+
+        <!-- app code -->
+
+        <script type="text/javascript">
+            require.config({
+                baseUrl: './src/'
+            });
+            require(['main']);
+        </script>
+    </head>
+    <body></body>
+</html>

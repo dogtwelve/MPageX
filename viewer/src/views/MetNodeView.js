@@ -7,7 +7,7 @@ define(function(require, exports, module) {
     var ModifierChain = require('famous/modifiers/ModifierChain');
     var UnitConverter = require('tools/UnitConverter');
 
-    function ActorView() {
+    function MetNodeView() {
         View.apply(this, arguments);
         this.modifiers = [];
         this.modifierChain = new ModifierChain();
@@ -24,7 +24,7 @@ define(function(require, exports, module) {
         _listenToScroll.call(this);
     }
 
-    ActorView.DEFAULT_OPTIONS = {
+    MetNodeView.DEFAULT_OPTIONS = {
         name: undefined,
         xPosition: 0.5,
         yPosition: 0.5,
@@ -43,34 +43,34 @@ define(function(require, exports, module) {
         }
     };
 
-    ActorView.prototype = Object.create(View.prototype);
-    ActorView.prototype.constructor = ActorView;
+    MetNodeView.prototype = Object.create(View.prototype);
+    MetNodeView.prototype.constructor = MetNodeView;
 
-    ActorView.prototype.addModifier = function(newModifier) {
+    MetNodeView.prototype.addModifier = function(newModifier) {
         this.modifiers.push(newModifier);
         this.modifierChain.addModifier(newModifier);
     };
 
-    ActorView.prototype.addSurface = function(newSurface) {
+    MetNodeView.prototype.addSurface = function(newSurface) {
         this.mainSurface = newSurface;
     };
 
-    ActorView.prototype.setPositionRatio = function(newX, newY) {
+    MetNodeView.prototype.setPositionRatio = function(newX, newY) {
         this.xPosition = newX;
         this.yPosition = newY;
     };
 
-    ActorView.prototype.setPositionPixels = function(newX, newY) {
+    MetNodeView.prototype.setPositionPixels = function(newX, newY) {
         this.xPosition = UnitConverter.pixelsToRatioX(newX);
         this.yPosition = UnitConverter.pixelsToRatioY(newY);
     };
 
-    ActorView.prototype.incrementPosition = function(incrX, incrY) {
+    MetNodeView.prototype.incrementPosition = function(incrX, incrY) {
         this.xPosition += incrX;
         this.yPosition += incrY;
     };
 
-    ActorView.prototype.activate = function(scrollSync) {
+    MetNodeView.prototype.activate = function(scrollSync) {
         if (!this.mainSurface) this.mainSurface = new Surface(this.options.surfaceOptions);
 
         this.mainSurface.pipe(scrollSync);
@@ -108,5 +108,5 @@ define(function(require, exports, module) {
         }
     }
 
-    module.exports = ActorView;
+    module.exports = MetNodeView;
 });

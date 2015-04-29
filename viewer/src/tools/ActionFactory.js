@@ -11,8 +11,8 @@ define(function(require, exports, module) {
     var Easing             = require('famous/transitions/Easing');
 
     function ActionFactory() {
-          // Container to store created actors by name.
-          this.actionsForActor = {};
+          // Container to store created nodes by name.
+          this.actionsForNode = {};
     }
 
     ActionFactory.prototype.makeAction = function(actor, type, scrollStart, scrollStop, properties) {
@@ -77,7 +77,7 @@ define(function(require, exports, module) {
     };
 
     ActionFactory.prototype.getActionsForActor = function(actorName) {
-        return this.actionsForActor[actorName];
+        return this.actionsForNode[actorName];
     };
 
     // Used for comparing actions and making sure they are sorted in the right order.
@@ -115,8 +115,8 @@ define(function(require, exports, module) {
     }
 
     function _saveAction(actor, action) {
-        if (!this.actionsForActor[actor.name]) this.actionsForActor[actor.name] = [];
-        this.actionsForActor[actor.name].push(action);
+        if (!this.actionsForNode[actor.name]) this.actionsForNode[actor.name] = [];
+        this.actionsForNode[actor.name].push(action);
     }
 
     module.exports = ActionFactory;

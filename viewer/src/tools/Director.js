@@ -1,42 +1,42 @@
 define(function(require, exports, module) {
     'use strict';
-    var ActorFactory       = require('tools/ActorFactory');
+    var MetNodeFactory       = require('tools/MetNodeFactory');
     var ActionFactory      = require('tools/ActionFactory');
     var UnitConverter      = require('tools/UnitConverter');
 
     function Director() {
-        this.actors = {}; // Collection of actors by name.
+        this.metnodes = {}; // Collection of nodes by name.
     }
 
-    Director.prototype.populateStage = function(stage, actorDescriptions, actionDescriptions) {
-        var actorFactory = new ActorFactory();
+    Director.prototype.populateStage = function(stage, nodeDescriptions, actionDescriptions) {
+        var nodeFactory = new MetNodeFactory();
         var actionFactory = new ActionFactory();
         var keyboardBreakPoints = [];
 
-        for (var actorName in actorDescriptions) {
+        for (var nodeName in nodeDescriptions) {
             // Make sure the zIndex is included in the properties
-            if (actorDescriptions[actorName].zPosition && actorDescriptions[actorName].properties) {
-                actorDescriptions[actorName].properties.zPosition = actorDescriptions[actorName].zPosition;
+            if (nodeDescriptions[nodeName].zPosition && nodeDescriptions[nodeName].properties) {
+                nodeDescriptions[nodeName].properties.zPosition = nodeDescriptions[nodeName].zPosition;
             }
 
             // Make sure size is in pixels.
-            actorDescriptions[actorName].size = _unitsToPixels(actorDescriptions[actorName].size);
+            nodeDescriptions[nodeName].size = _unitsToPixels(nodeDescriptions[nodeName].size);
 
             // Make sure position is in pixels.
-            if (actorDescriptions[actorName].position) {
-                actorDescriptions[actorName].position = _unitsToPixels(actorDescriptions[actorName].position);
+            if (nodeDescriptions[nodeName].position) {
+                nodeDescriptions[nodeName].position = _unitsToPixels(nodeDescriptions[nodeName].position);
             }
 
-            var newActor = actorFactory.makeActor(actorName,
-                                                  actorDescriptions[actorName].type,
-                                                  actorDescriptions[actorName].content,
-                                                  actorDescriptions[actorName].classes,
-                                                  actorDescriptions[actorName].properties,
-                                                  actorDescriptions[actorName].size,
-                                                  actorDescriptions[actorName].opacity
+            var newNode = nodeFactory.makeMetNode(nodeName,
+                                                  nodeDescriptions[nodeName].type,
+                                                  nodeDescriptions[nodeName].content,
+                                                  nodeDescriptions[nodeName].classes,
+                                                  nodeDescriptions[nodeName].properties,
+                                                  nodeDescriptions[nodeName].size,
+                                                  nodeDescriptions[nodeName].opacity
                                                   );
-            this.actors[actorName] = newActor;
-            newActor.setPositionPixels(actorDescriptions[actorName].position[0], actorDescriptions[actorName].position[1]);
+            this.metnodes[nodeName] = newNode;
+            newNode.setPositionPixels(nodeDescriptions[nodeName].position[0], nodeDescriptions[nodeName].position[1]);
         }
 
         // Reorder the action descriptions by type, since order matters for
@@ -45,10 +45,10 @@ define(function(require, exports, module) {
 
         for (var i = 0; i < actionDescriptions.length; i++) {
             var actionDesc = actionDescriptions[i];
-            var actor = this.actors[actionDesc.actor];
+            var node = this.metnodes[actionDesc.actor];
 
-            // Here we skip the useless action that associated with a undefined actor
-            if(!actor) {
+            // Here we skip the useless action that associated with a undefined node
+            if(!node) {
                 continue;
             }
             // Keep track of break points
@@ -61,7 +61,7 @@ define(function(require, exports, module) {
                 actionDesc.properties.location = _unitsToPixels(actionDesc.properties.location);
             }
 
-            actionFactory.makeAction(actor,
+            actionFactory.makeAction(node,
                                      actionDesc.type,
                                      actionDesc.start,
                                      actionDesc.stop,
@@ -69,9 +69,9 @@ define(function(require, exports, module) {
                                     );
         }
 
-        for (var actorToStage in this.actors) {
-            var currActor = this.actors[actorToStage];
-            stage.addActor(currActor);
+        for (var actorToStage in this.metnodes) {
+            var currActor = this.metnodes[actorToStage];
+            stage.addNode(currActor);
         }
 
         stage.updateArrowKeyBreakpoints(keyboardBreakPoints);

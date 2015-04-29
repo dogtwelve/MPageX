@@ -38,10 +38,10 @@ define(function(require, exports, module) {
     StageView.prototype = Object.create(View.prototype);
     StageView.prototype.constructor = StageView;
 
-    StageView.prototype.addActor = function(newActor) {
-        newActor.activate(this.sync);
-        newActor.subscribe(this._eventOutput);
-        this.add(newActor);
+    StageView.prototype.addNode = function(newNode) {
+        newNode.activate(this.sync);
+        newNode.subscribe(this._eventOutput);
+        this.add(newNode);
     };
 
     StageView.prototype.updateArrowKeyBreakpoints = function(newBreakpoints) {

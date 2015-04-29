@@ -1,16 +1,16 @@
 define(function(require, exports, module) {
     'use strict';
-    var ActorView     = require('views/ActorView');
+    var MetNodeView      = require('views/MetNodeView');
     var UnitConverter = require('tools/UnitConverter');
     var Surface       = require('famous/core/Surface');
     var ImageSurface  = require('famous/surfaces/ImageSurface');
 
-    function ActorFactory() {
+    function MetNodeFactory() {
           // Container to store created actors by name.
-          this.actors = {};
+          this.metnodes = {};
     }
 
-    ActorFactory.prototype.makeActor = function(name, type, content, classes, properties, size, opacity, scrollStart, scrollStop) {
+    MetNodeFactory.prototype.makeMetNode = function(name, type, content, classes, properties, size, opacity, scrollStart, scrollStop) {
         var newSurface;
 
         // Ensure backface visibility is set for all new surfaces.
@@ -38,22 +38,22 @@ define(function(require, exports, module) {
             });
         }
 
-        var newActor = new ActorView({
+        var newNode = new MetNodeView({
             name: name,
             zPosition: properties.zPosition,
             opacity: opacity !== undefined ? opacity : 1
         });
 
-        newActor.addSurface(newSurface);
+        newNode.addSurface(newSurface);
 
-        this.actors[name] = newActor;
+        this.metnodes[name] = newNode;
 
-        return newActor;
+        return newNode;
     };
 
-    ActorFactory.prototype.getActor = function(name) {
-        return this.actors[name];
+    MetNodeFactory.prototype.getMetNode = function(name) {
+        return this.metnodes[name];
     };
 
-    module.exports = ActorFactory;
+    module.exports = MetNodeFactory;
 });

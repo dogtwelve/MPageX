@@ -1,6 +1,6 @@
 define(function(require, exports, module) {
     'use strict';
-    var MetNodeView      = require('views/MetNodeView');
+    var MetNodeView   = require('views/MetNodeView');
     var UnitConverter = require('tools/UnitConverter');
     var Surface       = require('famous/core/Surface');
     var ImageSurface  = require('famous/surfaces/ImageSurface');

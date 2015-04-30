@@ -71,7 +71,7 @@ define(function(require, exports, module) {
 
         for (var actorToStage in this.metnodes) {
             var currActor = this.metnodes[actorToStage];
-            stage.addNode(currActor);
+            stage.addMetNode(currActor);
         }
 
         stage.updateArrowKeyBreakpoints(keyboardBreakPoints);

@@ -1,6 +1,7 @@
 define(function(require, exports, module) {
     'use strict';
     var MetNodeView   = require('views/MetNodeView');
+    var BgImageSurface   = require('surfaces/BgImageSurface');
     var UnitConverter = require('tools/UnitConverter');
     var Surface       = require('famous/core/Surface');
     var ImageSurface  = require('famous/surfaces/ImageSurface');
@@ -30,8 +31,8 @@ define(function(require, exports, module) {
         }
 
         if (type === 'image') {
-            newSurface = new ImageSurface({
-                size: size,
+            newSurface = new BgImageSurface({
+                sizeMode: BgImageSurface.SizeMode.ASPECTFILL,
                 content: content,
                 properties: properties,
                 classes: classes

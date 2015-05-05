@@ -1,8 +1,6 @@
 // Gestures
-"use strict";
-
-define(function(require, exports, module)
-{
+define(function(require, exports, module) {
+    'use strict';
 
     var Engine = require("famous/core/Engine");
     var Timer = require("famous/utilities/Timer");

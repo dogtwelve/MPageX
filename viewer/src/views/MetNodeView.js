@@ -20,6 +20,7 @@ define(function(require, exports, module) {
         this.opacity = this.options.opacity;
         this.destination = this.options.destination;
         this.name = this.options.name;
+        this.metNodes = [];
 
         _listenToScroll.call(this);
     }
@@ -55,6 +56,11 @@ define(function(require, exports, module) {
         this.mainSurface = newSurface;
     };
 
+
+    MetNodeView.prototype.addMetNode = function(metNode) {
+        this.metnodes.push(metNode);
+    };
+
     MetNodeView.prototype.setPositionRatio = function(newX, newY) {
         this.xPosition = newX;
         this.yPosition = newY;
@@ -75,8 +81,15 @@ define(function(require, exports, module) {
 
         this.mainSurface.pipe(scrollSync);
 
-        _createBaseModifier.call(this); // Ensures actor always has a position modifier
+        // Ensures metnode always has a position modifier
+        _createBaseModifier.call(this);
         this.add(this.modifierChain).add(this.mainSurface);
+
+        //children metnodes processing
+        for(var metNode in this.metNodes) {
+            metNode.activate(scrollSync);
+            this.add(this.modifierChain).add(metNode);
+        }
     };
 
     function _listenToScroll() {
@@ -85,7 +98,7 @@ define(function(require, exports, module) {
 
     function _createBaseModifier() {
         var baseModifier = new Modifier({
-            origin: [0.5, 0.5],
+            origin: [0, 0],
             align: function() {
                 return [this.xPosition, this.yPosition];
             }.bind(this),

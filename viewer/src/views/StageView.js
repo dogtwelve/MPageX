@@ -24,10 +24,12 @@ define(function(require, exports, module) {
 
         _setupScrollRecieverSurface.call(this);
         _handleScroll.call(this);
+        _handleSwipe.call(this);
         _setupArrowKeyBreakpoints.call(this, 16, 60);
     }
 
     StageView.DEFAULT_OPTIONS = {
+        velThreshold: 0.75,
         arrowData: {
             breakpoints: [0],
             speed: 4,
@@ -39,7 +41,8 @@ define(function(require, exports, module) {
     StageView.prototype.constructor = StageView;
 
     StageView.prototype.addMetNode = function(newNode) {
-        newNode.activate(this.sync);
+        newNode.activate(this.syncScroll);
+        newNode.activate(this.syncSwipe);
         newNode.subscribe(this._eventOutput);
         this.add(newNode);
     };
@@ -65,25 +68,72 @@ define(function(require, exports, module) {
     }
 
     function _handleScroll() {
-        this.sync = new GenericSync(
+        this.syncScroll = new GenericSync(
             ['touch', 'scroll'],
             {direction: GenericSync.DIRECTION_Y}
         );
 
-        this.scrollRecieverSurface.pipe(this.sync);
+        this.scrollRecieverSurface.pipe(this.syncScroll);
 
-        this.sync.on('update', function(data) {
+        this.syncScroll.on('update', function(data) {
             // Invert delta so scrolling up is positive.
             this.worldScrollValue -= data.delta;
             _emitScrollUpdate.call(this, data.delta);
         }.bind(this));
 
-        this.sync.on('end', function(data) {
+        this.syncScroll.on('end', function(data) {
         }.bind(this));
+    }
+
+    function _handleSwipe() {
+        this.syncSwipe = new GenericSync(
+            ['mouse', 'touch'],
+            {direction : GenericSync.DIRECTION_X}
+        );
+
+        this.scrollRecieverSurface.pipe(this.syncSwipe);
+
+        this.syncSwipe.on('update', function(data) {
+            //var currentPosition = this.pageViewPos.get();
+            //if(currentPosition === 0 && data.velocity > 0) {
+            //    this.menuView.animateStrips();
+            //}
+            //
+            //this.pageViewPos.set(Math.max(0, currentPosition + data.delta));
+        }.bind(this));
+
+        this.syncSwipe.on('end', (function(data) {
+            var velocity = data.velocity;
+            //var position = this.pageViewPos.get();
+            //
+            //if(this.pageViewPos.get() > this.options.posThreshold) {
+            //    if(velocity < -this.options.velThreshold) {
+            //        this.slideLeft();
+            //    } else {
+            //        this.slideRight();
+            //    }
+            //} else {
+            //    if(velocity > this.options.velThreshold) {
+            //        this.slideRight();
+            //    } else {
+            //        this.slideLeft();
+            //    }
+            //}
+
+            if(velocity < -this.options.velThreshold) {
+                console.log("syncSwipe1" + velocity);
+            } else {
+                console.log("syncSwipe2" + velocity);
+            }
+        }).bind(this));
     }
 
     function _emitScrollUpdate(delta) {
         this._eventOutput.emit('ScrollUpdated', {delta: -delta});
+    }
+
+    function _onForwardOrBackward(direction) {
+
     }
 
     function _setupArrowKeyBreakpoints(speed, step) {

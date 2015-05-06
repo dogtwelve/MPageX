@@ -121,8 +121,10 @@ define(function(require, exports, module) {
             //}
 
             if(velocity < -this.options.velThreshold) {
+                _onForwardOrBackward.call(this, 'forward');
                 console.log("syncSwipe1" + velocity);
             } else {
+                _onForwardOrBackward.call(this, 'reverse');
                 console.log("syncSwipe2" + velocity);
             }
         }).bind(this));
@@ -133,7 +135,55 @@ define(function(require, exports, module) {
     }
 
     function _onForwardOrBackward(direction) {
+        // If movement is already in progress, cancel interval
+        if (this._arrowData.interval) {
+            Timer.clear(this._arrowData.interval);
+            delete this._arrowData.interval;
+        }
+        // Set next lowest breakpoint
+        var nextBreakpoint = getNextScrollPoint.call(this, direction);
 
+
+
+        this._arrowData.interval = Timer.setInterval(function() {
+            if ((direction === 'reverse' && this.worldScrollValue <= nextBreakpoint) ||
+                (direction === 'forward' && this.worldScrollValue >= nextBreakpoint)) {
+                Timer.clear(this._arrowData.interval);
+                delete this._arrowData.interval;
+            } else {
+                if (direction === 'forward' ? this.worldScrollValue < nextBreakpoint : this.worldScrollValue > nextBreakpoint) {
+                    var currentStep = Math.min(this._arrowData.step, direction === 'forward' ? nextBreakpoint - this.worldScrollValue : this.worldScrollValue - nextBreakpoint);
+                    currentStep = direction === 'forward' ? -currentStep : currentStep;
+                    this.worldScrollValue -= currentStep;
+                    _emitScrollUpdate.call(this, currentStep);
+                } else {
+                    Timer.clear(this._arrowData.interval);
+                    delete this._arrowData.interval;
+                }
+            }
+        }.bind(this), this._arrowData.speed);
+
+        // Function assumes that the breakboards are sorted lowest to highest.
+        function getNextScrollPoint(searchDirection) {
+            searchDirection = searchDirection ? searchDirection : 'forward';
+
+            var searchBreakpoints = this._arrowData.breakpoints;
+            var nextScrollPoint; //init undefined
+
+            if (searchDirection !== 'forward') {
+                searchBreakpoints = searchBreakpoints.slice(0).reverse(); //copy array so we don't mutate the original with the reverse;
+            }
+
+            for (var i = 0; i < searchBreakpoints.length; i++) {
+                if ((searchDirection === 'forward' && this.worldScrollValue < searchBreakpoints[i]) ||
+                    (searchDirection !== 'forward' && this.worldScrollValue > searchBreakpoints[i])) {
+                    nextScrollPoint = searchBreakpoints[i];
+                    break;
+                }
+            }
+
+            return nextScrollPoint;
+        }
     }
 
     function _setupArrowKeyBreakpoints(speed, step) {
@@ -150,11 +200,11 @@ define(function(require, exports, module) {
         Engine.on('keydown', function(e) {
             var direction;
 
-            // If movement is already in progress, cancel interval
-            if (this._arrowData.interval) {
-                Timer.clear(this._arrowData.interval);
-                delete this._arrowData.interval;
-            }
+            //// If movement is already in progress, cancel interval
+            //if (this._arrowData.interval) {
+            //    Timer.clear(this._arrowData.interval);
+            //    delete this._arrowData.interval;
+            //}
 
             // Arrow key selected
             if (e.keyCode === downArrowKeyCode || e.keyCode === leftArrowKeyCode ||
@@ -167,49 +217,51 @@ define(function(require, exports, module) {
                     direction = 'reverse';
                 }
 
-                // Set next lowest breakpoint
-                nextBreakpoint = getNextScrollPoint.call(this, direction);
+                _onForwardOrBackward.call(this, direction);
 
-                this._arrowData.interval = Timer.setInterval(function() {
-                    if ((direction === 'reverse' && this.worldScrollValue <= nextBreakpoint) ||
-                        (direction === 'forward' && this.worldScrollValue >= nextBreakpoint)) {
-                        Timer.clear(this._arrowData.interval);
-                        delete this._arrowData.interval;
-                    } else {
-                        if (direction === 'forward' ? this.worldScrollValue < nextBreakpoint : this.worldScrollValue > nextBreakpoint) {
-                            var currentStep = Math.min(this._arrowData.step, direction === 'forward' ? nextBreakpoint - this.worldScrollValue : this.worldScrollValue - nextBreakpoint);
-                            currentStep = direction === 'forward' ? -currentStep : currentStep;
-                            this.worldScrollValue -= currentStep;
-                            _emitScrollUpdate.call(this, currentStep);
-                        } else {
-                            Timer.clear(this._arrowData.interval);
-                            delete this._arrowData.interval;
-                        }
-                    }
-                }.bind(this), this._arrowData.speed);
+                //// Set next lowest breakpoint
+                //nextBreakpoint = getNextScrollPoint.call(this, direction);
+                //
+                //this._arrowData.interval = Timer.setInterval(function() {
+                //    if ((direction === 'reverse' && this.worldScrollValue <= nextBreakpoint) ||
+                //        (direction === 'forward' && this.worldScrollValue >= nextBreakpoint)) {
+                //        Timer.clear(this._arrowData.interval);
+                //        delete this._arrowData.interval;
+                //    } else {
+                //        if (direction === 'forward' ? this.worldScrollValue < nextBreakpoint : this.worldScrollValue > nextBreakpoint) {
+                //            var currentStep = Math.min(this._arrowData.step, direction === 'forward' ? nextBreakpoint - this.worldScrollValue : this.worldScrollValue - nextBreakpoint);
+                //            currentStep = direction === 'forward' ? -currentStep : currentStep;
+                //            this.worldScrollValue -= currentStep;
+                //            _emitScrollUpdate.call(this, currentStep);
+                //        } else {
+                //            Timer.clear(this._arrowData.interval);
+                //            delete this._arrowData.interval;
+                //        }
+                //    }
+                //}.bind(this), this._arrowData.speed);
             }
 
-            // Function assumes that the breakboards are sorted lowest to highest.
-            function getNextScrollPoint(searchDirection) {
-                searchDirection = searchDirection ? searchDirection : 'forward';
-
-                var searchBreakpoints = this._arrowData.breakpoints;
-                var nextScrollPoint; //init undefined
-
-                if (searchDirection !== 'forward') {
-                    searchBreakpoints = searchBreakpoints.slice(0).reverse(); //copy array so we don't mutate the original with the reverse;
-                }
-
-                for (var i = 0; i < searchBreakpoints.length; i++) {
-                    if ((searchDirection === 'forward' && this.worldScrollValue < searchBreakpoints[i]) ||
-                        (searchDirection !== 'forward' && this.worldScrollValue > searchBreakpoints[i])) {
-                        nextScrollPoint = searchBreakpoints[i];
-                        break;
-                    }
-                }
-
-                return nextScrollPoint;
-            }
+            //// Function assumes that the breakboards are sorted lowest to highest.
+            //function getNextScrollPoint(searchDirection) {
+            //    searchDirection = searchDirection ? searchDirection : 'forward';
+            //
+            //    var searchBreakpoints = this._arrowData.breakpoints;
+            //    var nextScrollPoint; //init undefined
+            //
+            //    if (searchDirection !== 'forward') {
+            //        searchBreakpoints = searchBreakpoints.slice(0).reverse(); //copy array so we don't mutate the original with the reverse;
+            //    }
+            //
+            //    for (var i = 0; i < searchBreakpoints.length; i++) {
+            //        if ((searchDirection === 'forward' && this.worldScrollValue < searchBreakpoints[i]) ||
+            //            (searchDirection !== 'forward' && this.worldScrollValue > searchBreakpoints[i])) {
+            //            nextScrollPoint = searchBreakpoints[i];
+            //            break;
+            //        }
+            //    }
+            //
+            //    return nextScrollPoint;
+            //}
         }.bind(this));
     }
 

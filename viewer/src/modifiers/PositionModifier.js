@@ -80,7 +80,7 @@ define(function(require, exports, module) {
                 // } else {
                 //     return undefined;
                 // }
-                console.log("Position(" + this.actor.xPosition + "," + this.actor.yPosition + ")");
+                //console.log("Position(" + this.actor.xPosition + "," + this.actor.yPosition + ")");
                 return [this.actor.xPosition, this.actor.yPosition];
             }.bind(this)
         };

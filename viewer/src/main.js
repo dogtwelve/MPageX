@@ -23,17 +23,70 @@ define(function(require, exports, module) {
         'Scrollster': {
             "nodes" : [
                 {
+                    "nodes" : [
+                        {
+                            "nodes" : [
+                                {
+                                    name:'Scrollster SSS1 Node 1',
+                                    type: 'html',
+                                    content: 'Scrollster SSS1 Node 1',
+                                    properties: {
+                                        backfaceVisibility: 'visible',
+                                        fontSize: '100%',
+                                        textAlign: 'center',
+                                        backgroundColor: 'red'
+                                    },
+                                    size: [320, 80],
+                                    position: ['350', '40'],
+                                    classes: ['z2'],
+                                    zPosition: 0,
+                                    opacity: 0
+                                },
+                                {
+                                    name:'Scrollster SSS2 Node 1',
+                                    type: 'html',
+                                    content: 'Scrollster SSS2 Node 1',
+                                    properties: {
+                                        backfaceVisibility: 'visible',
+                                        fontSize: '100%',
+                                        textAlign: 'center',
+                                        backgroundColor: 'red'
+                                    },
+                                    size: [320, 80],
+                                    position: ['350', '50'],
+                                    classes: ['z2'],
+                                    zPosition: 0,
+                                    opacity: 0
+                                },
+
+                            ],
+                            name:'Scrollster Sub 1 of Sub Node 1',
+                            type: 'html',
+                            content: 'Scrollster Sub 1 of Sub Node 1',
+                            properties: {
+                                backfaceVisibility: 'visible',
+                                fontSize: '100%',
+                                textAlign: 'center',
+                                backgroundColor: 'red'
+                            },
+                            size: [480, 160],
+                            position: ['350', '10'],
+                            classes: ['z2'],
+                            zPosition: 0,
+                            opacity: 0
+                        },
+                    ],
                     name:'Scrollster Sub Node 1',
                     type: 'html',
-                    content: 'Move To Sub Node 1',
+                    content: 'Scrollster Sub Node 1',
                     properties: {
                         backfaceVisibility: 'visible',
                         fontSize: '100%',
                         textAlign: 'center',
                         backgroundColor: 'yellow'
                     },
-                    size: [160, 40],
-                    position: ['80%', '0%'],
+                    size: [640, 320],
+                    position: ['150', '10'],
                     classes: ['z2'],
                     zPosition: 0,
                     opacity: 0
@@ -47,72 +100,72 @@ define(function(require, exports, module) {
                 textAlign: 'center',
                 backgroundColor: 'white'
             },
-            size: [640, 360]/*['100%', '100%']*/,
-            position: ['0', '20'],
+            size: [960, 640]/*['100%', '100%']*/,
+            position: ['300', '20'],
             classes: ['z2'],
             zPosition: 1
         },
-        'Instructions': {
-            type: 'html',
-            content: '<div>滚动或方向键</div>',
-            properties: {
-                backfaceVisibility: 'visible',
-                fontSize: '100%',
-                textAlign: 'center',
-                backgroundColor: 'white'
-            },
-            size: [640, 20],
-            position: ['50%', '90%'],
-            classes: ['z2'],
-            zPosition: 1
-        },
-        'Action Labs Logo': {
-            "nodes" : [
-                {
-                    name:'Action Labs Logo Sub Node 1',
-                    type: 'html',
-                    content: 'Action Labs Logo Sub Node 1',
-                    properties: {
-                        backfaceVisibility: 'visible',
-                        fontSize: '100%',
-                        textAlign: 'center',
-                        backgroundColor: 'red'
-                    },
-                    size: [160, 40],
-                    position: ['50%', '0%'],
-                    classes: ['z2'],
-                    zPosition: 0,
-                    opacity: 0
-                },
-                {
-                    name:'Action Labs Logo Sub Node 2',
-                    type: 'html',
-                    content: 'Action Labs Logo Sub Node 2',
-                    properties: {
-                        backfaceVisibility: 'visible',
-                        fontSize: '100%',
-                        textAlign: 'center',
-                        backgroundColor: 'green'
-                    },
-                    size: [160, 40],
-                    position: ['50%', '20%'],
-                    classes: ['z2'],
-                    zPosition: 0,
-                    opacity: 0
-                }
-            ],
-
-            type: 'image',
-            content: 'content/images/mci-logo.jpg',
-            properties: {
-                backfaceVisibility: 'visible'
-            },
-            size: [320, 160],
-            position: ['50%', '50%'],
-            classes: ['z2'],
-            zPosition: 0,
-            opacity: 0
-        },
+        //'Instructions': {
+        //    type: 'html',
+        //    content: '<div>滚动或方向键</div>',
+        //    properties: {
+        //        backfaceVisibility: 'visible',
+        //        fontSize: '100%',
+        //        textAlign: 'center',
+        //        backgroundColor: 'white'
+        //    },
+        //    size: [640, 20],
+        //    position: ['50%', '90%'],
+        //    classes: ['z2'],
+        //    zPosition: 1
+        //},
+        //'Action Labs Logo': {
+        //    "nodes" : [
+        //        {
+        //            name:'Action Labs Logo Sub Node 1',
+        //            type: 'html',
+        //            content: 'Action Labs Logo Sub Node 1',
+        //            properties: {
+        //                backfaceVisibility: 'visible',
+        //                fontSize: '100%',
+        //                textAlign: 'center',
+        //                backgroundColor: 'red'
+        //            },
+        //            size: [160, 40],
+        //            position: ['50%', '0%'],
+        //            classes: ['z2'],
+        //            zPosition: 0,
+        //            opacity: 0
+        //        },
+        //        {
+        //            name:'Action Labs Logo Sub Node 2',
+        //            type: 'html',
+        //            content: 'Action Labs Logo Sub Node 2',
+        //            properties: {
+        //                backfaceVisibility: 'visible',
+        //                fontSize: '100%',
+        //                textAlign: 'center',
+        //                backgroundColor: 'green'
+        //            },
+        //            size: [160, 40],
+        //            position: ['50%', '20%'],
+        //            classes: ['z2'],
+        //            zPosition: 0,
+        //            opacity: 0
+        //        }
+        //    ],
+        //
+        //    type: 'image',
+        //    content: 'content/images/mci-logo.jpg',
+        //    properties: {
+        //        backfaceVisibility: 'visible'
+        //    },
+        //    size: [320, 160],
+        //    position: ['50%', '50%'],
+        //    classes: ['z2'],
+        //    zPosition: 0,
+        //    opacity: 0
+        //},
         //'Why Famous': {
         //    type: 'html',
         //    content: '<div class="vertCenter"><h1>幻灯片效果</h1></div>',

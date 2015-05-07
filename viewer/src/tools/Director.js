@@ -63,12 +63,13 @@ define(function(require, exports, module) {
                 actionDesc.properties.location = _unitsToPixels(actionDesc.properties.location);
             }
 
-            actionFactory.makeAction(node,
-                                     actionDesc.type,
-                                     actionDesc.start,
-                                     actionDesc.stop,
-                                     actionDesc.properties
-                                    );
+            //actionFactory.makeAction(node,
+            //                         actionDesc.type,
+            //                         actionDesc.start,
+            //                         actionDesc.stop,
+            //                         actionDesc.properties
+            //                        );
+            actionFactory.makeActionNew(node, actionDesc);
         }
 
         for (var actorToStage in this.metnodes) {

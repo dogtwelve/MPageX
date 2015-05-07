@@ -19,46 +19,82 @@ define(function(require, exports, module) {
 
     var actionExampleText = '<pre>{ \n    actor: \'Presenter Name\', \n    start: 7001, \n    stop: 8000, \n    type: \'rotateTo\', \n    properties: { \n        axis: \'x\', \n        angleInDegrees: 720, \n    } \n}, \n</pre>';
 
-    var actorDescriptions = {
-        //'Scrollster': {
-        //    type: 'html',
-        //    content: '<div class="vertCenter"><h1>MSHOWX</h1><p>METSHOW HTML5展示骨骼</div>',
-        //    properties: {
-        //        backfaceVisibility: 'visible',
-        //        fontSize: '200%',
-        //        textAlign: 'center',
-        //        backgroundColor: 'white'
-        //    },
-        //    size: ['100%', '100%'],
-        //    position: ['50%', '50%'],
-        //    classes: ['z2'],
-        //    zPosition: 1
-        //},
-        //'Instructions': {
-        //    type: 'html',
-        //    content: '滚动或方向键',
-        //    properties: {
-        //        backfaceVisibility: 'visible',
-        //        fontSize: '100%',
-        //        textAlign: 'center'
-        //    },
-        //    size: ['100%', '10%'],
-        //    position: ['50%', '90%'],
-        //    classes: ['z2'],
-        //    zPosition: 1
-        //},
-        //'Action Labs Logo': {
-        //    type: 'image',
-        //    content: 'content/images/mci-logo.jpg',
-        //    properties: {
-        //        backfaceVisibility: 'visible'
-        //    },
-        //    size: [320, 160],
-        //    position: ['50%', '50%'],
-        //    classes: ['z2'],
-        //    zPosition: 0,
-        //    opacity: 0
-        //},
+    var nodeDescriptions = {
+        'Scrollster': {
+            type: 'html',
+            content: '<div class="vertCenter"><h1>MSHOWX</h1><p>METSHOW HTML5展示骨骼</div>',
+            properties: {
+                backfaceVisibility: 'visible',
+                fontSize: '200%',
+                textAlign: 'center',
+                backgroundColor: 'white'
+            },
+            size: [640, 320]/*['100%', '100%']*/,
+            position: ['50%', '50%'],
+            classes: ['z2'],
+            zPosition: 1
+        },
+        'Instructions': {
+            type: 'html',
+            content: '<div>滚动或方向键</div>',
+            properties: {
+                backfaceVisibility: 'visible',
+                fontSize: '100%',
+                textAlign: 'center',
+                backgroundColor: 'white'
+            },
+            size: [640, 20],
+            position: ['50%', '90%'],
+            classes: ['z2'],
+            zPosition: 1
+        },
+        'Action Labs Logo': {
+            "nodes" : [
+                {
+                    name:'Action Labs Logo Sub Node 1',
+                    type: 'html',
+                    content: 'Action Labs Logo Sub Node 1',
+                    properties: {
+                        backfaceVisibility: 'visible',
+                        fontSize: '100%',
+                        textAlign: 'center',
+                        backgroundColor: 'red'
+                    },
+                    size: [160, 40],
+                    position: ['50%', '0%'],
+                    classes: ['z2'],
+                    zPosition: 0,
+                    opacity: 0
+                },
+                {
+                    name:'Action Labs Logo Sub Node 2',
+                    type: 'html',
+                    content: 'Action Labs Logo Sub Node 2',
+                    properties: {
+                        backfaceVisibility: 'visible',
+                        fontSize: '100%',
+                        textAlign: 'center',
+                        backgroundColor: 'green'
+                    },
+                    size: [160, 40],
+                    position: ['50%', '20%'],
+                    classes: ['z2'],
+                    zPosition: 0,
+                    opacity: 0
+                }
+            ],
+
+            type: 'image',
+            content: 'content/images/mci-logo.jpg',
+            properties: {
+                backfaceVisibility: 'visible'
+            },
+            size: [320, 160],
+            position: ['50%', '50%'],
+            classes: ['z2'],
+            zPosition: 0,
+            opacity: 0
+        },
         //'Why Famous': {
         //    type: 'html',
         //    content: '<div class="vertCenter"><h1>幻灯片效果</h1></div>',
@@ -114,83 +150,83 @@ define(function(require, exports, module) {
         //    position: ['-150%', '70%'],
         //    classes: ['z2']
         //},
-        'How It Works': {
-            type: 'html',
-            content: '<div class="vertCenter"><h1>Layer附带Action</h1><p>关联 Layer and Actions</p></div>',
-            zPosition: 0,
-            properties: {
-                backfaceVisibility: 'visible',
-                fontSize: '200%',
-                textAlign: 'center'
-            },
-            size: ['100%', '30%'],
-            position: ['50%', '7%'],
-            classes: ['z2'],
-            opacity: 0
-        },
-        'Action': {
-            type: 'html',
-            content: '<div class="vertCenter">Action</div>',
-            zPosition: 0,
-            properties: {
-                backfaceVisibility: 'visible',
-                fontSize: '300%',
-                textAlign: 'center',
-                backgroundColor: 'rgb(83,83,83)',
-                color: 'rgb(240,240,240)'
-            },
-            size: ['25%', '35%'],
-            position: ['70%', '50%'],
-            classes: ['z2'],
-            opacity: 0
-        },
-        'Actor': {
-            type: 'html',
-            content: '<div class="vertCenter">Layer</div>',
-            zPosition: 0,
-            size: ['25%', '35%'],
-            position: ['30%', '50%'],
-            classes: ['z2'],
-            opacity: 0,
-            properties: {
-                backfaceVisibility: 'visible',
-                fontSize: '300%',
-                textAlign: 'center',
-                backgroundColor: 'rgb(240,240,240)'
-            }
-        },
-        'Actor Example': {
-            type: 'html',
-            content: '<div class="vertCenter code">' + actorExampleText + '<div>',
-            zPosition: 0,
-            properties: {
-                backfaceVisibility: 'visible',
-                fontSize: '150%',
-                backgroundColor: 'black',
-                color: 'white',
-                fontFamily: '"Lucida Console", Monaco, monospace'
-            },
-            size: ['40%', '50%'],
-            position: ['70%', '50%'],
-            classes: ['z2'],
-            opacity: 0
-        },
-        'Action Example': {
-            type: 'html',
-            content: '<div class="vertCenter code">' + actionExampleText + '</div>',
-            zPosition: 0,
-            properties: {
-                backfaceVisibility: 'visible',
-                fontSize: '150%',
-                backgroundColor: 'white',
-                color: 'black',
-                fontFamily: '"Lucida Console", Monaco, monospace'
-            },
-            size: ['40%', '50%'],
-            position: ['150%', '50%'],
-            classes: ['z2'],
-            opacity: 1
-        },
+        //'How It Works': {
+        //    type: 'html',
+        //    content: '<div class="vertCenter"><h1>Layer附带Action</h1><p>关联 Layer and Actions</p></div>',
+        //    zPosition: 0,
+        //    properties: {
+        //        backfaceVisibility: 'visible',
+        //        fontSize: '200%',
+        //        textAlign: 'center'
+        //    },
+        //    size: ['100%', '30%'],
+        //    position: ['50%', '7%'],
+        //    classes: ['z2'],
+        //    opacity: 0
+        //},
+        //'Action': {
+        //    type: 'html',
+        //    content: '<div class="vertCenter">Action</div>',
+        //    zPosition: 0,
+        //    properties: {
+        //        backfaceVisibility: 'visible',
+        //        fontSize: '300%',
+        //        textAlign: 'center',
+        //        backgroundColor: 'rgb(83,83,83)',
+        //        color: 'rgb(240,240,240)'
+        //    },
+        //    size: ['25%', '35%'],
+        //    position: ['70%', '50%'],
+        //    classes: ['z2'],
+        //    opacity: 0
+        //},
+        //'Actor': {
+        //    type: 'html',
+        //    content: '<div class="vertCenter">Layer</div>',
+        //    zPosition: 0,
+        //    size: ['25%', '35%'],
+        //    position: ['30%', '50%'],
+        //    classes: ['z2'],
+        //    opacity: 0,
+        //    properties: {
+        //        backfaceVisibility: 'visible',
+        //        fontSize: '300%',
+        //        textAlign: 'center',
+        //        backgroundColor: 'rgb(240,240,240)'
+        //    }
+        //},
+        //'Actor Example': {
+        //    type: 'html',
+        //    content: '<div class="vertCenter code">' + actorExampleText + '<div>',
+        //    zPosition: 0,
+        //    properties: {
+        //        backfaceVisibility: 'visible',
+        //        fontSize: '150%',
+        //        backgroundColor: 'black',
+        //        color: 'white',
+        //        fontFamily: '"Lucida Console", Monaco, monospace'
+        //    },
+        //    size: ['40%', '50%'],
+        //    position: ['70%', '50%'],
+        //    classes: ['z2'],
+        //    opacity: 0
+        //},
+        //'Action Example': {
+        //    type: 'html',
+        //    content: '<div class="vertCenter code">' + actionExampleText + '</div>',
+        //    zPosition: 0,
+        //    properties: {
+        //        backfaceVisibility: 'visible',
+        //        fontSize: '150%',
+        //        backgroundColor: 'white',
+        //        color: 'black',
+        //        fontFamily: '"Lucida Console", Monaco, monospace'
+        //    },
+        //    size: ['40%', '50%'],
+        //    position: ['150%', '50%'],
+        //    classes: ['z2'],
+        //    opacity: 1
+        //},
         //'Position': {
         //    type: 'html',
         //    content: '<div class="vertCenter box">Position</div>',
@@ -310,475 +346,491 @@ define(function(require, exports, module) {
             type: 'opacity',
             properties: {}
         },
-        {
-            actor: 'Action Labs Logo',
-            start: 1001,
-            stop: 2000,
-            type: 'position',
-            properties: {
-                scaleX: 0,
-                scaleY: 2.5
-            }
-        },
-        {
-            actor: 'Why Famous',
-            start: 1001,
-            stop: 1500,
-            type: 'moveTo',
-            properties: {
-                location: ['50%', '50%'],
-                curve: 'easeIn'
-            }
-        },
-        {
-            actor: 'Why Famous',
-            start: 1501,
-            stop: 2000,
-            setBreak: true,
-            type: 'moveTo',
-            properties: {
-                location: ['50%', '5%'],
-                curve: 'easeIn'
-            }
-        },
-        {
-            actor: 'Speed',
-            start: 2001,
-            stop: 3000,
-            type: 'moveTo',
-            setBreak: true,
-            properties: {
-                location: ['50%', '30%'],
-                curve: 'easeIn'
-            }
-        },
-        {
-            actor: 'Easing',
-            start: 3001,
-            stop: 4000,
-            setBreak: true,
-            type: 'moveTo',
-            properties: {
-                location: ['50%', '50%'],
-                curve: 'spring'
-            }
-        },
-        {
-            actor: '3D',
-            start: 4001,
-            stop: 5000,
-            type: 'moveTo',
-            properties: {
-                location: ['50%', '70%'],
-                curve: 'linear'
-            }
-        },
-        {
-            actor: '3D',
-            start: 4001,
-            stop: 5000,
-            setBreak: true,
-            type: 'rotateTo',
-            properties: {
-                axis: 'x',
-                angleInDegrees: 720,
-                curve: 'linear'
-            }
-        },
-        {
-            actor: 'Why Famous',
-            start: 5001,
-            stop: 6000,
-            type: 'moveTo',
-            properties: {
-                location: ['50%', '150%'],
-                curve: 'linear'
-            }
-        },
-        {
-            actor: 'Speed',
-            start: 5001,
-            stop: 6000,
-            type: 'moveTo',
-            properties: {
-                location: ['50%', '130%'],
-                curve: 'easeIn'
-            }
-        },
-        {
-            actor: 'Easing',
-            start: 5201,
-            stop: 6000,
-            type: 'moveTo',
-            properties: {
-                location: ['50%', '130%'],
-                curve: 'easeIn'
-            }
-        },
-        {
-            actor: '3D',
-            start: 5401,
-            stop: 6000,
-            type: 'moveTo',
-            properties: {
-                location: ['50%', '130%'],
-                curve: 'easeIn'
-            }
-        },
-        {
-            actor: 'How It Works',
-            start: 5800,
-            stop: 7000,
-            type: 'opacity',
-            properties: {}
-        },
-        {
-            actor: 'Actor',
-            start: 6001,
-            stop: 7000,
-            setBreak: true,
-            type: 'opacity',
-            properties: {
-                finalOpacity: 1
-            }
-        },
-        {
-            actor: 'Action',
-            start: 7001,
-            stop: 8000,
-            setBreak: true,
-            type: 'opacity',
-            properties: {
-                finalOpacity: 1
-            }
-        },
-        {
-            actor: 'Action',
-            start: 8001,
-            stop: 9000,
-            type: 'moveTo',
-            properties: {
-                location: ['150%', '50%'],
-                curve: 'linear'
-            }
-        },
-        {
-            actor: 'Actor Example',
-            start: 8001,
-            stop: 9000,
-            type: 'opacity',
-            setBreak: true,
-            properties: {
-                finalOpacity: 1
-            }
-        },
-        {
-            actor: 'Actor',
-            start: 9001,
-            stop: 10000,
-            type: 'moveTo',
-            properties: {
-                location: ['150%', '50%'],
-                curve: 'linear'
-            }
-        },
-        {
-            actor: 'Actor Example',
-            start: 9001,
-            stop: 10000,
-            type: 'moveTo',
-            properties: {
-                location: ['150%', '50%'],
-                curve: 'linear'
-            }
-        },
-        {
-            actor: 'Action',
-            start: 10000,
-            stop: 11000,
-            type: 'moveTo',
-            properties: {
-                location: ['30%', '50%'],
-                curve: 'easeOut'
-            }
-        },
-        {
-            actor: 'Action Example',
-            start: 10000,
-            stop: 11000,
-            setBreak: true,
-            type: 'moveTo',
-            properties: {
-                location: ['70%', '50%'],
-                curve: 'easeOut'
-            }
-        },
-        {
-            actor: 'Action Example',
-            start: 11000,
-            stop: 11500,
-            type: 'opacity',
-            properties: {
-                finalOpacity: 0
-            }
-        },
-        {
-            actor: 'Actor',
-            start: 11000,
-            stop: 11500,
-            type: 'moveTo',
-            setBreak: true,
-            properties: {
-                location: ['70%', '50%'],
-                curve: 'linear'
-            }
-        },
-        {
-            actor: 'Action',
-            start: 11500,
-            stop: 13000,
-            type: 'rotateTo',
-            properties: {
-                axis: 'z',
-                angleInDegrees: '1080'
-            }
-        },
-        {
-            actor: 'Actor',
-            start: 12000,
-            stop: 12500,
-            type: 'moveTo',
-            properties: {
-                location: ['50%', '50%'],
-                curve: 'linear'
-            }
-        },
-        {
-            actor: 'Action',
-            start: 12000,
-            stop: 12500,
-            type: 'moveTo',
-            properties: {
-                location: ['50%', '50%'],
-                curve: 'linear'
-            }
-        },
-        {
-            actor: 'Actor',
-            start: 12500,
-            stop: 13000,
-            type: 'rotateTo',
-            properties: {
-                axis: 'z',
-                angleInDegrees: '360'
-            }
-        },
-        {
-            actor: 'Actor',
-            start: 12500,
-            stop: 13000,
-            type: 'moveTo',
-            properties: {
-                location: ['50%', '150%'],
-                curve: 'linear'
-            }
-        },
-        {
-            actor: 'Action',
-            start: 12500,
-            stop: 13000,
-            setBreak: true,
-            type: 'moveTo',
-            properties: {
-                location: ['50%', '150%'],
-                curve: 'linear'
-            }
-        },
-        {
-            actor: 'Position',
-            start: 13000,
-            stop: 14000,
-            setBreak: true,
-            type: 'opacity',
-            properties: {
-                finalOpacity: 1
-            }
-        },
-        {
-            actor: 'Position',
-            start: 14001,
-            stop: 15000,
-            setBreak: true,
-            type: 'position',
-            properties: {
-                scaleX: 0.5,
-                scaleY: 0
-            }
-        },
-        {
-            actor: 'Position',
-            start: 15001,
-            stop: 16000,
-            type: 'position',
-            properties: {
-                scaleX: 0,
-                scaleY: -3
-            }
-        },
-        {
-            actor: 'Move To',
-            start: 15001,
-            stop: 16000,
-            setBreak: true,
-            type: 'opacity',
-            properties: {
-                finalOpacity: 1
-            }
-        },
-        {
-            actor: 'Move To',
-            start: 16001,
-            stop: 17000,
-            setBreak: true,
-            type: 'moveTo',
-            properties: {
-                location: ['25%', '25%']
-            }
-        },
-        {
-            actor: 'Move To',
-            start: 17001,
-            stop: 18000,
-            type: 'position',
-            properties: {
-                scaleX: 0,
-                scaleY: -4
-            }
-        },
-        {
-            actor: 'Rotate To',
-            start: 17001,
-            stop: 18000,
-            setBreak: true,
-            type: 'opacity',
-            properties: {
-                finalOpacity: 1
-            }
-        },
-        {
-            actor: 'Rotate To',
-            start: 18001,
-            stop: 19000,
-            setBreak: true,
-            type: 'rotateTo',
-            properties: {
-                axis: 'y',
-                angleInDegrees: 180
-            }
-        },
-        {
-            actor: 'Rotate To',
-            start: 19001,
-            stop: 20000,
-            type: 'position',
-            properties: {
-                scaleX: 0,
-                scaleY: -4
-            }
-        },
-        {
-            actor: 'Scale',
-            start: 19001,
-            stop: 20000,
-            setBreak: true,
-            type: 'opacity',
-            properties: {
-                finalOpacity: 1
-            }
-        },
-        {
-            actor: 'Scale',
-            start: 20001,
-            stop: 21000,
-            setBreak: true,
-            type: 'scale',
-            properties: {
-                changeRatioX: 3,
-                changeRatioY: 3
-            }
-        },
-        {
-            actor: 'Scale',
-            start: 21001,
-            stop: 22000,
-            type: 'position',
-            properties: {
-                scaleX: 0,
-                scaleY: -5
-            }
-        },
-        {
-            actor: 'Skew',
-            start: 21001,
-            stop: 22000,
-            setBreak: true,
-            type: 'opacity',
-            properties: {
-                finalOpacity: 1
-            }
-        },
-        {
-            actor: 'Skew',
-            start: 22001,
-            stop: 23000,
-            setBreak: true,
-            type: 'skew',
-            properties: {
-                scaleZ: 0.75
-            }
-        },
-        {
-            actor: 'Skew',
-            start: 23001,
-            stop: 24000,
-            type: 'position',
-            properties: {
-                scaleX: 0,
-                scaleY: -5
-            }
-        },
-        {
-            actor: 'How It Works',
-            start: 22001,
-            stop: 23000,
-            type: 'moveTo',
-            properties: {
-                location: ['50%', '-30%']
-            }
-        },
-        {
-            actor: 'Scrollster Final',
-            start: 22000,
-            stop: 24000,
-            setBreak: true,
-            type: 'rotateTo',
-            properties: {
-                axis: 'x',
-                angleInDegrees: 360
-            }
-        },
-        {
-            actor: 'Scrollster Final',
-            start: 23500,
-            stop: 23600,
-            type: 'opacity',
-            properties: {
-                finalOpacity: 1
-            }
-        }
+        //{
+        //    actor: 'Action Labs Logo Sub Node 1',
+        //    start: 500,
+        //    stop: 1000,
+        //    setBreak: true,
+        //    type: 'opacity',
+        //    properties: {}
+        //},
+        //{
+        //    actor: 'Action Labs Logo Sub Node 2',
+        //    start: 500,
+        //    stop: 1000,
+        //    setBreak: true,
+        //    type: 'opacity',
+        //    properties: {}
+        //},
+        //{
+        //    actor: 'Action Labs Logo',
+        //    start: 1001,
+        //    stop: 2000,
+        //    type: 'position',
+        //    properties: {
+        //        scaleX: 0,
+        //        scaleY: 2.5
+        //    }
+        //},
+        //{
+        //    actor: 'Why Famous',
+        //    start: 1001,
+        //    stop: 1500,
+        //    type: 'moveTo',
+        //    properties: {
+        //        location: ['50%', '50%'],
+        //        curve: 'easeIn'
+        //    }
+        //},
+        //{
+        //    actor: 'Why Famous',
+        //    start: 1501,
+        //    stop: 2000,
+        //    setBreak: true,
+        //    type: 'moveTo',
+        //    properties: {
+        //        location: ['50%', '5%'],
+        //        curve: 'easeIn'
+        //    }
+        //},
+        //{
+        //    actor: 'Speed',
+        //    start: 2001,
+        //    stop: 3000,
+        //    type: 'moveTo',
+        //    setBreak: true,
+        //    properties: {
+        //        location: ['50%', '30%'],
+        //        curve: 'easeIn'
+        //    }
+        //},
+        //{
+        //    actor: 'Easing',
+        //    start: 3001,
+        //    stop: 4000,
+        //    setBreak: true,
+        //    type: 'moveTo',
+        //    properties: {
+        //        location: ['50%', '50%'],
+        //        curve: 'spring'
+        //    }
+        //},
+        //{
+        //    actor: '3D',
+        //    start: 4001,
+        //    stop: 5000,
+        //    type: 'moveTo',
+        //    properties: {
+        //        location: ['50%', '70%'],
+        //        curve: 'linear'
+        //    }
+        //},
+        //{
+        //    actor: '3D',
+        //    start: 4001,
+        //    stop: 5000,
+        //    setBreak: true,
+        //    type: 'rotateTo',
+        //    properties: {
+        //        axis: 'x',
+        //        angleInDegrees: 720,
+        //        curve: 'linear'
+        //    }
+        //},
+        //{
+        //    actor: 'Why Famous',
+        //    start: 5001,
+        //    stop: 6000,
+        //    type: 'moveTo',
+        //    properties: {
+        //        location: ['50%', '150%'],
+        //        curve: 'linear'
+        //    }
+        //},
+        //{
+        //    actor: 'Speed',
+        //    start: 5001,
+        //    stop: 6000,
+        //    type: 'moveTo',
+        //    properties: {
+        //        location: ['50%', '130%'],
+        //        curve: 'easeIn'
+        //    }
+        //},
+        //{
+        //    actor: 'Easing',
+        //    start: 5201,
+        //    stop: 6000,
+        //    type: 'moveTo',
+        //    properties: {
+        //        location: ['50%', '130%'],
+        //        curve: 'easeIn'
+        //    }
+        //},
+        //{
+        //    actor: '3D',
+        //    start: 5401,
+        //    stop: 6000,
+        //    type: 'moveTo',
+        //    properties: {
+        //        location: ['50%', '130%'],
+        //        curve: 'easeIn'
+        //    }
+        //},
+        //{
+        //    actor: 'How It Works',
+        //    start: 5800,
+        //    stop: 7000,
+        //    type: 'opacity',
+        //    properties: {}
+        //},
+        //{
+        //    actor: 'Actor',
+        //    start: 6001,
+        //    stop: 7000,
+        //    setBreak: true,
+        //    type: 'opacity',
+        //    properties: {
+        //        finalOpacity: 1
+        //    }
+        //},
+        //{
+        //    actor: 'Action',
+        //    start: 7001,
+        //    stop: 8000,
+        //    setBreak: true,
+        //    type: 'opacity',
+        //    properties: {
+        //        finalOpacity: 1
+        //    }
+        //},
+        //{
+        //    actor: 'Action',
+        //    start: 8001,
+        //    stop: 9000,
+        //    type: 'moveTo',
+        //    properties: {
+        //        location: ['150%', '50%'],
+        //        curve: 'linear'
+        //    }
+        //},
+        //{
+        //    actor: 'Actor Example',
+        //    start: 8001,
+        //    stop: 9000,
+        //    type: 'opacity',
+        //    setBreak: true,
+        //    properties: {
+        //        finalOpacity: 1
+        //    }
+        //},
+        //{
+        //    actor: 'Actor',
+        //    start: 9001,
+        //    stop: 10000,
+        //    type: 'moveTo',
+        //    properties: {
+        //        location: ['150%', '50%'],
+        //        curve: 'linear'
+        //    }
+        //},
+        //{
+        //    actor: 'Actor Example',
+        //    start: 9001,
+        //    stop: 10000,
+        //    type: 'moveTo',
+        //    properties: {
+        //        location: ['150%', '50%'],
+        //        curve: 'linear'
+        //    }
+        //},
+        //{
+        //    actor: 'Action',
+        //    start: 10000,
+        //    stop: 11000,
+        //    type: 'moveTo',
+        //    properties: {
+        //        location: ['30%', '50%'],
+        //        curve: 'easeOut'
+        //    }
+        //},
+        //{
+        //    actor: 'Action Example',
+        //    start: 10000,
+        //    stop: 11000,
+        //    setBreak: true,
+        //    type: 'moveTo',
+        //    properties: {
+        //        location: ['70%', '50%'],
+        //        curve: 'easeOut'
+        //    }
+        //},
+        //{
+        //    actor: 'Action Example',
+        //    start: 11000,
+        //    stop: 11500,
+        //    type: 'opacity',
+        //    properties: {
+        //        finalOpacity: 0
+        //    }
+        //},
+        //{
+        //    actor: 'Actor',
+        //    start: 11000,
+        //    stop: 11500,
+        //    type: 'moveTo',
+        //    setBreak: true,
+        //    properties: {
+        //        location: ['70%', '50%'],
+        //        curve: 'linear'
+        //    }
+        //},
+        //{
+        //    actor: 'Action',
+        //    start: 11500,
+        //    stop: 13000,
+        //    type: 'rotateTo',
+        //    properties: {
+        //        axis: 'z',
+        //        angleInDegrees: '1080'
+        //    }
+        //},
+        //{
+        //    actor: 'Actor',
+        //    start: 12000,
+        //    stop: 12500,
+        //    type: 'moveTo',
+        //    properties: {
+        //        location: ['50%', '50%'],
+        //        curve: 'linear'
+        //    }
+        //},
+        //{
+        //    actor: 'Action',
+        //    start: 12000,
+        //    stop: 12500,
+        //    type: 'moveTo',
+        //    properties: {
+        //        location: ['50%', '50%'],
+        //        curve: 'linear'
+        //    }
+        //},
+        //{
+        //    actor: 'Actor',
+        //    start: 12500,
+        //    stop: 13000,
+        //    type: 'rotateTo',
+        //    properties: {
+        //        axis: 'z',
+        //        angleInDegrees: '360'
+        //    }
+        //},
+        //{
+        //    actor: 'Actor',
+        //    start: 12500,
+        //    stop: 13000,
+        //    type: 'moveTo',
+        //    properties: {
+        //        location: ['50%', '150%'],
+        //        curve: 'linear'
+        //    }
+        //},
+        //{
+        //    actor: 'Action',
+        //    start: 12500,
+        //    stop: 13000,
+        //    setBreak: true,
+        //    type: 'moveTo',
+        //    properties: {
+        //        location: ['50%', '150%'],
+        //        curve: 'linear'
+        //    }
+        //},
+        //{
+        //    actor: 'Position',
+        //    start: 13000,
+        //    stop: 14000,
+        //    setBreak: true,
+        //    type: 'opacity',
+        //    properties: {
+        //        finalOpacity: 1
+        //    }
+        //},
+        //{
+        //    actor: 'Position',
+        //    start: 14001,
+        //    stop: 15000,
+        //    setBreak: true,
+        //    type: 'position',
+        //    properties: {
+        //        scaleX: 0.5,
+        //        scaleY: 0
+        //    }
+        //},
+        //{
+        //    actor: 'Position',
+        //    start: 15001,
+        //    stop: 16000,
+        //    type: 'position',
+        //    properties: {
+        //        scaleX: 0,
+        //        scaleY: -3
+        //    }
+        //},
+        //{
+        //    actor: 'Move To',
+        //    start: 15001,
+        //    stop: 16000,
+        //    setBreak: true,
+        //    type: 'opacity',
+        //    properties: {
+        //        finalOpacity: 1
+        //    }
+        //},
+        //{
+        //    actor: 'Move To',
+        //    start: 16001,
+        //    stop: 17000,
+        //    setBreak: true,
+        //    type: 'moveTo',
+        //    properties: {
+        //        location: ['25%', '25%']
+        //    }
+        //},
+        //{
+        //    actor: 'Move To',
+        //    start: 17001,
+        //    stop: 18000,
+        //    type: 'position',
+        //    properties: {
+        //        scaleX: 0,
+        //        scaleY: -4
+        //    }
+        //},
+        //{
+        //    actor: 'Rotate To',
+        //    start: 17001,
+        //    stop: 18000,
+        //    setBreak: true,
+        //    type: 'opacity',
+        //    properties: {
+        //        finalOpacity: 1
+        //    }
+        //},
+        //{
+        //    actor: 'Rotate To',
+        //    start: 18001,
+        //    stop: 19000,
+        //    setBreak: true,
+        //    type: 'rotateTo',
+        //    properties: {
+        //        axis: 'y',
+        //        angleInDegrees: 180
+        //    }
+        //},
+        //{
+        //    actor: 'Rotate To',
+        //    start: 19001,
+        //    stop: 20000,
+        //    type: 'position',
+        //    properties: {
+        //        scaleX: 0,
+        //        scaleY: -4
+        //    }
+        //},
+        //{
+        //    actor: 'Scale',
+        //    start: 19001,
+        //    stop: 20000,
+        //    setBreak: true,
+        //    type: 'opacity',
+        //    properties: {
+        //        finalOpacity: 1
+        //    }
+        //},
+        //{
+        //    actor: 'Scale',
+        //    start: 20001,
+        //    stop: 21000,
+        //    setBreak: true,
+        //    type: 'scale',
+        //    properties: {
+        //        changeRatioX: 3,
+        //        changeRatioY: 3
+        //    }
+        //},
+        //{
+        //    actor: 'Scale',
+        //    start: 21001,
+        //    stop: 22000,
+        //    type: 'position',
+        //    properties: {
+        //        scaleX: 0,
+        //        scaleY: -5
+        //    }
+        //},
+        //{
+        //    actor: 'Skew',
+        //    start: 21001,
+        //    stop: 22000,
+        //    setBreak: true,
+        //    type: 'opacity',
+        //    properties: {
+        //        finalOpacity: 1
+        //    }
+        //},
+        //{
+        //    actor: 'Skew',
+        //    start: 22001,
+        //    stop: 23000,
+        //    setBreak: true,
+        //    type: 'skew',
+        //    properties: {
+        //        scaleZ: 0.75
+        //    }
+        //},
+        //{
+        //    actor: 'Skew',
+        //    start: 23001,
+        //    stop: 24000,
+        //    type: 'position',
+        //    properties: {
+        //        scaleX: 0,
+        //        scaleY: -5
+        //    }
+        //},
+        //{
+        //    actor: 'How It Works',
+        //    start: 22001,
+        //    stop: 23000,
+        //    type: 'moveTo',
+        //    properties: {
+        //        location: ['50%', '-30%']
+        //    }
+        //},
+        //{
+        //    actor: 'Scrollster Final',
+        //    start: 22000,
+        //    stop: 24000,
+        //    setBreak: true,
+        //    type: 'rotateTo',
+        //    properties: {
+        //        axis: 'x',
+        //        angleInDegrees: 360
+        //    }
+        //},
+        //{
+        //    actor: 'Scrollster Final',
+        //    start: 23500,
+        //    stop: 23600,
+        //    type: 'opacity',
+        //    properties: {
+        //        finalOpacity: 1
+        //    }
+        //}
     ];
 
-    director.populateStage(stageView, actorDescriptions, actionDescriptions);
+    director.populateStage(stageView, nodeDescriptions, actionDescriptions);
 
     mainContext.add(stageView);
 });

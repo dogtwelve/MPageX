@@ -15,6 +15,72 @@ define(function(require, exports, module) {
           this.actionsForNode = {};
     }
 
+    ActionFactory.prototype.makeActionNew = function(metNode, actionDesc) {
+        var newAction;
+
+        var type        = actionDesc.type;
+        var scrollStart = actionDesc.scrollStart;
+        var scrollStop  = actionDesc.scrollStop;
+        var properties  = actionDesc.properties;
+
+        if (!properties) properties = {};
+
+        _setupTweenCurve(properties);
+
+        if (type === 'moveTo') {
+            newAction = new MoveToModifier({actor: metNode,
+                scrollStart: scrollStart,
+                scrollStop: scrollStop,
+                curveFn: properties.curveFn,
+                pixelsStopX: properties.location[0],
+                pixelsStopY: properties.location[1]});
+        } else if (type === 'position') {
+            newAction = new PositionModifier({actor: metNode,
+                scaleX: properties.scaleX,
+                scaleY: properties.scaleY,
+                scrollStart: scrollStart,
+                scrollStop: scrollStop});
+        } else if (type === 'rotateTo') {
+            newAction = new RotateToModifier({actor: metNode,
+                scrollStart: scrollStart,
+                scrollStop: scrollStop,
+                curveFn: properties.curveFn,
+                axis: properties.axis,
+                angleInDegrees: properties.angleInDegrees});
+        } else if (type === 'rotate') {
+            newAction = new RotateModifier({actor: metNode,
+                scrollStart: scrollStart,
+                scrollStop: scrollStop,
+                axis: properties.axis,
+                scale: properties.scale});
+        } else if (type === 'opacity') {
+            newAction = new OpacityModifier({actor: metNode,
+                scrollStart: scrollStart,
+                scrollStop: scrollStop,
+                curveFn: properties.curveFn,
+                finalOpacity: properties && properties.finalOpacity !== undefined ? properties.finalOpacity : 1});
+        } else if (type === 'scale') {
+            newAction = new ScaleModifier({scrollStart: scrollStart,
+                scrollStop: scrollStop,
+                curveFn: properties.curveFn,
+                changeRatioX: properties.changeRatioX,
+                changeRatioY: properties.changeRatioY});
+        } else if (type === 'skew') {
+            newAction = new SkewModifier({scrollStart: scrollStart,
+                scrollStop: scrollStop,
+                curveFn: properties.curveFn,
+                scaleX: properties.scaleX || 0,
+                scaleY: properties.scaleY || 0,
+                scaleZ: properties.scaleZ || 0});
+        }
+
+        metNode.addModifier(newAction);
+
+        _saveAction.call(this, metNode, newAction);
+
+        return newAction;
+    }
+
     ActionFactory.prototype.makeAction = function(actor, type, scrollStart, scrollStop, properties) {
         var newAction;
 

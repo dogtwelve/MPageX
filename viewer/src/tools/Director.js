@@ -27,14 +27,16 @@ define(function(require, exports, module) {
                 nodeDescriptions[nodeName].position = _unitsToPixels(nodeDescriptions[nodeName].position);
             }
 
-            var newNode = nodeFactory.makeMetNode(nodeName,
-                                                  nodeDescriptions[nodeName].type,
-                                                  nodeDescriptions[nodeName].content,
-                                                  nodeDescriptions[nodeName].classes,
-                                                  nodeDescriptions[nodeName].properties,
-                                                  nodeDescriptions[nodeName].size,
-                                                  nodeDescriptions[nodeName].opacity
-                                                  );
+            //var newNode = nodeFactory.makeMetNode(nodeName,
+            //                                      nodeDescriptions[nodeName].type,
+            //                                      nodeDescriptions[nodeName].content,
+            //                                      nodeDescriptions[nodeName].classes,
+            //                                      nodeDescriptions[nodeName].properties,
+            //                                      nodeDescriptions[nodeName].size,
+            //                                      nodeDescriptions[nodeName].opacity
+            //                                      );
+
+            var newNode = nodeFactory.makeMetNodeNew(nodeName, nodeDescriptions[nodeName]);
             this.metnodes[nodeName] = newNode;
             newNode.setPositionPixels(nodeDescriptions[nodeName].position[0], nodeDescriptions[nodeName].position[1]);
         }

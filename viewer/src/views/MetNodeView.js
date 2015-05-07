@@ -57,7 +57,7 @@ define(function(require, exports, module) {
     };
 
 
-    MetNodeView.prototype.addMetNode = function(metNode) {
+    MetNodeView.prototype.addSubMetNode = function(metNode) {
         this.metnodes.push(metNode);
     };
 

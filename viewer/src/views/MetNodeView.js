@@ -58,7 +58,7 @@ define(function(require, exports, module) {
 
 
     MetNodeView.prototype.addSubMetNode = function(metNode) {
-        this.metnodes.push(metNode);
+        this.metNodes.push(metNode);
     };
 
     MetNodeView.prototype.setPositionRatio = function(newX, newY) {
@@ -83,12 +83,15 @@ define(function(require, exports, module) {
 
         // Ensures metnode always has a position modifier
         _createBaseModifier.call(this);
-        this.add(this.modifierChain).add(this.mainSurface);
 
-        //children metnodes processing
-        for(var metNode in this.metNodes) {
-            metNode.activate(scrollSync);
-            this.add(this.modifierChain).add(metNode);
+        this.rootMetNode = this.add(this.modifierChain);
+        this.rootMetNode.add(this.mainSurface);
+
+        ////children metnodes processing
+        var subMetNodes = this.metNodes;
+        for(var metNode in subMetNodes) {
+            subMetNodes[metNode].activate(scrollSync);
+            this.rootMetNode.add(subMetNodes[metNode]);
         }
     };
 

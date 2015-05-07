@@ -43,8 +43,8 @@ define(function(require, exports, module) {
             scrollPosition <= this.scrollStop)) {
             // Inside scroll range
             this.scrollState = 'active';
-            var currPixelX = UnitConverter.ratioXtoPixels(this.actor.xPosition);
-            var currPixelY = UnitConverter.ratioYtoPixels(this.actor.yPosition);
+            var currPixelX = UnitConverter.ratioXtoPixels(this.actor.xPosition, this.actor.containerSize[0]);
+            var currPixelY = UnitConverter.ratioYtoPixels(this.actor.yPosition, this.actor.containerSize[1]);
 
             if (!this.startX) this.startX = currPixelX;
             if (!this.startY) this.startY = currPixelY;
@@ -73,20 +73,21 @@ define(function(require, exports, module) {
 
     function _makeModifier() {
         this.modifier = {
-            origin: [0.5, 0.5],
+            origin: [0, 0],
             align: function() {
                 // if (this.scrollState === 'active') {
                 //     return [this.actor.xPosition, this.actor.yPosition];
                 // } else {
                 //     return undefined;
                 // }
+                console.log("Position(" + this.actor.xPosition + "," + this.actor.yPosition + ")");
                 return [this.actor.xPosition, this.actor.yPosition];
             }.bind(this)
         };
     }
 
     function _incrementPosition(pixelDelta) {
-        this.actor.incrementPosition(UnitConverter.pixelsToRatioX(pixelDelta) * this.scaleX, UnitConverter.pixelsToRatioY(pixelDelta) * this.scaleY);
+        this.actor.incrementPosition(UnitConverter.pixelsToRatioX(pixelDelta, this.actor.containerSize[0]) * this.scaleX, UnitConverter.pixelsToRatioY(pixelDelta, this.actor.containerSize[1]) * this.scaleY);
     }
 
     module.exports = PositionModifier;

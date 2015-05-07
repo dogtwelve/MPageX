@@ -12,7 +12,7 @@ define(function(require, exports, module) {
           this.metNodesFromFactory = {};
     }
 
-    MetNodeFactory.prototype.makeMetNodeNew = function(name, nodeDescription) {
+    MetNodeFactory.prototype.makeMetNodeNew = function(name, nodeDescription, containerSize) {
         var newSurface;
 
         if (nodeDescription.zPosition && nodeDescription.properties) {
@@ -20,11 +20,11 @@ define(function(require, exports, module) {
         }
 
         // Make sure size is in pixels.
-        nodeDescription.size = UnitConverter._unitsToPixels(nodeDescription.size);
+        nodeDescription.size = UnitConverter._unitsToPixels(nodeDescription.size, containerSize);
 
         // Make sure position is in pixels.
         if (nodeDescription.position) {
-            nodeDescription.position = UnitConverter._unitsToPixels(nodeDescription.position);
+            nodeDescription.position = UnitConverter._unitsToPixels(nodeDescription.position, containerSize);
         }
 
 
@@ -69,12 +69,16 @@ define(function(require, exports, module) {
         var newNode = new MetNodeView({
             name: name,
             zPosition: properties.zPosition,
-            opacity: opacity !== undefined ? opacity : 1
+            opacity: opacity !== undefined ? opacity : 1,
+            containerSize:containerSize
         });
 
         var subMetNodes = nodeDescription.nodes;
         for(var subMetNodenode in subMetNodes) {
-            var newSubNode = this.makeMetNodeNew(subMetNodes[subMetNodenode].name, subMetNodes[subMetNodenode]);
+            var newSubNode = this.makeMetNodeNew(
+                subMetNodes[subMetNodenode].name,
+                subMetNodes[subMetNodenode],
+                nodeDescription.size);
             newNode.addSubMetNode(newSubNode);
         }
 

@@ -21,7 +21,8 @@ define(function(require, exports, module) {
         this.destination = this.options.destination;
         this.name = this.options.name;
         this.metNodes = [];
-
+        this.containerSize = this.options.containerSize;
+        console.log(this.name + " containerSize(" + this.containerSize[0] + "," + this.containerSize[1] + ")");
         _listenToScroll.call(this);
     }
 
@@ -67,8 +68,8 @@ define(function(require, exports, module) {
     };
 
     MetNodeView.prototype.setPositionPixels = function(newX, newY) {
-        this.xPosition = UnitConverter.pixelsToRatioX(newX);
-        this.yPosition = UnitConverter.pixelsToRatioY(newY);
+        this.xPosition = UnitConverter.pixelsToRatioX(newX, this.containerSize[0]);
+        this.yPosition = UnitConverter.pixelsToRatioY(newY, this.containerSize[1]);
     };
 
     MetNodeView.prototype.incrementPosition = function(incrX, incrY) {

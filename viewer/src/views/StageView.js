@@ -34,7 +34,8 @@ define(function(require, exports, module) {
             breakpoints: [0],
             speed: 4,
             step: 10
-        }
+        },
+        containerSize: [window.innerWidth, window.innerHeight]
     };
 
     StageView.prototype = Object.create(View.prototype);

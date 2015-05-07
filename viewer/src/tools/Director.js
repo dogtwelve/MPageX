@@ -36,7 +36,7 @@ define(function(require, exports, module) {
             //                                      nodeDescriptions[nodeName].opacity
             //                                      );
 
-            var newNode = nodeFactory.makeMetNodeNew(nodeName, nodeDescriptions[nodeName]);
+            var newNode = nodeFactory.makeMetNodeNew(nodeName, nodeDescriptions[nodeName], stage.options.containerSize);
             //this.metnodes[nodeName] = newNode;
             //newNode.setPositionPixels(nodeDescriptions[nodeName].position[0], nodeDescriptions[nodeName].position[1]);
         }

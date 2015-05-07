@@ -21,7 +21,7 @@ define(function(require, exports, module) {
 
         // If action takes a location, ensure that it's in pixels
         if (actionDesc.properties && actionDesc.properties.location) {
-            actionDesc.properties.location = UnitConverter._unitsToPixels(actionDesc.properties.location);
+            actionDesc.properties.location = UnitConverter._unitsToPixels(actionDesc.properties.location, metNode.containerSize);
         }
 
         var type        = actionDesc.type;

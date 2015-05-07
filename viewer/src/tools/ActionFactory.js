@@ -19,8 +19,8 @@ define(function(require, exports, module) {
         var newAction;
 
         var type        = actionDesc.type;
-        var scrollStart = actionDesc.scrollStart;
-        var scrollStop  = actionDesc.scrollStop;
+        var scrollStart = actionDesc.start;
+        var scrollStop  = actionDesc.stop;
         var properties  = actionDesc.properties;
 
         if (!properties) properties = {};

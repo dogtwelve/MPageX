@@ -1,5 +1,6 @@
 define(function(require, exports, module) {
     'use strict';
+    var UnitConverter      = require('tools/UnitConverter');
     var MoveToModifier     = require('modifiers/MoveToModifier');
     var OpacityModifier    = require('modifiers/OpacityModifier');
     var PositionModifier   = require('modifiers/PositionModifier');
@@ -17,6 +18,11 @@ define(function(require, exports, module) {
 
     ActionFactory.prototype.makeActionNew = function(metNode, actionDesc) {
         var newAction;
+
+        // If action takes a location, ensure that it's in pixels
+        if (actionDesc.properties && actionDesc.properties.location) {
+            actionDesc.properties.location = UnitConverter._unitsToPixels(actionDesc.properties.location);
+        }
 
         var type        = actionDesc.type;
         var scrollStart = actionDesc.start;

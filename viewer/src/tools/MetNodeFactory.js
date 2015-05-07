@@ -5,14 +5,28 @@ define(function(require, exports, module) {
     var UnitConverter = require('tools/UnitConverter');
     var Surface       = require('famous/core/Surface');
     var ImageSurface  = require('famous/surfaces/ImageSurface');
+    var UnitConverter      = require('tools/UnitConverter');
 
     function MetNodeFactory() {
           // Container to store created actors by name.
-          this.metnodes = {};
+          this.metNodesFromFactory = {};
     }
 
     MetNodeFactory.prototype.makeMetNodeNew = function(name, nodeDescription) {
         var newSurface;
+
+        if (nodeDescription.zPosition && nodeDescription.properties) {
+            nodeDescription.properties.zPosition = nodeDescription.zPosition;
+        }
+
+        // Make sure size is in pixels.
+        nodeDescription.size = UnitConverter._unitsToPixels(nodeDescription.size);
+
+        // Make sure position is in pixels.
+        if (nodeDescription.position) {
+            nodeDescription.position = UnitConverter._unitsToPixels(nodeDescription.position);
+        }
+
 
         var type = nodeDescription.type;
         var content = nodeDescription.content;
@@ -58,10 +72,18 @@ define(function(require, exports, module) {
             opacity: opacity !== undefined ? opacity : 1
         });
 
+        var subMetNodes = nodeDescription.nodes;
+        for(var subMetNodenode in subMetNodes) {
+            var newSubNode = this.makeMetNodeNew(subMetNodes[subMetNodenode].name, subMetNodes[subMetNodenode]);
+            newNode.addSubMetNode(newSubNode);
+        }
 
         newNode.addSurface(newSurface);
 
-        this.metnodes[name] = newNode;
+
+        this.metNodesFromFactory[name] = newNode;
+
+        newNode.setPositionPixels(nodeDescription.position[0], nodeDescription.position[1]);
 
         return newNode;
     };
@@ -114,7 +136,7 @@ define(function(require, exports, module) {
     //};
 
     MetNodeFactory.prototype.getMetNode = function(name) {
-        return this.metnodes[name];
+        return this.metNodesFromFactory[name];
     };
 
     module.exports = MetNodeFactory;

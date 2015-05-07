@@ -81,66 +81,66 @@ define(function(require, exports, module) {
         return newAction;
     }
 
-    ActionFactory.prototype.makeAction = function(actor, type, scrollStart, scrollStop, properties) {
-        var newAction;
-
-        if (!properties) properties = {};
-
-        _setupTweenCurve(properties);
-
-        if (type === 'moveTo') {
-            newAction = new MoveToModifier({actor: actor,
-                                            scrollStart: scrollStart,
-                                            scrollStop: scrollStop,
-                                            curveFn: properties.curveFn,
-                                            pixelsStopX: properties.location[0],
-                                            pixelsStopY: properties.location[1]});
-        } else if (type === 'position') {
-            newAction = new PositionModifier({actor: actor,
-                                              scaleX: properties.scaleX,
-                                              scaleY: properties.scaleY,
-                                              scrollStart: scrollStart,
-                                              scrollStop: scrollStop});
-        } else if (type === 'rotateTo') {
-            newAction = new RotateToModifier({actor: actor,
-                                              scrollStart: scrollStart,
-                                              scrollStop: scrollStop,
-                                              curveFn: properties.curveFn,
-                                              axis: properties.axis,
-                                              angleInDegrees: properties.angleInDegrees});
-        } else if (type === 'rotate') {
-            newAction = new RotateModifier({actor: actor,
-                                            scrollStart: scrollStart,
-                                            scrollStop: scrollStop,
-                                            axis: properties.axis,
-                                            scale: properties.scale});
-        } else if (type === 'opacity') {
-            newAction = new OpacityModifier({actor: actor,
-                                             scrollStart: scrollStart,
-                                             scrollStop: scrollStop,
-                                             curveFn: properties.curveFn,
-                                             finalOpacity: properties && properties.finalOpacity !== undefined ? properties.finalOpacity : 1});
-        } else if (type === 'scale') {
-            newAction = new ScaleModifier({scrollStart: scrollStart,
-                                           scrollStop: scrollStop,
-                                           curveFn: properties.curveFn,
-                                           changeRatioX: properties.changeRatioX,
-                                           changeRatioY: properties.changeRatioY});
-        } else if (type === 'skew') {
-            newAction = new SkewModifier({scrollStart: scrollStart,
-                                          scrollStop: scrollStop,
-                                          curveFn: properties.curveFn,
-                                          scaleX: properties.scaleX || 0,
-                                          scaleY: properties.scaleY || 0,
-                                          scaleZ: properties.scaleZ || 0});
-        }
-
-        actor.addModifier(newAction);
-
-        _saveAction.call(this, actor, newAction);
-
-        return newAction;
-    };
+    //ActionFactory.prototype.makeAction = function(actor, type, scrollStart, scrollStop, properties) {
+    //    var newAction;
+    //
+    //    if (!properties) properties = {};
+    //
+    //    _setupTweenCurve(properties);
+    //
+    //    if (type === 'moveTo') {
+    //        newAction = new MoveToModifier({actor: actor,
+    //                                        scrollStart: scrollStart,
+    //                                        scrollStop: scrollStop,
+    //                                        curveFn: properties.curveFn,
+    //                                        pixelsStopX: properties.location[0],
+    //                                        pixelsStopY: properties.location[1]});
+    //    } else if (type === 'position') {
+    //        newAction = new PositionModifier({actor: actor,
+    //                                          scaleX: properties.scaleX,
+    //                                          scaleY: properties.scaleY,
+    //                                          scrollStart: scrollStart,
+    //                                          scrollStop: scrollStop});
+    //    } else if (type === 'rotateTo') {
+    //        newAction = new RotateToModifier({actor: actor,
+    //                                          scrollStart: scrollStart,
+    //                                          scrollStop: scrollStop,
+    //                                          curveFn: properties.curveFn,
+    //                                          axis: properties.axis,
+    //                                          angleInDegrees: properties.angleInDegrees});
+    //    } else if (type === 'rotate') {
+    //        newAction = new RotateModifier({actor: actor,
+    //                                        scrollStart: scrollStart,
+    //                                        scrollStop: scrollStop,
+    //                                        axis: properties.axis,
+    //                                        scale: properties.scale});
+    //    } else if (type === 'opacity') {
+    //        newAction = new OpacityModifier({actor: actor,
+    //                                         scrollStart: scrollStart,
+    //                                         scrollStop: scrollStop,
+    //                                         curveFn: properties.curveFn,
+    //                                         finalOpacity: properties && properties.finalOpacity !== undefined ? properties.finalOpacity : 1});
+    //    } else if (type === 'scale') {
+    //        newAction = new ScaleModifier({scrollStart: scrollStart,
+    //                                       scrollStop: scrollStop,
+    //                                       curveFn: properties.curveFn,
+    //                                       changeRatioX: properties.changeRatioX,
+    //                                       changeRatioY: properties.changeRatioY});
+    //    } else if (type === 'skew') {
+    //        newAction = new SkewModifier({scrollStart: scrollStart,
+    //                                      scrollStop: scrollStop,
+    //                                      curveFn: properties.curveFn,
+    //                                      scaleX: properties.scaleX || 0,
+    //                                      scaleY: properties.scaleY || 0,
+    //                                      scaleZ: properties.scaleZ || 0});
+    //    }
+    //
+    //    actor.addModifier(newAction);
+    //
+    //    _saveAction.call(this, actor, newAction);
+    //
+    //    return newAction;
+    //};
 
     ActionFactory.prototype.getActionsForActor = function(actorName) {
         return this.actionsForNode[actorName];

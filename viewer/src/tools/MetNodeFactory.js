@@ -11,54 +11,7 @@ define(function(require, exports, module) {
           this.metnodes = {};
     }
 
-    MetNodeFactory.prototype.makeMetNode = function(name, type, content, classes, properties, size, opacity, scrollStart, scrollStop) {
-        var newSurface;
-
-        // Ensure backface visibility is set for all new surfaces.
-        if (!classes) {
-            classes = ['backfaceVisibility'];
-        } else {
-            classes.push('backfaceVisibility');
-        }
-
-        if (type === 'html') {
-            newSurface = new Surface({
-                size: size,
-                content: content,
-                properties: properties,
-                classes: classes
-            });
-        }
-
-        if (type === 'image') {
-            //newSurface = new BgImageSurface({
-            //    sizeMode: BgImageSurface.SizeMode.ASPECTFILL,
-            //    content: content,
-            //    properties: properties,
-            //    classes: classes
-            //});
-            newSurface = new ImageSurface({
-                size: size,
-                content: content,
-                properties: properties,
-                classes: classes
-            });
-        }
-
-        var newNode = new MetNodeView({
-            name: name,
-            zPosition: properties.zPosition,
-            opacity: opacity !== undefined ? opacity : 1
-        });
-
-        newNode.addSurface(newSurface);
-
-        this.metnodes[name] = newNode;
-
-        return newNode;
-    };
-
-    MetNodeFactory.prototype.makeMetNodeNew = function(name, nodeDescription, scrollStart, scrollStop) {
+    MetNodeFactory.prototype.makeMetNodeNew = function(name, nodeDescription) {
         var newSurface;
 
         var type = nodeDescription.type;
@@ -92,10 +45,10 @@ define(function(require, exports, module) {
             //    classes: classes
             //});
             newSurface = new ImageSurface({
-                size: size,
-                content: content,
-                properties: properties,
-                classes: classes
+                    size: size,
+                    content: content,
+                    properties: properties,
+                    classes: classes
             });
         }
 
@@ -112,6 +65,53 @@ define(function(require, exports, module) {
 
         return newNode;
     };
+
+    //MetNodeFactory.prototype.makeMetNode = function(name, type, content, classes, properties, size, opacity, scrollStart, scrollStop) {
+    //    var newSurface;
+    //
+    //    // Ensure backface visibility is set for all new surfaces.
+    //    if (!classes) {
+    //        classes = ['backfaceVisibility'];
+    //    } else {
+    //        classes.push('backfaceVisibility');
+    //    }
+    //
+    //    if (type === 'html') {
+    //        newSurface = new Surface({
+    //            size: size,
+    //            content: content,
+    //            properties: properties,
+    //            classes: classes
+    //        });
+    //    }
+    //
+    //    if (type === 'image') {
+    //        //newSurface = new BgImageSurface({
+    //        //    sizeMode: BgImageSurface.SizeMode.ASPECTFILL,
+    //        //    content: content,
+    //        //    properties: properties,
+    //        //    classes: classes
+    //        //});
+    //        newSurface = new ImageSurface({
+    //            size: size,
+    //            content: content,
+    //            properties: properties,
+    //            classes: classes
+    //        });
+    //    }
+    //
+    //    var newNode = new MetNodeView({
+    //        name: name,
+    //        zPosition: properties.zPosition,
+    //        opacity: opacity !== undefined ? opacity : 1
+    //    });
+    //
+    //    newNode.addSurface(newSurface);
+    //
+    //    this.metnodes[name] = newNode;
+    //
+    //    return newNode;
+    //};
 
     MetNodeFactory.prototype.getMetNode = function(name) {
         return this.metnodes[name];

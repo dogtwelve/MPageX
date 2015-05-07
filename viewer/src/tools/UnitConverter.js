@@ -35,5 +35,25 @@ define(function(require, exports, module) {
       return Math.round(UnitConverter.ratioYtoPixels(percentage / 100));
     };
 
+    UnitConverter._unitsToPixels = function(initial) {
+        var result =[];
+        for (var i = 0; i <= 1; i++) {
+            var checkVal = '' + initial[i]; // cast to string
+            // Check if units are percentages and adjust is necessary
+            // otherwise units are assumed to be pixels.
+            if (checkVal.charAt(checkVal.length - 1) === '%') {
+                if (i === 0) {
+                    result[i] = UnitConverter.percentageToPixelsX(parseFloat(checkVal.slice(0, checkVal.length - 1)));
+                }
+                if (i === 1) {
+                    result[i] = UnitConverter.percentageToPixelsY(parseFloat(checkVal.slice(0, checkVal.length - 1)));
+                }
+            } else {
+                result[i] = initial[i];
+            }
+        }
+        return result;
+    }
+
     module.exports = UnitConverter;
 });

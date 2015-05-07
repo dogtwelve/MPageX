@@ -120,12 +120,12 @@ define(function(require, exports, module) {
             //    }
             //}
 
-            if(velocity < -this.options.velThreshold) {
+            if(velocity < 0 && velocity < -this.options.velThreshold) {
                 _onForwardOrBackward.call(this, 'forward');
-                console.log("syncSwipe1" + velocity);
-            } else {
+                console.log("syncSwipe forward:" + velocity);
+            } else if(velocity > 0 && velocity > this.options.velThreshold){
                 _onForwardOrBackward.call(this, 'reverse');
-                console.log("syncSwipe2" + velocity);
+                console.log("syncSwipe backward:" + velocity);
             }
         }).bind(this));
     }

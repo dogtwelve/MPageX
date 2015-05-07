@@ -37,10 +37,10 @@ define(function(require, exports, module) {
             //                                      );
 
             var newNode = nodeFactory.makeMetNodeNew(nodeName, nodeDescriptions[nodeName], stage.options.containerSize);
-            //this.metnodes[nodeName] = newNode;
+            this.metnodes[nodeName] = newNode;
             //newNode.setPositionPixels(nodeDescriptions[nodeName].position[0], nodeDescriptions[nodeName].position[1]);
         }
-        this.metnodes = nodeFactory.metNodesFromFactory;
+        //this.metnodes = nodeFactory.metNodesFromFactory;
         // Reorder the action descriptions by type, since order matters for
         // some types of actions / modifiers.
         actionDescriptions = actionDescriptions.sort(actionFactory.actionComparator);

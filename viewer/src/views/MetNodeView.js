@@ -77,7 +77,7 @@ define(function(require, exports, module) {
         this.yPosition += incrY;
     };
 
-    MetNodeView.prototype.activate = function(holdersSync) {
+    MetNodeView.prototype.activate = function(holdersSync, rootMetNode) {
         if (!this.mainSurface) this.mainSurface = new Surface(this.options.surfaceOptions);
 
         for(var holder in holdersSync) {
@@ -88,14 +88,18 @@ define(function(require, exports, module) {
         // Ensures metnode always has a position modifier
         _createBaseModifier.call(this);
 
-        this.rootMetNode = this.add(this.modifierChain);
+        if(!rootMetNode) {
+            this.rootMetNode = this.add(this.modifierChain);
+        } else {
+            this.rootMetNode = rootMetNode.add(this.modifierChain);
+        }
+
         this.rootMetNode.add(this.mainSurface);
 
         ////children metnodes processing
         var subMetNodes = this.metNodes;
         for(var metNode in subMetNodes) {
-            subMetNodes[metNode].activate(holdersSync);
-            this.rootMetNode.add(subMetNodes[metNode]);
+            subMetNodes[metNode].activate(holdersSync, this.rootMetNode);
         }
     };
 

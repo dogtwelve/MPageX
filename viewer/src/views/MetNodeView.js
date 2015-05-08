@@ -3,6 +3,8 @@ define(function(require, exports, module) {
     var View          = require('famous/core/View');
     var Surface       = require('famous/core/Surface');
     var Modifier      = require('famous/core/Modifier');
+    var StateModifier = require('famous/modifiers/StateModifier');
+    var Draggable = require('famous/modifiers/Draggable');
     var Transform     = require('famous/core/Transform');
     var ModifierChain = require('famous/modifiers/ModifierChain');
     var UnitConverter = require('tools/UnitConverter');
@@ -35,7 +37,7 @@ define(function(require, exports, module) {
         destination: undefined,
         surfaceOptions: {
             size: [300, 300],
-            content: 'This is a demo',
+            content: 'This is a dummy',
             properties: {
                 backgroundColor: 'blue',
                 fontSize: '4em',
@@ -77,7 +79,7 @@ define(function(require, exports, module) {
         this.yPosition += incrY;
     };
 
-    MetNodeView.prototype.activate = function(holdersSync, rootMetNode) {
+    MetNodeView.prototype.activateMetNode = function(holdersSync, rootMetNode) {
         if (!this.mainSurface) this.mainSurface = new Surface(this.options.surfaceOptions);
 
         for(var holder in holdersSync) {
@@ -86,20 +88,22 @@ define(function(require, exports, module) {
         //this.mainSurface.pipe(scrollSync);
 
         // Ensures metnode always has a position modifier
-        _createBaseModifier.call(this);
+        //_createBaseModifier.call(this);
 
+        var draggable = new Draggable();
         if(!rootMetNode) {
-            this.rootMetNode = this.add(this.modifierChain);
+            this.rootMetNode = this.add(this.modifierChain).add(draggable);
         } else {
-            this.rootMetNode = rootMetNode.add(this.modifierChain);
+            this.rootMetNode = rootMetNode.add(this.modifierChain).add(draggable);
         }
 
         this.rootMetNode.add(this.mainSurface);
+        this.mainSurface.pipe(draggable);
 
         ////children metnodes processing
         var subMetNodes = this.metNodes;
         for(var metNode in subMetNodes) {
-            subMetNodes[metNode].activate(holdersSync, this.rootMetNode);
+            subMetNodes[metNode].activateMetNode(holdersSync, this.rootMetNode);
         }
     };
 

@@ -34,10 +34,13 @@ define(function(require, exports, module) {
                                         backfaceVisibility: 'visible',
                                         fontSize: '100%',
                                         textAlign: 'center',
-                                        backgroundColor: 'red'
+                                        backgroundColor: 'red',
+                                        borderStyle: 'solid',
+                                        borderColor: 'black',
+                                        borderSize: '2'
                                     },
                                     size: [320, 80],
-                                    position: ['350', '40'],
+                                    position: ['5', '40'],
                                     classes: ['z2'],
                                     zPosition: 0,
                                     opacity: 0
@@ -50,10 +53,13 @@ define(function(require, exports, module) {
                                         backfaceVisibility: 'visible',
                                         fontSize: '100%',
                                         textAlign: 'center',
-                                        backgroundColor: 'red'
+                                        backgroundColor: 'red',
+                                        borderStyle: 'solid',
+                                        borderColor: 'black',
+                                        borderSize: '2'
                                     },
                                     size: [320, 80],
-                                    position: ['350', '50'],
+                                    position: ['5', '50'],
                                     classes: ['z2'],
                                     zPosition: 0,
                                     opacity: 0
@@ -67,10 +73,13 @@ define(function(require, exports, module) {
                                 backfaceVisibility: 'visible',
                                 fontSize: '100%',
                                 textAlign: 'center',
-                                backgroundColor: 'red'
+                                backgroundColor: 'red',
+                                borderStyle: 'solid',
+                                borderColor: 'black',
+                                borderSize: '2'
                             },
                             size: [480, 160],
-                            position: ['350', '10'],
+                            position: ['5', '20'],
                             classes: ['z2'],
                             zPosition: 0,
                             opacity: 0
@@ -83,22 +92,29 @@ define(function(require, exports, module) {
                         backfaceVisibility: 'visible',
                         fontSize: '100%',
                         textAlign: 'center',
-                        backgroundColor: 'yellow'
+                        backgroundColor: 'yellow',
+                        borderStyle: 'solid',
+                        borderColor: 'black',
+                        borderSize: '2'
                     },
                     size: [640, 320],
-                    position: ['150', '10'],
+                    position: ['5', '10'],
                     classes: ['z2'],
                     zPosition: 0,
                     opacity: 0
                 },
             ],
             type: 'html',
-            content: '<div class="vertCenter"><h1>MSHOWX</h1><p>METSHOW HTML5展示骨骼</div>',
+            //content: '<div class="vertCenter"><h1>MSHOWX</h1><p>METSHOW HTML5展示骨骼</div>',
+            content: '<div class="vertCenter">rect1</div>',
             properties: {
                 backfaceVisibility: 'visible',
                 fontSize: '200%',
                 textAlign: 'center',
-                backgroundColor: 'white'
+                backgroundColor: 'white',
+                borderStyle: 'solid',
+                borderColor: 'black',
+                borderSize: '2'
             },
             size: [960, 640]/*['100%', '100%']*/,
             position: ['300', '20'],

@@ -37,7 +37,7 @@ define(function(require, exports, module) {
                                         backgroundColor: 'red',
                                         borderStyle: 'solid',
                                         borderColor: 'black',
-                                        borderSize: '2'
+                                        borderSize: '1'
                                     },
                                     size: [320, 80],
                                     position: ['5', '40'],
@@ -56,7 +56,7 @@ define(function(require, exports, module) {
                                         backgroundColor: 'red',
                                         borderStyle: 'solid',
                                         borderColor: 'black',
-                                        borderSize: '2'
+                                        borderSize: '1'
                                     },
                                     size: [320, 80],
                                     position: ['5', '50'],
@@ -76,7 +76,7 @@ define(function(require, exports, module) {
                                 backgroundColor: 'red',
                                 borderStyle: 'solid',
                                 borderColor: 'black',
-                                borderSize: '2'
+                                borderSize: '1'
                             },
                             size: [480, 160],
                             position: ['5', '20'],
@@ -95,7 +95,7 @@ define(function(require, exports, module) {
                         backgroundColor: 'yellow',
                         borderStyle: 'solid',
                         borderColor: 'black',
-                        borderSize: '2'
+                        borderSize: '1'
                     },
                     size: [640, 320],
                     position: ['5', '10'],

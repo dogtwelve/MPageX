@@ -79,6 +79,12 @@ define(function(require, exports, module) {
             transform: function() {
                 var posX = this.actor.xPosition * this.actor.containerSize[0];
                 var posY = this.actor.yPosition * this.actor.containerSize[1];
+
+                var name = 'Scrollster';
+                if(name === this.actor.name) {
+                    console.log(this.actor.name + ' MoveToModifier(' + posX + ','+ posY + ')');
+                }
+
                 return Transform.translate(posX, posY, this.actor.zPosition);
             }.bind(this)
         };

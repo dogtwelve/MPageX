@@ -50,7 +50,7 @@ define(function(require, exports, module) {
     MetNodeView.prototype = Object.create(View.prototype);
     MetNodeView.prototype.constructor = MetNodeView;
 
-    MetNodeView.prototype.addModifier = function(newModifier) {
+    MetNodeView.prototype.addModifierAction = function(newModifier) {
         this.modifiers.push(newModifier);
         this.modifierChain.addModifier(newModifier);
     };
@@ -88,17 +88,23 @@ define(function(require, exports, module) {
         //this.mainSurface.pipe(scrollSync);
 
         // Ensures metnode always has a position modifier
-        //_createBaseModifier.call(this);
+        _createBaseModifier.call(this);
 
         var draggable = new Draggable();
+
+        this.modifierChain.addModifier(draggable);
+
         if(!rootMetNode) {
-            this.rootMetNode = this.add(this.modifierChain).add(draggable);
+            this.rootMetNode = this.add(this.modifierChain);
         } else {
-            this.rootMetNode = rootMetNode.add(this.modifierChain).add(draggable);
+            this.rootMetNode = rootMetNode.add(this.modifierChain);
         }
 
+        draggable.subscribe(this.mainSurface);
         this.rootMetNode.add(this.mainSurface);
-        this.mainSurface.pipe(draggable);
+
+        //this.mainSurface.pipe(draggable);
+
 
         ////children metnodes processing
         var subMetNodes = this.metNodes;
@@ -112,13 +118,15 @@ define(function(require, exports, module) {
     }
 
     function _createBaseModifier() {
+        var posX = this.xPosition * this.containerSize[0];
+        var posY = this.yPosition * this.containerSize[1];
         var baseModifier = new Modifier({
             origin: [0, 0],
-            align: function() {
-                return [this.xPosition, this.yPosition];
-            }.bind(this),
-            transform: Transform.translate(0, 0, this.zPosition)
+            align: [0, 0],
+            transform: Transform.translate(posX, posY, this.zPosition)
         });
+
+        console.log(this.name + '(' + posX + ','+ posY + ')');
 
         this.modifierChain.addModifier(baseModifier);
     }

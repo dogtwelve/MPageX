@@ -2,6 +2,7 @@ define(function(require, exports, module) {
     'use strict';
     var UnitConverter  = require('tools/UnitConverter');
     var OptionsManager = require('famous/core/OptionsManager');
+    var Transform     = require('famous/core/Transform');
     var Modifier       = require('famous/core/Modifier');  // Parent class
 
     function MoveToModifier(options) {
@@ -78,18 +79,29 @@ define(function(require, exports, module) {
     };
 
     function _makeModifier() {
+
         this.modifier = {
             origin: [0, 0],
-            align: function() {
-                // if (this.scrollState === 'active') {
-                //     return [this.actor.xPosition, this.actor.yPosition];
-                // } else {
-                //     return undefined;
-                // }
-                //console.log("MoveTo(" + this.actor.xPosition + "," + this.actor.yPosition + ")");
-                return [this.actor.xPosition, this.actor.yPosition];
+            align: [0, 0],
+            transform: function() {
+                var posX = this.actor.xPosition * this.actor.containerSize[0];
+                var posY = this.actor.yPosition * this.actor.containerSize[1];
+                return Transform.translate(posX, posY, this.actor.zPosition);
             }.bind(this)
         };
+
+        //this.modifier = {
+        //    origin: [0, 0],
+        //    align: function() {
+        //        // if (this.scrollState === 'active') {
+        //        //     return [this.actor.xPosition, this.actor.yPosition];
+        //        // } else {
+        //        //     return undefined;
+        //        // }
+        //        //console.log("MoveTo(" + this.actor.xPosition + "," + this.actor.yPosition + ")");
+        //        return [this.actor.xPosition, this.actor.yPosition];
+        //    }.bind(this)
+        //};
     }
 
     module.exports = MoveToModifier;

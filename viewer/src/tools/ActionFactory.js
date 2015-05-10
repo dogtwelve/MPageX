@@ -80,7 +80,7 @@ define(function(require, exports, module) {
                 scaleZ: properties.scaleZ || 0});
         }
 
-        metNode.addModifier(newAction);
+        metNode.addModifierAction(newAction);
 
         _saveAction.call(this, metNode, newAction);
 

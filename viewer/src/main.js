@@ -40,7 +40,7 @@ define(function(require, exports, module) {
                                         borderSize: '1'
                                     },
                                     size: [320, 80],
-                                    position: ['5', '40'],
+                                    position: ['50', '40'],
                                     classes: ['z2'],
                                     zPosition: 0,
                                     opacity: 0
@@ -59,7 +59,7 @@ define(function(require, exports, module) {
                                         borderSize: '1'
                                     },
                                     size: [320, 80],
-                                    position: ['5', '50'],
+                                    position: ['50', '50'],
                                     classes: ['z2'],
                                     zPosition: 0,
                                     opacity: 0
@@ -79,7 +79,7 @@ define(function(require, exports, module) {
                                 borderSize: '1'
                             },
                             size: [480, 160],
-                            position: ['5', '20'],
+                            position: ['50', '20'],
                             classes: ['z2'],
                             zPosition: 0,
                             opacity: 0
@@ -98,7 +98,7 @@ define(function(require, exports, module) {
                         borderSize: '1'
                     },
                     size: [640, 320],
-                    position: ['5', '10'],
+                    position: ['50', '10'],
                     classes: ['z2'],
                     zPosition: 0,
                     opacity: 0
@@ -117,7 +117,7 @@ define(function(require, exports, module) {
                 borderSize: '2'
             },
             size: [960, 640]/*['100%', '100%']*/,
-            position: ['300', '20'],
+            position: ['20', '20'],
             classes: ['z2'],
             zPosition: 1
         },

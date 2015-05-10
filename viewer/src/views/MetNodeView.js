@@ -126,7 +126,7 @@ define(function(require, exports, module) {
             transform: Transform.translate(posX, posY, this.zPosition)
         });
 
-        console.log(this.name + '(' + posX + ','+ posY + ')');
+        console.log(this.name + ' pos(' + posX + ','+ posY + ')');
 
         this.modifierChain.addModifier(baseModifier);
     }

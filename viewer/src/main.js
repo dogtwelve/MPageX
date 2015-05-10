@@ -40,7 +40,7 @@ define(function(require, exports, module) {
                                         borderSize: '1'
                                     },
                                     size: [320, 80],
-                                    position: ['50', '40'],
+                                    position: ['60', '80'],
                                     classes: ['z2'],
                                     zPosition: 0,
                                     opacity: 0
@@ -59,7 +59,7 @@ define(function(require, exports, module) {
                                         borderSize: '1'
                                     },
                                     size: [320, 80],
-                                    position: ['50', '50'],
+                                    position: ['60', '60'],
                                     classes: ['z2'],
                                     zPosition: 0,
                                     opacity: 0
@@ -79,7 +79,7 @@ define(function(require, exports, module) {
                                 borderSize: '1'
                             },
                             size: [480, 160],
-                            position: ['50', '20'],
+                            position: ['60', '60'],
                             classes: ['z2'],
                             zPosition: 0,
                             opacity: 0
@@ -98,7 +98,7 @@ define(function(require, exports, module) {
                         borderSize: '1'
                     },
                     size: [640, 320],
-                    position: ['50', '10'],
+                    position: ['60', '60'],
                     classes: ['z2'],
                     zPosition: 0,
                     opacity: 0
@@ -117,293 +117,340 @@ define(function(require, exports, module) {
                 borderSize: '2'
             },
             size: [960, 640]/*['100%', '100%']*/,
-            position: ['20', '20'],
+            position: ['120', '0'],
             classes: ['z2'],
             zPosition: 1
         },
-        //'Instructions': {
-        //    type: 'html',
-        //    content: '<div>滚动或方向键</div>',
-        //    properties: {
-        //        backfaceVisibility: 'visible',
-        //        fontSize: '100%',
-        //        textAlign: 'center',
-        //        backgroundColor: 'white'
-        //    },
-        //    size: [640, 20],
-        //    position: ['50%', '90%'],
-        //    classes: ['z2'],
-        //    zPosition: 1
-        //},
-        //'Action Labs Logo': {
-        //    "nodes" : [
-        //        {
-        //            name:'Action Labs Logo Sub Node 1',
-        //            type: 'html',
-        //            content: 'Action Labs Logo Sub Node 1',
-        //            properties: {
-        //                backfaceVisibility: 'visible',
-        //                fontSize: '100%',
-        //                textAlign: 'center',
-        //                backgroundColor: 'red'
-        //            },
-        //            size: [160, 40],
-        //            position: ['50%', '0%'],
-        //            classes: ['z2'],
-        //            zPosition: 0,
-        //            opacity: 0
-        //        },
-        //        {
-        //            name:'Action Labs Logo Sub Node 2',
-        //            type: 'html',
-        //            content: 'Action Labs Logo Sub Node 2',
-        //            properties: {
-        //                backfaceVisibility: 'visible',
-        //                fontSize: '100%',
-        //                textAlign: 'center',
-        //                backgroundColor: 'green'
-        //            },
-        //            size: [160, 40],
-        //            position: ['50%', '20%'],
-        //            classes: ['z2'],
-        //            zPosition: 0,
-        //            opacity: 0
-        //        }
-        //    ],
-        //
-        //    type: 'image',
-        //    content: 'content/images/mci-logo.jpg',
-        //    properties: {
-        //        backfaceVisibility: 'visible'
-        //    },
-        //    size: [320, 160],
-        //    position: ['50%', '50%'],
-        //    classes: ['z2'],
-        //    zPosition: 0,
-        //    opacity: 0
-        //},
-        //'Why Famous': {
-        //    type: 'html',
-        //    content: '<div class="vertCenter"><h1>幻灯片效果</h1></div>',
-        //    zPosition: 0,
-        //    properties: {
-        //        backfaceVisibility: 'visible',
-        //        fontSize: '200%',
-        //        textAlign: 'center'
-        //    },
-        //    size: ['100%', '30%'],
-        //    position: ['-150%', '50%'],
-        //    classes: ['z2']
-        //},
-        //'Speed': {
-        //    type: 'html',
-        //    content: '<div class="vertCenter">效率</div>',
-        //    zPosition: 0,
-        //    properties: {
-        //        backfaceVisibility: 'visible',
-        //        fontSize: '300%',
-        //        textAlign: 'center',
-        //        backgroundColor: 'rgb(240,240,240)'
-        //    },
-        //    size: ['100%', 75],
-        //    position: ['-150%', '30%'],
-        //    classes: ['z2']
-        //},
-        //'Easing': {
-        //    type: 'html',
-        //    content: '<div class="vertCenter">Easing / Physics</div>',
-        //    zPosition: 0,
-        //    properties: {
-        //        backfaceVisibility: 'visible',
-        //        fontSize: '300%',
-        //        textAlign: 'center',
-        //        backgroundColor: 'rgb(240,240,240)'
-        //    },
-        //    size: ['100%', 75],
-        //    position: ['-150%', '50%'],
-        //    classes: ['z2']
-        //},
-        //'3D': {
-        //    type: 'html',
-        //    content: '<div class="vertCenter">3D Transformations</div>',
-        //    zPosition: 0,
-        //    properties: {
-        //        backfaceVisibility: 'visible',
-        //        fontSize: '300%',
-        //        textAlign: 'center',
-        //        backgroundColor: 'rgb(240,240,240)'
-        //    },
-        //    size: ['100%', 75],
-        //    position: ['-150%', '70%'],
-        //    classes: ['z2']
-        //},
-        //'How It Works': {
-        //    type: 'html',
-        //    content: '<div class="vertCenter"><h1>Layer附带Action</h1><p>关联 Layer and Actions</p></div>',
-        //    zPosition: 0,
-        //    properties: {
-        //        backfaceVisibility: 'visible',
-        //        fontSize: '200%',
-        //        textAlign: 'center'
-        //    },
-        //    size: ['100%', '30%'],
-        //    position: ['50%', '7%'],
-        //    classes: ['z2'],
-        //    opacity: 0
-        //},
-        //'Action': {
-        //    type: 'html',
-        //    content: '<div class="vertCenter">Action</div>',
-        //    zPosition: 0,
-        //    properties: {
-        //        backfaceVisibility: 'visible',
-        //        fontSize: '300%',
-        //        textAlign: 'center',
-        //        backgroundColor: 'rgb(83,83,83)',
-        //        color: 'rgb(240,240,240)'
-        //    },
-        //    size: ['25%', '35%'],
-        //    position: ['70%', '50%'],
-        //    classes: ['z2'],
-        //    opacity: 0
-        //},
-        //'Actor': {
-        //    type: 'html',
-        //    content: '<div class="vertCenter">Layer</div>',
-        //    zPosition: 0,
-        //    size: ['25%', '35%'],
-        //    position: ['30%', '50%'],
-        //    classes: ['z2'],
-        //    opacity: 0,
-        //    properties: {
-        //        backfaceVisibility: 'visible',
-        //        fontSize: '300%',
-        //        textAlign: 'center',
-        //        backgroundColor: 'rgb(240,240,240)'
-        //    }
-        //},
-        //'Actor Example': {
-        //    type: 'html',
-        //    content: '<div class="vertCenter code">' + actorExampleText + '<div>',
-        //    zPosition: 0,
-        //    properties: {
-        //        backfaceVisibility: 'visible',
-        //        fontSize: '150%',
-        //        backgroundColor: 'black',
-        //        color: 'white',
-        //        fontFamily: '"Lucida Console", Monaco, monospace'
-        //    },
-        //    size: ['40%', '50%'],
-        //    position: ['70%', '50%'],
-        //    classes: ['z2'],
-        //    opacity: 0
-        //},
-        //'Action Example': {
-        //    type: 'html',
-        //    content: '<div class="vertCenter code">' + actionExampleText + '</div>',
-        //    zPosition: 0,
-        //    properties: {
-        //        backfaceVisibility: 'visible',
-        //        fontSize: '150%',
-        //        backgroundColor: 'white',
-        //        color: 'black',
-        //        fontFamily: '"Lucida Console", Monaco, monospace'
-        //    },
-        //    size: ['40%', '50%'],
-        //    position: ['150%', '50%'],
-        //    classes: ['z2'],
-        //    opacity: 1
-        //},
-        //'Position': {
-        //    type: 'html',
-        //    content: '<div class="vertCenter box">Position</div>',
-        //    zPosition: 0,
-        //    size: [200, 200],
-        //    position: ['50%', '50%'],
-        //    classes: ['z2'],
-        //    opacity: 0,
-        //    properties: {
-        //        backfaceVisibility: 'visible',
-        //        fontSize: '300%',
-        //        textAlign: 'center',
-        //        backgroundColor: 'rgb(240,240,240)'
-        //    }
-        //},
-        //'Move To': {
-        //    type: 'html',
-        //    content: '<div class="vertCenter box">Move To</div>',
-        //    zPosition: 0,
-        //    size: [200, 200],
-        //    position: ['50%', '50%'],
-        //    classes: ['z2'],
-        //    opacity: 0,
-        //    properties: {
-        //        backfaceVisibility: 'visible',
-        //        fontSize: '300%',
-        //        textAlign: 'center',
-        //        backgroundColor: 'rgb(240,240,240)'
-        //    }
-        //},
-        //'Rotate To': {
-        //    type: 'html',
-        //    content: '<div class="vertCenter box">Rotate To</div>',
-        //    zPosition: 0,
-        //    size: [200, 200],
-        //    position: ['50%', '50%'],
-        //    classes: ['z2'],
-        //    opacity: 0,
-        //    properties: {
-        //        backfaceVisibility: 'visible',
-        //        fontSize: '300%',
-        //        textAlign: 'center',
-        //        backgroundColor: 'rgb(240,240,240)'
-        //    }
-        //},
-        //'Scale': {
-        //    type: 'html',
-        //    content: '<div class="vertCenter box">Scale</div>',
-        //    zPosition: 0,
-        //    size: [200, 200],
-        //    position: ['50%', '50%'],
-        //    classes: ['z2'],
-        //    opacity: 0,
-        //    properties: {
-        //        backfaceVisibility: 'visible',
-        //        fontSize: '300%',
-        //        textAlign: 'center',
-        //        backgroundColor: 'rgb(240,240,240)'
-        //    }
-        //},
-        //'Skew': {
-        //    type: 'html',
-        //    content: '<div class="vertCenter box">Skew</div>',
-        //    zPosition: 0,
-        //    size: [200, 200],
-        //    position: ['50%', '50%'],
-        //    classes: ['z2'],
-        //    opacity: 0,
-        //    properties: {
-        //        backfaceVisibility: 'visible',
-        //        fontSize: '300%',
-        //        textAlign: 'center',
-        //        backgroundColor: 'rgb(240,240,240)'
-        //    }
-        //},
-        //'Scrollster Final': {
-        //    type: 'html',
-        //    content: '<div class="vertCenter"><h1>TODO:</h1><p>贝塞尔曲线动画,mobile based,iOS video,auto-layout,文本格式,效率考虑,and so on...</a></div>',
-        //    properties: {
-        //        backfaceVisibility: 'visible',
-        //        fontSize: '200%',
-        //        textAlign: 'center',
-        //        backgroundColor: 'white'
-        //    },
-        //    size: ['100%', '100%'],
-        //    position: ['50%', '50%'],
-        //    classes: ['z2'],
-        //    zPosition: 0,
-        //    opacity: 0
-        //}
+        'Instructions': {
+            type: 'html',
+            content: '<div>滚动或方向键</div>',
+            properties: {
+                backfaceVisibility: 'visible',
+                fontSize: '100%',
+                textAlign: 'center',
+                backgroundColor: 'white'
+            },
+            size: [640, 20],
+            position: ['50%', '90%'],
+            classes: ['z2'],
+            zPosition: 1
+        },
+        'Action Labs Logo': {
+            "nodes" : [
+                {
+                    name:'Action Labs Logo Sub Node 1',
+                    type: 'html',
+                    content: 'Action Labs Logo Sub Node 1',
+                    properties: {
+                        backfaceVisibility: 'visible',
+                        fontSize: '100%',
+                        textAlign: 'center',
+                        backgroundColor: 'red',
+                        borderStyle: 'solid',
+                        borderColor: 'black',
+                        borderSize: '2'
+                    },
+                    size: [160, 40],
+                    position: ['50%', '0%'],
+                    classes: ['z2'],
+                    zPosition: 0,
+                    opacity: 0
+                },
+                {
+                    name:'Action Labs Logo Sub Node 2',
+                    type: 'html',
+                    content: 'Action Labs Logo Sub Node 2',
+                    properties: {
+                        backfaceVisibility: 'visible',
+                        fontSize: '100%',
+                        textAlign: 'center',
+                        backgroundColor: 'green',
+                        borderStyle: 'solid',
+                        borderColor: 'black',
+                        borderSize: '2'
+                    },
+                    size: [160, 40],
+                    position: ['50%', '20%'],
+                    classes: ['z2'],
+                    zPosition: 0,
+                    opacity: 0
+                }
+            ],
+
+            type: 'image',
+            content: 'content/images/mci-logo.jpg',
+            properties: {
+                backfaceVisibility: 'visible'
+            },
+            size: [320, 160],
+            position: ['10%', '10%'],
+            classes: ['z2'],
+            zPosition: 0,
+            opacity: 0
+        },
+        'Why Famous': {
+            type: 'html',
+            content: '<div class="vertCenter"><h1>幻灯片效果</h1></div>',
+            zPosition: 0,
+            properties: {
+                backfaceVisibility: 'visible',
+                fontSize: '200%',
+                textAlign: 'center'
+            },
+            size: ['100%', '30%'],
+            position: ['0', '10%'],
+            classes: ['z2']
+        },
+        'Speed': {
+            type: 'html',
+            content: '<div class="vertCenter">效率</div>',
+            zPosition: 0,
+            properties: {
+                backfaceVisibility: 'visible',
+                fontSize: '300%',
+                textAlign: 'center',
+                backgroundColor: 'rgb(240,240,240)'
+            },
+            size: ['100%', 75],
+            position: ['-150%', '30%'],
+            classes: ['z2']
+        },
+        'Easing': {
+            type: 'html',
+            content: '<div class="vertCenter">Easing / Physics</div>',
+            zPosition: 0,
+            properties: {
+                backfaceVisibility: 'visible',
+                fontSize: '300%',
+                textAlign: 'center',
+                backgroundColor: 'rgb(240,240,240)'
+            },
+            size: ['100%', 75],
+            position: ['-150%', '50%'],
+            classes: ['z2']
+        },
+        '3D': {
+            type: 'html',
+            content: '<div class="vertCenter">3D Transformations</div>',
+            zPosition: 0,
+            properties: {
+                backfaceVisibility: 'visible',
+                fontSize: '300%',
+                textAlign: 'center',
+                backgroundColor: 'rgb(240,240,240)'
+            },
+            size: ['100%', 75],
+            position: ['-150%', '70%'],
+            classes: ['z2']
+        },
+        'How It Works': {
+            type: 'html',
+            content: '<div class="vertCenter"><h1>Layer附带Action</h1><p>关联 Layer and Actions</p></div>',
+            zPosition: 0,
+            properties: {
+                backfaceVisibility: 'visible',
+                fontSize: '200%',
+                textAlign: 'center'
+            },
+            size: ['100%', '30%'],
+            position: ['50%', '7%'],
+            classes: ['z2'],
+            opacity: 0
+        },
+        'Action': {
+            type: 'html',
+            content: '<div class="vertCenter">Action</div>',
+            zPosition: 0,
+            properties: {
+                backfaceVisibility: 'visible',
+                fontSize: '300%',
+                textAlign: 'center',
+                backgroundColor: 'rgb(83,83,83)',
+                color: 'rgb(240,240,240)'
+            },
+            size: ['25%', '35%'],
+            position: ['70%', '50%'],
+            classes: ['z2'],
+            opacity: 0
+        },
+        'Actor': {
+            type: 'html',
+            content: '<div class="vertCenter">Layer</div>',
+            zPosition: 0,
+            size: ['25%', '35%'],
+            position: ['30%', '50%'],
+            classes: ['z2'],
+            opacity: 0,
+            properties: {
+                backfaceVisibility: 'visible',
+                fontSize: '300%',
+                textAlign: 'center',
+                backgroundColor: 'rgb(240,240,240)'
+            }
+        },
+        'Actor Example': {
+            type: 'html',
+            content: '<div class="vertCenter code">' + actorExampleText + '<div>',
+            zPosition: 0,
+            properties: {
+                backfaceVisibility: 'visible',
+                fontSize: '150%',
+                backgroundColor: 'black',
+                color: 'white',
+                fontFamily: '"Lucida Console", Monaco, monospace'
+            },
+            size: ['40%', '50%'],
+            position: ['70%', '50%'],
+            classes: ['z2'],
+            opacity: 0
+        },
+        'Action Example': {
+            type: 'html',
+            content: '<div class="vertCenter code">' + actionExampleText + '</div>',
+            zPosition: 0,
+            properties: {
+                backfaceVisibility: 'visible',
+                fontSize: '150%',
+                backgroundColor: 'white',
+                color: 'black',
+                fontFamily: '"Lucida Console", Monaco, monospace'
+            },
+            size: ['40%', '50%'],
+            position: ['150%', '50%'],
+            classes: ['z2'],
+            opacity: 1
+        },
+        'Position': {
+            type: 'html',
+            content: '<div class="vertCenter box">Position</div>',
+            zPosition: 0,
+            size: [200, 200],
+            position: ['50%', '50%'],
+            classes: ['z2'],
+            opacity: 0,
+            properties: {
+                backfaceVisibility: 'visible',
+                fontSize: '300%',
+                textAlign: 'center',
+                backgroundColor: 'rgb(240,240,240)'
+            }
+        },
+        'Move To': {
+            type: 'html',
+            content: '<div class="vertCenter box">Move To</div>',
+            zPosition: 0,
+            size: [200, 200],
+            position: ['50%', '50%'],
+            classes: ['z2'],
+            opacity: 0,
+            properties: {
+                backfaceVisibility: 'visible',
+                fontSize: '300%',
+                textAlign: 'center',
+                backgroundColor: 'rgb(240,240,240)'
+            }
+        },
+        'Rotate To': {
+            type: 'html',
+            content: '<div class="vertCenter box">Rotate To</div>',
+            zPosition: 0,
+            size: [200, 200],
+            position: ['50%', '50%'],
+            classes: ['z2'],
+            opacity: 0,
+            properties: {
+                backfaceVisibility: 'visible',
+                fontSize: '300%',
+                textAlign: 'center',
+                backgroundColor: 'rgb(240,240,240)'
+            }
+        },
+        'Scale': {
+            type: 'html',
+            content: '<div class="vertCenter box">Scale</div>',
+            zPosition: 0,
+            size: [200, 200],
+            position: ['50%', '50%'],
+            classes: ['z2'],
+            opacity: 0,
+            properties: {
+                backfaceVisibility: 'visible',
+                fontSize: '300%',
+                textAlign: 'center',
+                backgroundColor: 'rgb(240,240,240)'
+            }
+        },
+        'Skew': {
+            type: 'html',
+            content: '<div class="vertCenter box">Skew</div>',
+            zPosition: 0,
+            size: [200, 200],
+            position: ['50%', '50%'],
+            classes: ['z2'],
+            opacity: 0,
+            properties: {
+                backfaceVisibility: 'visible',
+                fontSize: '300%',
+                textAlign: 'center',
+                backgroundColor: 'rgb(240,240,240)'
+            }
+        },
+        'Scrollster Final': {
+            "nodes" : [
+                {
+                    name:'Scrollster Final Sub Node 1',
+                    type: 'html',
+                    content: 'Scrollster Final Sub Node 1',
+                    properties: {
+                        backfaceVisibility: 'visible',
+                        fontSize: '100%',
+                        textAlign: 'center',
+                        backgroundColor: 'red',
+                        borderStyle: 'solid',
+                        borderColor: 'black',
+                        borderSize: '1'
+                    },
+                    size: [320, 80],
+                    position: ['50', '40'],
+                    classes: ['z2'],
+                    zPosition: 1,
+                    opacity: 0
+                },
+                {
+                    name:'Scrollster Final Sub Node 2',
+                    type: 'html',
+                    content: 'Scrollster Final Sub Node 2',
+                    properties: {
+                        backfaceVisibility: 'visible',
+                        fontSize: '100%',
+                        textAlign: 'center',
+                        backgroundColor: 'red',
+                        borderStyle: 'solid',
+                        borderColor: 'black',
+                        borderSize: '1'
+                    },
+                    size: [320, 80],
+                    position: ['50', '50'],
+                    classes: ['z2'],
+                    zPosition: 1,
+                    opacity: 0
+                },
+
+            ],
+            type: 'html',
+            content: '<div class="vertCenter"><h1>TODO:</h1><p>贝塞尔曲线动画,mobile based,iOS video,auto-layout,文本格式,效率考虑,and so on...</a></div>',
+            properties: {
+                backfaceVisibility: 'visible',
+                fontSize: '200%',
+                textAlign: 'center',
+                backgroundColor: 'white'
+            },
+            size: ['100%', '100%'],
+            position: ['50%', '50%'],
+            classes: ['z2'],
+            zPosition: 0,
+            opacity: 0
+        }
     };
 
     var actionDescriptions = [
@@ -449,7 +496,7 @@ define(function(require, exports, module) {
             stop: 1500,
             type: 'moveTo',
             properties: {
-                location: ['50%', '50%'],
+                location: ['50%', '10%'],
                 curve: 'easeIn'
             }
         },

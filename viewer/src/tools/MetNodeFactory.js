@@ -73,6 +73,8 @@ define(function(require, exports, module) {
             containerSize:containerSize
         });
 
+        newNode.addSurface(newSurface);
+
         var subMetNodes = nodeDescription.nodes;
         for(var subMetNodenode in subMetNodes) {
             var newSubNode = this.makeMetNodeNew(
@@ -82,7 +84,7 @@ define(function(require, exports, module) {
             newNode.addSubMetNode(newSubNode);
         }
 
-        newNode.addSurface(newSurface);
+
 
 
         this.metNodesFromFactory[name] = newNode;

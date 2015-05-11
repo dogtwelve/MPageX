@@ -18,9 +18,15 @@ define(function(require, exports, module) {
         this.pixelsStopX = this.options.pixelsStopX;
         this.pixelsStopY = this.options.pixelsStopY;
         this.scrollState = 'inactive';
+        this.deltaPixelsX = 0;
+        this.deltaPixelsY = 0;
 
         _makeModifier.call(this);
         Modifier.call(this, this.modifier);
+
+        var posX = this.actor.xPosition * this.actor.containerSize[0];
+        var posY = this.actor.yPosition * this.actor.containerSize[1];
+        console.log(this.actor.name + ' MoveToModifier(' + posX + ','+ posY + ')');
     }
 
     MoveToModifier.DEFAULT_OPTIONS = {
@@ -58,20 +64,26 @@ define(function(require, exports, module) {
             var newPixelX = (this.pixelsStopX - this.startX) * this.curveFn((scrollPosition - this.scrollStart) / this.scrollRange);
             var newPixelY = (this.pixelsStopY - this.startY) * this.curveFn((scrollPosition - this.scrollStart) / this.scrollRange);
 
-            this.actor.setPositionPixels(this.startX + newPixelX, this.startY + newPixelY);
+            //this.actor.setPositionPixels(this.startX + newPixelX, this.startY + newPixelY);
+            this.deltaPixelsX = newPixelX;
+            this.deltaPixelsY = newPixelY;
 
         } else if (((scrollPosition - delta) <= this.scrollStop) &&
                    (scrollPosition > this.scrollStop)) {
             // Passing out of scroll range.
             this.scrollState = 'upper';
-            this.actor.setPositionPixels(this.pixelsStopX, this.pixelsStopY);
+            //this.actor.setPositionPixels(this.pixelsStopX, this.pixelsStopY);
+            this.deltaPixelsX = this.pixelsStopX - this.startX;
+            this.deltaPixelsY = this.pixelsStopY - this.startY;
         } else if (((scrollPosition - delta) >= this.scrollStart) &&
                    (scrollPosition < this.scrollStart)) {
             // Passing out of scroll range.
             this.scrollState = 'lower';
-            if (this.startX !== undefined && this.startY !== undefined){
-                this.actor.setPositionPixels(this.startX, this.startY);
-            }
+            //if (this.startX !== undefined && this.startY !== undefined){
+            //    this.actor.setPositionPixels(this.startX, this.startY);
+            //}
+            this.deltaPixelsX = 0;
+            this.deltaPixelsY = 0;
         } else {
             // out of range
             this.scrollState = 'inactive';
@@ -87,13 +99,13 @@ define(function(require, exports, module) {
                 var posX = this.actor.xPosition * this.actor.containerSize[0];
                 var posY = this.actor.yPosition * this.actor.containerSize[1];
 
-                var name = 'Scrollster';
-                if(name === this.actor.name) {
-                    console.log(this.actor.name + ' MoveToModifier(' + posX + ','+ posY + ')');
-                }
+                //var name = 'Scrollster';
+                //if(name === this.actor.name) {
+                //    console.log(this.actor.name + ' MoveToModifier(' + posX + ','+ posY + ')');
+                //}
 
 
-                return Transform.translate(posX, posY, this.actor.zPosition);
+                return Transform.translate(this.deltaPixelsX, this.deltaPixelsY, 0);
             }.bind(this)
         };
 

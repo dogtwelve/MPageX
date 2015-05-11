@@ -5,28 +5,28 @@ define(function(require, exports, module) {
 
     UnitConverter.ratioXtoPixels = function(ratioX, containerX) {
         if(!containerX) {
-            console.log("error!");
+            console.log("ratioXtoPixels error!");
         }
         return ratioX * containerX;
     };
 
     UnitConverter.ratioYtoPixels = function(ratioY, containerY) {
         if(!containerY) {
-            console.log("error!");
+            console.log("ratioYtoPixels error!");
         }
       return ratioY * containerY;
     };
 
     UnitConverter.pixelsToRatioX = function(pixels, containerX) {
         if(!containerX) {
-            console.log("error!");
+            console.log("pixelsToRatioX error!");
         }
         return pixels / containerX;
     };
 
     UnitConverter.pixelsToRatioY = function(pixels, containerY) {
         if(!containerY) {
-            console.log("error!");
+            console.log("pixelsToRatioY error!");
         }
         return pixels / containerY;
     };
@@ -41,21 +41,21 @@ define(function(require, exports, module) {
 
     UnitConverter.percentageToPixelsX = function(percentage, containerX) {
         if(!containerX) {
-            console.log("error!");
+            console.log("percentageToPixelsX error!");
         }
         return Math.round(UnitConverter.ratioXtoPixels(percentage / 100, containerX));
     };
 
     UnitConverter.percentageToPixelsY = function(percentage, containerY) {
         if(!containerY) {
-            console.log("error!");
+            console.log("percentageToPixelsY error!");
         }
         return Math.round(UnitConverter.ratioYtoPixels(percentage / 100, containerY));
     };
 
     UnitConverter._unitsToPixels = function(initial, containerSize) {
         if(!containerSize) {
-            console.log("error!");
+            console.log("_unitsToPixels error!");
         }
         var result =[];
         for (var i = 0; i <= 1; i++) {

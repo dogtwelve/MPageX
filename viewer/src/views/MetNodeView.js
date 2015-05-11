@@ -80,19 +80,18 @@ define(function(require, exports, module) {
     };
 
     MetNodeView.prototype.activateMetNode = function(holdersSync, rootMetNode) {
-        if (!this.mainSurface) this.mainSurface = new Surface(this.options.surfaceOptions);
-
-        for(var holder in holdersSync) {
-            this.mainSurface.pipe(holdersSync[holder]);
-        }
         //this.mainSurface.pipe(scrollSync);
 
         // Ensures metnode always has a position modifier
         _createBaseModifier.call(this);
 
+        ////TODO:for draggable node, here is a temporary code snippet
         var draggable = new Draggable();
-
         this.modifierChain.addModifier(draggable);
+        if (this.mainSurface) {
+            draggable.subscribe(this.mainSurface);
+        }
+        ////a temporary code snippet end
 
         if(!rootMetNode) {
             this.rootMetNode = this.add(this.modifierChain);
@@ -100,10 +99,13 @@ define(function(require, exports, module) {
             this.rootMetNode = rootMetNode.add(this.modifierChain);
         }
 
-        draggable.subscribe(this.mainSurface);
-        this.rootMetNode.add(this.mainSurface);
+        if (this.mainSurface) {
+            for(var holder in holdersSync) {
+                this.mainSurface.pipe(holdersSync[holder]);
+            }
 
-        //this.mainSurface.pipe(draggable);
+            this.rootMetNode.add(this.mainSurface);
+        }
 
 
         ////children metnodes processing

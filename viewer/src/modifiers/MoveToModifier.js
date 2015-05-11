@@ -23,10 +23,6 @@ define(function(require, exports, module) {
 
         _makeModifier.call(this);
         Modifier.call(this, this.modifier);
-
-        var posX = this.actor.xPosition * this.actor.containerSize[0];
-        var posY = this.actor.yPosition * this.actor.containerSize[1];
-        console.log(this.actor.name + ' MoveToModifier(' + posX + ','+ posY + ')');
     }
 
     MoveToModifier.DEFAULT_OPTIONS = {
@@ -96,8 +92,8 @@ define(function(require, exports, module) {
             origin: [0, 0],
             align: [0, 0],
             transform: function() {
-                var posX = this.actor.xPosition * this.actor.containerSize[0];
-                var posY = this.actor.yPosition * this.actor.containerSize[1];
+                //var posX = this.actor.xPosition * this.actor.containerSize[0];
+                //var posY = this.actor.yPosition * this.actor.containerSize[1];
 
                 //var name = 'Scrollster';
                 //if(name === this.actor.name) {

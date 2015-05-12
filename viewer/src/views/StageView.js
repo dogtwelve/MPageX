@@ -45,7 +45,7 @@ define(function(require, exports, module) {
         newNode.activateMetNode([this.syncScroll, this.syncSwipe], this);
         //newNode.activate(this.syncSwipe);
         newNode.subscribe(this._eventOutput);
-        this.add(newNode);
+        //this.add(newNode);
     };
 
     StageView.prototype.updateArrowKeyBreakpoints = function(newBreakpoints) {

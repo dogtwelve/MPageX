@@ -79,25 +79,15 @@ define(function(require, exports, module) {
         this.yPosition += incrY;
     };
 
-    MetNodeView.prototype.activateMetNode = function(holdersSync, rootMetNode) {
+    MetNodeView.prototype.activateMetNode = function(holdersSync, rootParent) {
         //this.mainSurface.pipe(scrollSync);
 
         // Ensures metnode always has a position modifier
         _createBaseModifier.call(this);
 
-        ////TODO:for draggable node, here is a temporary code snippet
-        var draggable = new Draggable();
-        this.modifierChain.addModifier(draggable);
-        if (this.mainSurface) {
-            draggable.subscribe(this.mainSurface);
-        }
-        ////a temporary code snippet end
+        rootParent.add(this);
+        this.rootMetNode = this.add(this.modifierChain);
 
-        if(!rootMetNode) {
-            this.rootMetNode = this.add(this.modifierChain);
-        } else {
-            this.rootMetNode = rootMetNode.add(this.modifierChain);
-        }
 
         if (this.mainSurface) {
             for(var holder in holdersSync) {
@@ -113,6 +103,8 @@ define(function(require, exports, module) {
         for(var metNode in subMetNodes) {
             subMetNodes[metNode].activateMetNode(holdersSync, this.rootMetNode);
         }
+
+
     };
 
     function _listenToScroll() {
@@ -131,6 +123,14 @@ define(function(require, exports, module) {
         console.log(this.name + ' pos(' + posX + ','+ posY + ')');
 
         this.modifierChain.addModifier(baseModifier);
+
+        ////TODO:for draggable node, here is a temporary code snippet
+        var draggable = new Draggable();
+        this.modifierChain.addModifier(draggable);
+        if (this.mainSurface) {
+            draggable.subscribe(this.mainSurface);
+        }
+        ////a temporary code snippet end
     }
 
     function _updateScrollValue(data) {

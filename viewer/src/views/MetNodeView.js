@@ -85,8 +85,7 @@ define(function(require, exports, module) {
         // Ensures metnode always has a position modifier
         _createBaseModifier.call(this);
 
-        rootParent.add(this);
-        this.rootMetNode = this.add(this.modifierChain);
+        rootParent.add(this.modifierChain).add(this);
 
 
         if (this.mainSurface) {
@@ -94,14 +93,14 @@ define(function(require, exports, module) {
                 this.mainSurface.pipe(holdersSync[holder]);
             }
 
-            this.rootMetNode.add(this.mainSurface);
+            this.add(this.mainSurface);
         }
 
 
         ////children metnodes processing
         var subMetNodes = this.metNodes;
         for(var metNode in subMetNodes) {
-            subMetNodes[metNode].activateMetNode(holdersSync, this.rootMetNode);
+            subMetNodes[metNode].activateMetNode(holdersSync, this);
         }
 
 

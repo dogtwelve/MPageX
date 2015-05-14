@@ -19,12 +19,15 @@ define(function(require, exports, module) {
         this.zPosition = this.options.zPosition;
         this.scaleX = this.options.scaleX;
         this.scaleY = this.options.scaleY;
+        this.skewX = this.options.skewX;
+        this.skewY = this.options.skewY;
+        this.rotation = this.options.rotation;
         this.opacity = this.options.opacity;
         this.destination = this.options.destination;
         this.name = this.options.name;
         this.metNodes = [];
         this.containerSize = this.options.containerSize;
-        console.log(this.name + " containerSize(" + this.containerSize[0] + "," + this.containerSize[1] + ")");
+        //console.log(this.name + " containerSize(" + this.containerSize[0] + "," + this.containerSize[1] + ")");
         _listenToScroll.call(this);
     }
 

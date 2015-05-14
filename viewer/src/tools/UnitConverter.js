@@ -70,7 +70,7 @@ define(function(require, exports, module) {
                     result[i] = UnitConverter.percentageToPixelsY(parseFloat(checkVal.slice(0, checkVal.length - 1)), containerSize[1]);
                 }
             } else {
-                result[i] = initial[i];
+                result[i] = Math.round(initial[i]);
             }
         }
         return result;

@@ -21,10 +21,13 @@ define(function(require, exports, module) {
         this.scaleY = this.options.scaleY;
         this.skewX = this.options.skewX;
         this.skewY = this.options.skewY;
+        this.originX = this.options.anchorX;
+        this.originY = this.options.anchorY;
         this.rotation = this.options.rotation;
         this.opacity = this.options.opacity;
         this.destination = this.options.destination;
         this.name = this.options.name;
+        this.metNodeId = this.options.metNodeId;
         this.metNodes = [];
         this.containerSize = this.options.containerSize;
         //console.log(this.name + " containerSize(" + this.containerSize[0] + "," + this.containerSize[1] + ")");
@@ -35,6 +38,8 @@ define(function(require, exports, module) {
         name: undefined,
         xPosition: 0.5,
         yPosition: 0.5,
+        originX: 0,
+        originY: 0,
         zPosition: 0,
         opacity: 1,
         destination: undefined,
@@ -114,15 +119,17 @@ define(function(require, exports, module) {
     }
 
     function _createBaseModifier() {
-        var posX = this.xPosition * this.containerSize[0];
-        var posY = this.yPosition * this.containerSize[1];
+        var posX = Math.round(UnitConverter.ratioXtoPixels(this.xPosition, this.containerSize[0]));
+        var posY = Math.round(UnitConverter.ratioXtoPixels(this.yPosition, this.containerSize[1]));
         var baseModifier = new Modifier({
-            origin: [0, 0],
             align: [0, 0],
-            transform: Transform.translate(posX, posY, this.zPosition)
+            origin: [this.originX, this.originY],
+            transform: function() {
+                return Transform.translate(posX, posY, this.zPosition);
+            }.bind(this)
         });
 
-        console.log(this.name + ' pos(' + posX + ','+ posY + ')');
+        console.log(this.name + ' pos(' + posX + ','+ posY + ')' + ' align(' + this.originX + ','+ this.originY + ')');
 
         this.modifierChain.addModifier(baseModifier);
 

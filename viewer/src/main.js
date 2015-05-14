@@ -5,6 +5,9 @@ define(function(require, exports, module) {
     var Engine = require('famous/core/Engine');
     var StageView = require('views/StageView');
     var Director = require('tools/Director');
+    var Utility = require('famous/utilities/Utility');
+    var Modifier  = require('famous/core/Modifier');
+    var Draggable = require('famous/modifiers/Draggable');
 
     // create the main context
     var mainContext = Engine.createContext();
@@ -117,7 +120,7 @@ define(function(require, exports, module) {
                 borderSize: '2'
             },
             size: [960, 640]/*['100%', '100%']*/,
-            position: ['120', '0'],
+            position: ['60', '120'],
             classes: ['z2'],
             zPosition: 1
         },
@@ -948,7 +951,39 @@ define(function(require, exports, module) {
         }
     ];
 
-    director.populateStage(stageView, nodeDescriptions, actionDescriptions);
+    var dataContent = "dummy";
+    Utility.loadURL("dataValue.json", function(data) {
+        // Check response
+        if (!data) {
+            return;
+        }
 
-    mainContext.add(stageView);
+        // Consume response
+        var content =  JSON.parse(data);
+        dataContent = content.pagesData;
+
+        var page = dataContent[0];
+        console.log("dataContent:" +  dataContent);
+        var pageView = new StageView({
+            pageId:  page.id_,
+            size: [page.width, page.height]
+        });
+        var originModifier = new Modifier({
+            origin: [0.5, 0],
+            align: [0.5, 0]
+        });
+        var draggable = new Draggable();
+
+        director.populateStage(pageView, page.nodes);
+
+        draggable.subscribe(pageView.scrollRecieverSurface);
+
+        mainContext.add(draggable).add(pageView);
+
+    }.bind(this));
+
+
+    //director.populateStageNew(stageView, nodeDescriptions, actionDescriptions);
+    //
+    //mainContext.add(stageView);
 });

@@ -8,7 +8,21 @@ define(function(require, exports, module) {
         this.metnodes = {}; // Collection of nodes by name.
     }
 
-    Director.prototype.populateStage = function(stage, nodeDescriptions, actionDescriptions) {
+    Director.prototype.populateStage = function(stage, nodeDescriptions) {
+        var nodeFactory = new MetNodeFactory();
+        for (var nodeName in nodeDescriptions) {
+            var newNode = nodeFactory.makeMetNode(nodeDescriptions[nodeName], stage.options.containerSize);
+            this.metnodes[nodeName] = newNode;
+        }
+
+        for (var nodeToStage in this.metnodes) {
+            var curNode = this.metnodes[nodeToStage];
+            stage.addMetNode(curNode);
+        }
+
+    };
+
+    Director.prototype.populateStageNew = function(stage, nodeDescriptions, actionDescriptions) {
         var nodeFactory = new MetNodeFactory();
         var actionFactory = new ActionFactory();
         var keyboardBreakPoints = [];

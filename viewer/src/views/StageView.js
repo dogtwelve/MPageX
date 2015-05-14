@@ -21,6 +21,7 @@ define(function(require, exports, module) {
         View.apply(this, arguments);
         this.worldScrollValue = 0;
         this._arrowData = this.options.arrowData;
+        this.containerSize = this.options.size;
 
         _setupScrollRecieverSurface.call(this);
         _handleScroll.call(this);
@@ -62,7 +63,13 @@ define(function(require, exports, module) {
 
     function _setupScrollRecieverSurface() {
         this.scrollRecieverSurface = new Surface({
-            size: [undefined, undefined] // Take up the entire view
+            //size: [undefined, undefined] // Take up the entire view
+            size: this.containerSize,
+            properties: {
+                backgroundColor: 'white',
+                backfaceVisibility: 'visible',
+                border: '2px solid rgb(210, 208, 203)'
+            }
         });
 
         this.add(this.scrollRecieverSurface);

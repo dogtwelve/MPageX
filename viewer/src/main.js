@@ -969,16 +969,19 @@ define(function(require, exports, module) {
             size: [page.width, page.height]
         });
         var originModifier = new Modifier({
+            size:[page.width, undefined],
             origin: [0.5, 0],
             align: [0.5, 0]
         });
-        var draggable = new Draggable();
+
 
         director.populateStage(pageView, page.nodes);
 
-        draggable.subscribe(pageView.scrollRecieverSurface);
+        //var draggable = new Draggable();
+        //draggable.subscribe(pageView.scrollRecieverSurface);
+        //mainContext.add(originModifier).add(draggable).add(pageView);
 
-        mainContext.add(draggable).add(pageView);
+        mainContext.add(originModifier).add(pageView);
 
     }.bind(this));
 

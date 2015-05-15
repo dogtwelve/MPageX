@@ -29,6 +29,7 @@ define(function(require, exports, module) {
         this.name = this.options.name;
         this.metNodeId = this.options.metNodeId;
         this.metNodes = [];
+        this.size = this.options.size;
         this.containerSize = this.options.containerSize;
         //console.log(this.name + " containerSize(" + this.containerSize[0] + "," + this.containerSize[1] + ")");
         _listenToScroll.call(this);
@@ -122,6 +123,7 @@ define(function(require, exports, module) {
         var posX = Math.round(UnitConverter.ratioXtoPixels(this.xPosition, this.containerSize[0]));
         var posY = Math.round(UnitConverter.ratioXtoPixels(this.yPosition, this.containerSize[1]));
         var baseModifier = new Modifier({
+            size: this.size,
             align: [0, 0],
             origin: [this.originX, this.originY],
             transform: function() {

@@ -30,6 +30,7 @@ define(function(require, exports, module) {
         var anchorX = nodeDescription.anchorX;
         var anchorY = nodeDescription.anchorY;
         var rotation = nodeDescription.rotation;
+        var jpath = nodeDescription.jpath;
         // Make sure size is in pixels.
         var size = UnitConverter._unitsToPixels([nodeDescription.sizeX, nodeDescription.sizeY], containerSize);
 
@@ -57,15 +58,60 @@ define(function(require, exports, module) {
         });
 
         if(type === "ShapeNode") {
-            newSurface = new Surface({
-                size: size,
-                content: name,
-                properties: {
-                    backfaceVisibility: 'visible',
-                    backgroundColor: fillColor
-                },
-                classes: classes
-            });
+            //newSurface = new Surface({
+            //    size: size,
+            //    content: name,
+            //    properties: {
+            //        backfaceVisibility: 'visible',
+            //        backgroundColor: fillColor
+            //    },
+            //    classes: classes
+            //});
+
+            newSurface = new CanvasSurface({
+                    size: size,
+                    classes: classes
+                });
+
+            newSurface.render = function render() {
+
+                var ctx = this.getContext('2d');
+
+                ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+
+                ctx.beginPath();
+
+                var cmdVal;
+                for(var jpathcmd in jpath) {
+                    cmdVal = jpath[jpathcmd];
+
+                    //close path
+                    if(cmdVal === "X") {
+                        break;
+                    }
+
+                    var cmd = cmdVal.slip(' ');
+                    var op = cmd[0];
+                    if(op === "M") {
+                        ctx.moveTo(Math.round(cmd[1]), Math.round(cmd[2]));
+                    }
+                    if(op === "L") {
+                        ctx.lineTo(Math.round(cmd[1]), Math.round(cmd[2]));
+                    }
+                    if(op === "C") {
+                        ctx.bezierCurveTo(Math.round(cmd[1]), Math.round(cmd[2]),
+                            Math.round(cmd[3]), Math.round(cmd[4]),
+                            Math.round(cmd[5]), Math.round(cmd[6]));
+                    }
+
+                }
+                ctx.closePath();
+                ctx.fillStyle = fillColor;
+                ctx.fill();
+
+
+                return this.id;
+            };
 
             newNode.addSurface(newSurface);
         }
@@ -111,6 +157,38 @@ define(function(require, exports, module) {
         var colorStr = ((number>> 8) & 0xFFFFFF).toString(16).toUpperCase();
         //padding if necessary
         return "#" + "000000".substr(0, 6 - colorStr.length) + colorStr;
+    }
+
+    function paintJPath(context, jpath, fillColor)
+    {
+        context.beginPath();
+        for(var jpathcmd in jpath) {
+            var value = jpath[jpathcmd];
+
+            //close path
+            if(value === "X") {
+                break;
+            }
+
+            var cmd = value.slip(" ");
+            var op = cmd[0];
+            if(op === "M") {
+                context.moveTo(Math.round(cmd[1]), Math.round(cmd[2]));
+            }
+            if(op === "L") {
+                context.lineTo(Math.round(cmd[1]), Math.round(cmd[2]));
+            }
+            if(op === "C") {
+                context.bezierCurveTo(Math.round(cmd[1]), Math.round(cmd[2]),
+                    Math.round(cmd[3]), Math.round(cmd[4]),
+                    Math.round(cmd[5]), Math.round(cmd[6]));
+            }
+
+        }
+        context.closePath();
+        context.fillStyle = fillColor;
+        context.fill();
+
     }
 
     MetNodeFactory.prototype.makeMetNodeNew = function(name, nodeDescription, containerSize) {

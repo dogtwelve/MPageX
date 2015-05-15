@@ -36,6 +36,7 @@ define(function(require, exports, module) {
 
         var classes = ['z2'];
         var fillColor = decimalToHexColorString(nodeDescription.colorFill.fillColor);
+        var filltype = nodeDescription.fillType;
 
 
         var newSurface;
@@ -57,6 +58,16 @@ define(function(require, exports, module) {
             containerSize:containerSize
         });
 
+        ////单色填充
+        var METCOLORFILLTYPE = 0;
+        ////渐变填充
+        var METGRADIENTFILLTYPE = 1;
+        ////图片填充
+        var METIMAGEFILLTYPE = 2;
+        ////无填充
+        var METNONEFILLTYPE = 3;
+
+
         if(type === "ShapeNode") {
             //newSurface = new Surface({
             //    size: size,
@@ -77,10 +88,52 @@ define(function(require, exports, module) {
 
                 var ctx = this.getContext('2d');
 
-                ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-                setJPath(ctx, jpath);
-                ctx.fillStyle = fillColor;
-                ctx.fill();
+                //ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+
+                //ctx.fillStyle = fillColor;
+                //ctx.fill();
+
+
+
+                switch(filltype) {
+                    case METIMAGEFILLTYPE:
+                    {
+                        var imageObj = new Image();
+                        imageObj.src = nodeDescription.imageFill.rawImageURL;
+                        imageObj.onload = function() {
+                            ctx.save();
+                            setJPath(ctx, jpath);
+                            ctx.clip();
+                            ctx.drawImage(imageObj, 0, 0, ctx.canvas.width, ctx.canvas.height);
+                            ctx.restore();
+                        };
+                    }
+                        break;
+                    case METCOLORFILLTYPE:
+                    case METGRADIENTFILLTYPE:
+                    {
+                        ctx.save();
+                        setJPath(ctx, jpath);
+                        ctx.clip();
+                        ctx.fillStyle = fillColor;
+                        ctx.fill();
+
+                        //var imageObj = new Image();
+                        //imageObj.src = 'content/images/379335-boeing.jpg';
+                        //imageObj.onload = function() {
+                        //    ctx.drawImage(imageObj, 0, 0, ctx.canvas.width, ctx.canvas.height);
+                        //};
+
+                        ctx.restore();
+
+                    }
+                        break;
+
+                }
+
+
+
+
 
 
                 return this.id;

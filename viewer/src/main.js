@@ -960,9 +960,16 @@ define(function(require, exports, module) {
 
         // Consume response
         var content =  JSON.parse(data);
-        dataContent = content.pagesData;
 
-        var page = dataContent[0];
+
+
+        var page;
+        if(content.class === "MetProjectPage") {
+            page = content;
+        } else {
+            var dataContent = content.pagesData;
+            page = dataContent[0];
+        }
         console.log("dataContent:" +  dataContent);
         var pageView = new StageView({
             pageId:  page.id_,

@@ -136,11 +136,11 @@ define(function(require, exports, module) {
         this.modifierChain.addModifier(baseModifier);
 
         ////TODO:for draggable node, here is a temporary code snippet
-        var draggable = new Draggable();
-        this.modifierChain.addModifier(draggable);
-        if (this.mainSurface) {
-            draggable.subscribe(this.mainSurface);
-        }
+        //var draggable = new Draggable();
+        //this.modifierChain.addModifier(draggable);
+        //if (this.mainSurface) {
+        //    draggable.subscribe(this.mainSurface);
+        //}
         ////a temporary code snippet end
     }
 

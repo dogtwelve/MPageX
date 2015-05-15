@@ -39,6 +39,32 @@ define(function(require, exports, module) {
         var filltype = nodeDescription.fillType;
 
 
+        if(nodeDescription.keyframes) {
+            console.log("x_path.start = " + nodeDescription.positionX + ";");
+            for(var keyframe in nodeDescription.keyframes) {
+                var kframe = nodeDescription.keyframes[keyframe];
+                console.log("x_path.bezierCurveTo(" + kframe.controlAX + ", " + kframe.controlBX, ", " + kframe.positionX + ");");
+                //console.log("y_path.bezierCurveTo(" + kframe.controlAY + ", " + kframe.controlBY, ", " + kframe.positionY + ")");
+            }
+
+            console.log("y_path.start = " + nodeDescription.positionY + ";");
+            for(var keyframe in nodeDescription.keyframes) {
+                var kframe = nodeDescription.keyframes[keyframe];
+                //console.log("x_path.bezierCurveTo(" + kframe.controlAX + ", " + kframe.controlBX, ", " + kframe.positionX + ")");
+                console.log("y_path.bezierCurveTo(" + kframe.controlAY + ", " + kframe.controlBY, ", " + kframe.positionY + ");");
+            }
+
+            console.log("ctx.moveTo("+nodeDescription.positionX+ ", " + nodeDescription.positionY + ");");
+            for(var keyframe in nodeDescription.keyframes) {
+                var kframe = nodeDescription.keyframes[keyframe];
+                console.log("ctx.bezierCurveTo(" +
+                kframe.controlAX + ", " + kframe.controlAY + ", " +
+                kframe.controlBX + ", " + kframe.controlBY + ", " +
+                kframe.positionX + ", " + kframe.positionY +
+                ");");
+            }
+        }
+        
         var newSurface;
 
 

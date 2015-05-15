@@ -78,34 +78,7 @@ define(function(require, exports, module) {
                 var ctx = this.getContext('2d');
 
                 ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-
-                ctx.beginPath();
-
-                var cmdVal;
-                for(var jpathcmd in jpath) {
-                    cmdVal = jpath[jpathcmd];
-
-                    //close path
-                    if(cmdVal === "X") {
-                        break;
-                    }
-
-                    var cmd = cmdVal.slip(' ');
-                    var op = cmd[0];
-                    if(op === "M") {
-                        ctx.moveTo(Math.round(cmd[1]), Math.round(cmd[2]));
-                    }
-                    if(op === "L") {
-                        ctx.lineTo(Math.round(cmd[1]), Math.round(cmd[2]));
-                    }
-                    if(op === "C") {
-                        ctx.bezierCurveTo(Math.round(cmd[1]), Math.round(cmd[2]),
-                            Math.round(cmd[3]), Math.round(cmd[4]),
-                            Math.round(cmd[5]), Math.round(cmd[6]));
-                    }
-
-                }
-                ctx.closePath();
+                setJPath(ctx, jpath);
                 ctx.fillStyle = fillColor;
                 ctx.fill();
 
@@ -159,7 +132,7 @@ define(function(require, exports, module) {
         return "#" + "000000".substr(0, 6 - colorStr.length) + colorStr;
     }
 
-    function paintJPath(context, jpath, fillColor)
+    function setJPath(context, jpath)
     {
         context.beginPath();
         for(var jpathcmd in jpath) {
@@ -170,7 +143,7 @@ define(function(require, exports, module) {
                 break;
             }
 
-            var cmd = value.slip(" ");
+            var cmd = value.split(" ");
             var op = cmd[0];
             if(op === "M") {
                 context.moveTo(Math.round(cmd[1]), Math.round(cmd[2]));
@@ -186,9 +159,6 @@ define(function(require, exports, module) {
 
         }
         context.closePath();
-        context.fillStyle = fillColor;
-        context.fill();
-
     }
 
     MetNodeFactory.prototype.makeMetNodeNew = function(name, nodeDescription, containerSize) {

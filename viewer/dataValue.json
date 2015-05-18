@@ -1,5 +1,5 @@
 {
-  "fillEnable": 0,
+  "class": "MetProjectPage",
   "id_": "DBE3D88D-BEC6-453B-B6B6-521F2A2D59E1",
   "colorFill": {
     "fillColor": -320017153,
@@ -24,7 +24,7 @@
       "radiusY": 16,
       "class": "ShapeNode",
       "skewY": 0,
-      "positionX": 83.45001999999999,
+      "positionX": 83.45002,
       "opacity": 1,
       "jpath": [
         "M 0.000000 0.000000",
@@ -201,7 +201,7 @@
       "radiusY": 16,
       "class": "ShapeNode",
       "skewY": 0,
-      "positionX": 70.45001999999999,
+      "positionX": 70.45002,
       "opacity": 1,
       "jpath": [
         "M 49.500000 0.000000",
@@ -648,7 +648,7 @@
               "effectPanelOpen": 1,
               "sizeY": 131.9804,
               "fillType": 0,
-              "positionY": 77.19468999999999,
+              "positionY": 77.19469,
               "fillPanelOpen": 1,
               "name": "Polygon 1",
               "hasActionFlag": 0,
@@ -789,7 +789,7 @@
               "easing": 0,
               "anchorX": 0.5,
               "scaleX": 1,
-              "sizeX": 86.06901999999999,
+              "sizeX": 86.06902,
               "nodeStroke": {
                 "effectEnable": 0,
                 "strokeAlpha": 1,
@@ -873,7 +873,7 @@
           "effectPanelOpen": 1,
           "sizeY": 143,
           "fillType": 0,
-          "positionY": 74.30253999999999,
+          "positionY": 74.30254,
           "fillPanelOpen": 1,
           "name": "Rectangle 4",
           "hasActionFlag": 0,
@@ -1167,9 +1167,9 @@
           ],
           "class": "MetAnimKeyframe",
           "positionX": 237.5,
-          "controlBY": -69.97508999999999,
+          "controlBY": -69.97509,
           "skewY": 0,
-          "scaleY": 1,
+          "scaleY": 3,
           "anchorX": 0.5,
           "skewX": 0,
           "sizeY": 80.05,
@@ -1182,12 +1182,12 @@
           "positionY": 55.02499,
           "controlBX": -50,
           "sizeX": 85,
-          "scaleX": 1,
+          "scaleX": 3,
           "visible": 1,
           "easing": 1
         },
         {
-          "rotation": 3.141593,
+          "rotation": 0,
           "rotationY": 0,
           "time": 1.963346,
           "controlAX": 78,
@@ -1225,7 +1225,7 @@
           "positionX": -104.5,
           "controlBY": 106.0249,
           "skewY": 0,
-          "scaleY": 1,
+          "scaleY": 2,
           "anchorX": 0.5,
           "skewX": 0,
           "sizeY": 80.05,
@@ -1238,12 +1238,12 @@
           "positionY": 189.025,
           "controlBX": 5,
           "sizeX": 85,
-          "scaleX": 1,
+          "scaleX": 2,
           "visible": 1,
           "easing": 1
         },
         {
-          "rotation": 3.141593,
+          "rotation": 0,
           "rotationY": 0,
           "time": 4.961328,
           "controlAX": 0,
@@ -1308,8 +1308,8 @@
   "height": 1135,
   "fillType": 0,
   "fillPanelOpen": 0,
-  "class": "MetProjectPage",
   "pageIDs": [
   ],
-  "name": "Page 1"
+  "name": "Page 1",
+  "fillEnable": 0
 }

@@ -35,6 +35,7 @@ define(function(require, exports, module) {
         this.size = this.options.size;
         this.containerSize = this.options.containerSize;
         this.renderController = new RenderController();
+        this.timer = -1;
         //console.log(this.name + " containerSize(" + this.containerSize[0] + "," + this.containerSize[1] + ")");
         _listenToScroll.call(this);
     }
@@ -116,14 +117,36 @@ define(function(require, exports, module) {
         this.showMetNode();
     };
 
-    MetNodeView.prototype.udpateMetNode = function() {
+    MetNodeView.prototype.setActivated = function() {
+        this.timer = 0;
+    };
+
+    MetNodeView.prototype.isActivated = function() {
+        return this.timer >= 0 ? true : false;
+    };
+
+    MetNodeView.prototype.setMetAnimKeyFrames = function(metAnimKeyFrames) {
+        this.metAnimKeyFrames = metAnimKeyFrames;
+    };
+
+    MetNodeView.prototype.updateMetNode = function(elapsed) {
         ////children metnodes processing
         var subMetNodes = this.metNodes;
         for(var metNode in subMetNodes) {
-            subMetNodes[metNode].udpateMetNode(holdersSync, this);
+            var subMetNode = subMetNodes[metNode];
+            if(subMetNode.isActivated()) {
+                subMetNode.updateMetNode(elapsed);
+            }
         }
 
+        if(this.type == "MetAnimNode") {
+            this.updateAnimKeyFrames(elapsed);
+        }
     };
+
+    MetNodeView.prototype.updateAnimKeyFrames = function(elapsed) {
+        this.timer += elapsed;
+    }
 
     MetNodeView.prototype.showMetNode = function() {
         this.renderController.show(this,

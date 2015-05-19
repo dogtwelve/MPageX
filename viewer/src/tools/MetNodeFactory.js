@@ -56,7 +56,8 @@ define(function(require, exports, module) {
             anchorX: anchorX,
             anchorY: anchorY,
             rotation: rotation,
-            containerSize:containerSize
+            containerSize: containerSize,
+            type: type
         });
 
         ////单色填充
@@ -155,6 +156,10 @@ define(function(require, exports, module) {
             });
 
             newNode.addSurface(newSurface);
+        }
+
+        if(type === "MetAnimNode") {
+            newNode.setMetAnimKeyFrames(nodeDescription.keyframes);
         }
 
 

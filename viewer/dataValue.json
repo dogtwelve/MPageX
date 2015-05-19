@@ -1652,15 +1652,16 @@
           "anchorX": 0.5,
           "scaleX": 1,
           "sizeX": 65.05,
-          "effectEnable": 0,
-          "strokeAlpha": 1,
-          "panelOpen": 0,
-          "strokeWidth": 0,
-          "strokeColor": -1869573889,
-          "strokeLineType": 0,
-          "strokeType": 0,
-          "class": "MetNodeStroke"
-        }
+          "nodeStroke": {
+            "effectEnable": 0,
+            "strokeAlpha": 1,
+            "panelOpen": 0,
+            "strokeWidth": 0,
+            "strokeColor": -1869573889,
+            "strokeLineType": 0,
+            "strokeType": 0,
+            "class": "MetNodeStroke"
+          }
         }
       ],
       "color": 0,

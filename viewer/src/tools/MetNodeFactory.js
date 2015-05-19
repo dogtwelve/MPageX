@@ -21,6 +21,7 @@ define(function(require, exports, module) {
 
         var type = nodeDescription.class;
         var name = nodeDescription.name;
+        var metNodeId = nodeDescription.id_;
         var id = nodeDescription.id_;
         var opacity = nodeDescription.opacity;
         var scaleX = nodeDescription.scaleX;
@@ -39,32 +40,6 @@ define(function(require, exports, module) {
         var filltype = nodeDescription.fillType;
 
 
-        if(nodeDescription.keyframes) {
-            console.log("x_path.start = " + nodeDescription.positionX + ";");
-            for(var keyframe in nodeDescription.keyframes) {
-                var kframe = nodeDescription.keyframes[keyframe];
-                console.log("x_path.bezierCurveTo(" + kframe.controlAX + ", " + kframe.controlBX, ", " + kframe.positionX + ");");
-                //console.log("y_path.bezierCurveTo(" + kframe.controlAY + ", " + kframe.controlBY, ", " + kframe.positionY + ")");
-            }
-
-            console.log("y_path.start = " + nodeDescription.positionY + ";");
-            for(var keyframe in nodeDescription.keyframes) {
-                var kframe = nodeDescription.keyframes[keyframe];
-                //console.log("x_path.bezierCurveTo(" + kframe.controlAX + ", " + kframe.controlBX, ", " + kframe.positionX + ")");
-                console.log("y_path.bezierCurveTo(" + kframe.controlAY + ", " + kframe.controlBY, ", " + kframe.positionY + ");");
-            }
-
-            console.log("ctx.moveTo("+nodeDescription.positionX+ ", " + nodeDescription.positionY + ");");
-            for(var keyframe in nodeDescription.keyframes) {
-                var kframe = nodeDescription.keyframes[keyframe];
-                console.log("ctx.bezierCurveTo(" +
-                kframe.controlAX + ", " + kframe.controlAY + ", " +
-                kframe.controlBX + ", " + kframe.controlBY + ", " +
-                kframe.positionX + ", " + kframe.positionY +
-                ");");
-            }
-        }
-        
         var newSurface;
 
 
@@ -191,14 +166,14 @@ define(function(require, exports, module) {
             newNode.addSubMetNode(newSubNode);
         }
 
-        this.metNodesFromFactory[name] = newNode;
+        this.metNodesFromFactory[metNodeId] = newNode;
 
         newNode.setPositionPixels(nodeDescription.positionX, nodeDescription.positionY);
 
         console.log(name +
             //" Pos(" + UnitConverter.ratioXtoPixels(newNode.xPosition, containerSize[0]) + "," + UnitConverter.ratioXtoPixels(newNode.yPosition + containerSize[1]) + ") " +
             " Size(" + size[0] + "," + size[1] + ") " +
-            " fillColor=" + fillColor);
+            " fillColor=" + fillColor + " id_=" + metNodeId);
 
         return newNode;
 
@@ -390,8 +365,8 @@ define(function(require, exports, module) {
     //    return newNode;
     //};
 
-    MetNodeFactory.prototype.getMetNode = function(name) {
-        return this.metNodesFromFactory[name];
+    MetNodeFactory.prototype.getMetNode = function(metNodeId) {
+        return this.metNodesFromFactory[metNodeId];
     };
 
     module.exports = MetNodeFactory;

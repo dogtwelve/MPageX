@@ -34,7 +34,7 @@ define(function(require, exports, module) {
         this.metNodes = [];
         this.size = this.options.size;
         this.containerSize = this.options.containerSize;
-        this.rendererController = new RenderController();
+        this.renderController = new RenderController();
         //console.log(this.name + " containerSize(" + this.containerSize[0] + "," + this.containerSize[1] + ")");
         _listenToScroll.call(this);
     }
@@ -96,7 +96,7 @@ define(function(require, exports, module) {
         // Ensures metnode always has a position modifier
         _createBaseModifier.call(this);
 
-        rootParent.add(this.modifierChain).add(this.rendererController);
+        rootParent.add(this.modifierChain).add(this.renderController);
 
 
         if (this.mainSurface) {
@@ -116,8 +116,17 @@ define(function(require, exports, module) {
         this.showMetNode();
     };
 
+    MetNodeView.prototype.udpateMetNode = function() {
+        ////children metnodes processing
+        var subMetNodes = this.metNodes;
+        for(var metNode in subMetNodes) {
+            subMetNodes[metNode].udpateMetNode(holdersSync, this);
+        }
+
+    };
+
     MetNodeView.prototype.showMetNode = function() {
-        this.rendererController.show(this,
+        this.renderController.show(this,
             {
                 curve:TweenTransition.Curves.linear,
                 duration: 0
@@ -127,7 +136,7 @@ define(function(require, exports, module) {
     };
 
     MetNodeView.prototype.hideMetNode = function() {
-        this.rendererController.hide(
+        this.renderController.hide(
             {
                 curve:TweenTransition.Curves.linear,
                 duration: 0

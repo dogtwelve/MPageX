@@ -30,6 +30,7 @@ define(function(require, exports, module) {
         this.destination = this.options.destination;
         this.name = this.options.name;
         this.metNodeId = this.options.metNodeId;
+        this.type = this.options.type;
         this.metNodes = [];
         this.size = this.options.size;
         this.containerSize = this.options.containerSize;
@@ -91,9 +92,7 @@ define(function(require, exports, module) {
         this.yPosition += incrY;
     };
 
-    MetNodeView.prototype.activateMetNode = function(holdersSync, rootParent) {
-        //this.mainSurface.pipe(scrollSync);
-
+    MetNodeView.prototype.initMetNode = function(holdersSync, rootParent) {
         // Ensures metnode always has a position modifier
         _createBaseModifier.call(this);
 
@@ -111,7 +110,7 @@ define(function(require, exports, module) {
         ////children metnodes processing
         var subMetNodes = this.metNodes;
         for(var metNode in subMetNodes) {
-            subMetNodes[metNode].activateMetNode(holdersSync, this);
+            subMetNodes[metNode].initMetNode(holdersSync, this);
         }
 
         this.showMetNode();

@@ -167,12 +167,13 @@ define(function(require, exports, module) {
         //if (this.mainSurface) {
         //    draggable.subscribe(this.mainSurface);
         //}
-        if(this.mainSurface) {
-            this.mainSurface.on("click", function() {
-                this.hideMetNode();
-            }.bind(this));
 
-        }
+        //if(this.mainSurface) {
+        //    this.mainSurface.on("click", function() {
+        //        this.hideMetNode();
+        //    }.bind(this));
+        //}
+        
         ////a temporary code snippet end
     }
 

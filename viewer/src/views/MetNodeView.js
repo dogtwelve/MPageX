@@ -7,6 +7,7 @@ define(function(require, exports, module) {
     var Draggable = require('famous/modifiers/Draggable');
     var Transform     = require('famous/core/Transform');
     var ModifierChain = require('famous/modifiers/ModifierChain');
+    var RenderController = require("famous/views/RenderController");
     var UnitConverter = require('tools/UnitConverter');
 
     function MetNodeView() {
@@ -31,6 +32,7 @@ define(function(require, exports, module) {
         this.metNodes = [];
         this.size = this.options.size;
         this.containerSize = this.options.containerSize;
+        this.rendererController = new RenderController();
         //console.log(this.name + " containerSize(" + this.containerSize[0] + "," + this.containerSize[1] + ")");
         _listenToScroll.call(this);
     }
@@ -94,14 +96,13 @@ define(function(require, exports, module) {
         // Ensures metnode always has a position modifier
         _createBaseModifier.call(this);
 
-        rootParent.add(this.modifierChain).add(this);
+        rootParent.add(this.modifierChain).add(this.rendererController);
 
 
         if (this.mainSurface) {
             for(var holder in holdersSync) {
                 this.mainSurface.pipe(holdersSync[holder]);
             }
-
             this.add(this.mainSurface);
         }
 
@@ -112,7 +113,16 @@ define(function(require, exports, module) {
             subMetNodes[metNode].activateMetNode(holdersSync, this);
         }
 
+        this.showMetNode();
+    };
 
+    MetNodeView.prototype.showMetNode = function() {
+        this.rendererController.show(this);
+
+    };
+
+    MetNodeView.prototype.hideMetNode = function() {
+        this.rendererController.hide();
     };
 
     function _listenToScroll() {
@@ -122,7 +132,7 @@ define(function(require, exports, module) {
     function _createBaseModifier() {
         var posX = Math.round(UnitConverter.ratioXtoPixels(this.xPosition, this.containerSize[0]));
         var posY = Math.round(UnitConverter.ratioXtoPixels(this.yPosition, this.containerSize[1]));
-        var baseModifier = new Modifier({
+        this.baseModifier = new Modifier({
             size: this.size,
             align: [0, 0],
             origin: [this.originX, this.originY],
@@ -133,7 +143,7 @@ define(function(require, exports, module) {
 
         console.log(this.name + ' pos(' + posX + ','+ posY + ')' + ' align(' + this.originX + ','+ this.originY + ')');
 
-        this.modifierChain.addModifier(baseModifier);
+        this.modifierChain.addModifier(this.baseModifier);
 
         ////TODO:for draggable node, here is a temporary code snippet
         //var draggable = new Draggable();
@@ -141,6 +151,12 @@ define(function(require, exports, module) {
         //if (this.mainSurface) {
         //    draggable.subscribe(this.mainSurface);
         //}
+        if(this.mainSurface) {
+            this.mainSurface.on("click", function() {
+                this.hideMetNode();
+            }.bind(this));
+
+        }
         ////a temporary code snippet end
     }
 

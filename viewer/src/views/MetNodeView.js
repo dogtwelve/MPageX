@@ -8,6 +8,7 @@ define(function(require, exports, module) {
     var Transform     = require('famous/core/Transform');
     var ModifierChain = require('famous/modifiers/ModifierChain');
     var RenderController = require("famous/views/RenderController");
+    var TweenTransition    = require('famous/transitions/TweenTransition');
     var UnitConverter = require('tools/UnitConverter');
 
     function MetNodeView() {
@@ -117,12 +118,27 @@ define(function(require, exports, module) {
     };
 
     MetNodeView.prototype.showMetNode = function() {
-        this.rendererController.show(this);
+        this.rendererController.show(this,
+            {
+                curve:TweenTransition.Curves.linear,
+                duration: 0
+            }
+        );
 
     };
 
     MetNodeView.prototype.hideMetNode = function() {
-        this.rendererController.hide();
+        this.rendererController.hide(
+            {
+                curve:TweenTransition.Curves.linear,
+                duration: 0
+            }
+            //,
+            //function() {
+            //    //this.showMetNode();
+            //    //now hide complete
+            //}.bind(this)
+        );
     };
 
     function _listenToScroll() {

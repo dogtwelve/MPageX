@@ -10,6 +10,8 @@ define(function(require, exports, module) {
     var RenderController = require("famous/views/RenderController");
     var TweenTransition    = require('famous/transitions/TweenTransition');
     var UnitConverter = require('tools/UnitConverter');
+    var MotionPath = require('utils/MotionPath');
+    var KeyFrameAnim = require('animations/KeyFrameAnim');
 
     function MetNodeView() {
         View.apply(this, arguments);
@@ -115,6 +117,10 @@ define(function(require, exports, module) {
         }
 
         this.showMetNode();
+
+        if(this.curAnim) {
+            this.curAnim.activeAnim();
+        }
     };
 
     MetNodeView.prototype.setActivated = function() {
@@ -125,8 +131,8 @@ define(function(require, exports, module) {
         return this.timer >= 0 ? true : false;
     };
 
-    MetNodeView.prototype.setMetAnimKeyFrames = function(metAnimKeyFrames) {
-        this.metAnimKeyFrames = metAnimKeyFrames;
+    MetNodeView.prototype.setKeyFrameAnim = function(metKeyFramesAnim, duration) {
+        this.curAnim = new KeyFrameAnim(this, duration, metKeyFramesAnim);
     };
 
     MetNodeView.prototype.updateMetNode = function(elapsed) {
@@ -137,10 +143,6 @@ define(function(require, exports, module) {
             if(subMetNode.isActivated()) {
                 subMetNode.updateMetNode(elapsed);
             }
-        }
-
-        if(this.type == "MetAnimNode") {
-            this.updateAnimKeyFrames(elapsed);
         }
     };
 
@@ -174,21 +176,39 @@ define(function(require, exports, module) {
 
     function _listenToScroll() {
         this._eventInput.on('ScrollUpdated', _updateScrollValue.bind(this));
-    }
+    };
+
+    MetNodeView.prototype.createDisplacementModifier = function() {
+        this.displacementPosX = 0;
+        this.displacementPosY = 0;
+        this.displacementModifier = new Modifier({
+            transform: function() {
+                return Transform.translate(this.displacementPosX, this.displacementPosY, 0);
+            }.bind(this)
+        });
+
+        this.modifierChain.addModifier(this.displacementModifier);
+    };
+
+    MetNodeView.prototype.setDisplacementPos = function(posX, posY) {
+        this.displacementPosX = posX;
+        this.displacementPosY = posY;
+    };
 
     function _createBaseModifier() {
-        var posX = Math.round(UnitConverter.ratioXtoPixels(this.xPosition, this.containerSize[0]));
-        var posY = Math.round(UnitConverter.ratioXtoPixels(this.yPosition, this.containerSize[1]));
+
         this.baseModifier = new Modifier({
             size: this.size,
             align: [0, 0],
             origin: [this.originX, this.originY],
             transform: function() {
+                var posX = Math.round(UnitConverter.ratioXtoPixels(this.xPosition, this.containerSize[0]));
+                var posY = Math.round(UnitConverter.ratioXtoPixels(this.yPosition, this.containerSize[1]));
                 return Transform.translate(posX, posY, this.zPosition);
             }.bind(this)
         });
 
-        console.log(this.name + ' pos(' + posX + ','+ posY + ')' + ' align(' + this.originX + ','+ this.originY + ')');
+        //console.log(this.name + ' pos(' + posX + ','+ posY + ')' + ' align(' + this.originX + ','+ this.originY + ')');
 
         this.modifierChain.addModifier(this.baseModifier);
 

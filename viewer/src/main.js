@@ -982,7 +982,8 @@ define(function(require, exports, module) {
 
         var pageView = new StageView({
             pageId:  page.id_,
-            size: [page.width, page.height]
+            size: [page.width, page.height],
+            pageDesc: page
         });
 
         var originModifier = new Modifier({
@@ -1010,7 +1011,8 @@ define(function(require, exports, module) {
             var subpage = page;
             var subpageView = new StageView({
                 pageId:  page.id_,
-                size: [page.width, page.height]
+                size: [page.width, page.height],
+                pageDesc: subpage
             });
 
             director.populateStage(subpageView, subpage.nodes);

@@ -76,5 +76,12 @@ define(function(require, exports, module) {
         return result;
     }
 
-    module.exports = UnitConverter;
+    UnitConverter.decimalToHexColorString = function(number)
+    {
+        var colorStr = ((number>> 8) & 0xFFFFFF).toString(16).toUpperCase();
+        //padding if necessary
+        return "#" + "000000".substr(0, 6 - colorStr.length) + colorStr;
+    }
+
+        module.exports = UnitConverter;
 });

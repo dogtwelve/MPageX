@@ -36,7 +36,7 @@ define(function(require, exports, module) {
         var size = UnitConverter._unitsToPixels([nodeDescription.sizeX, nodeDescription.sizeY], containerSize);
 
         var classes = ['z2'];
-        var fillColor = decimalToHexColorString(nodeDescription.colorFill.fillColor);
+        var fillColor = UnitConverter.decimalToHexColorString(nodeDescription.colorFill.fillColor);
         var filltype = nodeDescription.fillType;
 
 
@@ -184,12 +184,12 @@ define(function(require, exports, module) {
 
     }
 
-    function decimalToHexColorString(number)
-    {
-        var colorStr = ((number>> 8) & 0xFFFFFF).toString(16).toUpperCase();
-        //padding if necessary
-        return "#" + "000000".substr(0, 6 - colorStr.length) + colorStr;
-    }
+    //function decimalToHexColorString(number)
+    //{
+    //    var colorStr = ((number>> 8) & 0xFFFFFF).toString(16).toUpperCase();
+    //    //padding if necessary
+    //    return "#" + "000000".substr(0, 6 - colorStr.length) + colorStr;
+    //}
 
     function setJPath(context, jpath)
     {

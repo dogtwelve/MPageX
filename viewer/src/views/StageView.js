@@ -11,6 +11,9 @@ define(function(require, exports, module) {
     var TouchSync     = require('famous/inputs/TouchSync');
     var ScrollSync    = require('famous/inputs/ScrollSync');
 
+    var UnitConverter = require('tools/UnitConverter');
+    var BgImageSurface = require('surfaces/BgImageSurface');
+
     GenericSync.register({
         'mouse': MouseSync,
         'touch': TouchSync,
@@ -22,6 +25,7 @@ define(function(require, exports, module) {
         this.worldScrollValue = 0;
         this._arrowData = this.options.arrowData;
         this.containerSize = this.options.size;
+        this.pageDesc = this.options.pageDesc;
 
         _setupScrollRecieverSurface.call(this);
         _handleScroll.call(this);
@@ -62,15 +66,47 @@ define(function(require, exports, module) {
     };
 
     function _setupScrollRecieverSurface() {
-        this.scrollRecieverSurface = new Surface({
-            //size: [undefined, undefined] // Take up the entire view
-            size: this.containerSize,
-            properties: {
-                backgroundColor: 'white',
-                backfaceVisibility: 'visible',
-                //border: '2px solid rgb(210, 208, 203)'
-            }
-        });
+        ////单色填充
+        var METCOLORFILLTYPE = 0;
+        ////渐变填充
+        var METGRADIENTFILLTYPE = 1;
+        ////图片填充
+        var METIMAGEFILLTYPE = 2;
+        ////无填充
+        var METNONEFILLTYPE = 3;
+
+
+        if(this.pageDesc.fillType == METCOLORFILLTYPE) {
+            var fillColor = UnitConverter.decimalToHexColorString(this.pageDesc.colorFill.fillColor);
+            this.scrollRecieverSurface = new Surface({
+                //size: [undefined, undefined] // Take up the entire view
+                size: this.containerSize,
+                properties: {
+                    backgroundColor: fillColor,
+                    backfaceVisibility: 'visible'
+                }
+            });
+        } else if(this.pageDesc.fillType == METIMAGEFILLTYPE) {
+            var fillImage = this.pageDesc.imageFill.rawImageURL;
+            var contentMode = this.pageDesc.imageFill.contentMode;
+            this.scrollRecieverSurface = new BgImageSurface({
+                size: this.containerSize,
+                content: fillImage,
+                sizeMode: BgImageSurface.SizeMode.ASPECTFILL,
+                properties: {
+                    backgroundColor: 'black'
+                }
+            });
+        } else {
+            this.scrollRecieverSurface = new Surface({
+                size: this.containerSize,
+                properties: {
+                    backgroundColor: 'white',
+                    backfaceVisibility: 'visible'
+                }
+            });
+        }
+
 
         this.add(this.scrollRecieverSurface);
     }

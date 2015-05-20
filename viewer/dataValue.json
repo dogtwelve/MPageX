@@ -289,7 +289,7 @@
       "radiusY": 16,
       "class": "ShapeNode",
       "skewY": 0,
-      "positionX": -32.975,
+      "positionX": 450.95,
       "opacity": 1,
       "jpath": [
         "M 0.000000 0.000000",
@@ -303,7 +303,7 @@
       "effectPanelOpen": 1,
       "sizeY": 115,
       "fillType": 2,
-      "positionY": -175.45,
+      "positionY": 97.57498,
       "fillPanelOpen": 1,
       "name": "Rectangle 2",
       "hasActionFlag": 0,
@@ -598,7 +598,7 @@
           "effectPanelOpen": 1,
           "sizeY": 209.1751,
           "fillType": 0,
-          "positionY": 0,
+          "positionY": -5.684342e-14,
           "fillPanelOpen": 1,
           "name": "Group 1",
           "hasActionFlag": 0,
@@ -648,7 +648,7 @@
               "effectPanelOpen": 1,
               "sizeY": 131.9804,
               "fillType": 0,
-              "positionY": 77.19468,
+              "positionY": 77.19467,
               "fillPanelOpen": 1,
               "name": "Polygon 1",
               "hasActionFlag": 0,
@@ -1708,6 +1708,443 @@
         "strokeType": 0,
         "class": "MetNodeStroke"
       }
+    },
+    {
+      "rotation": 3.141593,
+      "repeatCount": 0,
+      "gradientFill": {
+        "gradientAngle": 0,
+        "gradientType": 0,
+        "endPoint": "{0, 0}",
+        "fillAlpha": 1,
+        "class": "MetNodeGradientFill",
+        "startPoint": "{0, 0}",
+        "gradientPoints": [
+        ]
+      },
+      "actions": [
+      ],
+      "class": "VideoNode",
+      "interval": 0,
+      "loops": 0,
+      "skewY": 0,
+      "positionX": 513.5,
+      "opacity": 1,
+      "duration": 0,
+      "effectPanelOpen": 1,
+      "fullScreen": 0,
+      "resourceType": 0,
+      "sizeY": 164.05,
+      "fillType": 0,
+      "positionY": 761.975,
+      "fillPanelOpen": 1,
+      "name": "Video 1",
+      "hasActionFlag": 0,
+      "imageFill": {
+        "handlerName": 0,
+        "imageRect": "{{0, 0}, {0, 0}}",
+        "contentMode": 0,
+        "presentationHandlerName": 0,
+        "zoom": 1,
+        "class": "MetNodeImageFill",
+        "sourceRect": "{{0, 0}, {0, 0}}"
+      },
+      "id_": "BE352697-A037-4FF9-AAB3-212C70BC349F",
+      "nodes": [
+        {
+          "rotation": 0,
+          "gradientFill": {
+            "gradientAngle": 0,
+            "gradientType": 0,
+            "endPoint": "{0, 0}",
+            "fillAlpha": 1,
+            "class": "MetNodeGradientFill",
+            "startPoint": "{0, 0}",
+            "gradientPoints": [
+            ]
+          },
+          "actions": [
+          ],
+          "class": "MetStateKeyframeNode",
+          "skewY": 0,
+          "positionX": 103.5,
+          "opacity": 1,
+          "performs": [
+          ],
+          "effectPanelOpen": 1,
+          "sizeY": 164.05,
+          "fillType": 0,
+          "positionY": 82.025,
+          "fillPanelOpen": 1,
+          "name": "封面",
+          "hasActionFlag": 0,
+          "imageFill": {
+            "handlerName": 0,
+            "imageRect": "{{0, 0}, {0, 0}}",
+            "contentMode": 0,
+            "presentationHandlerName": 0,
+            "zoom": 1,
+            "class": "MetNodeImageFill",
+            "sourceRect": "{{0, 0}, {0, 0}}"
+          },
+          "id_": "封面",
+          "nodes": [
+          ],
+          "color": 0,
+          "anchorY": 0.5,
+          "baseOn": 0,
+          "effectEnable": 1,
+          "hasAnimFlag": 0,
+          "skewX": 0,
+          "visible": 1,
+          "nodeShadow": {
+            "shadowAlpha": 0.5,
+            "effectEnable": 0,
+            "shadowWidth": 4,
+            "shadowColor": 255,
+            "panelOpen": 0,
+            "shadowExpand": 0,
+            "class": "MetNodeShadow",
+            "shadowOffsetX": 1,
+            "shadowOffsetY": 1
+          },
+          "effects": [
+          ],
+          "scaleY": 1,
+          "fillEnable": 1,
+          "colorFill": {
+            "fillColor": -320017153,
+            "class": "MetNodeColorFill"
+          },
+          "hooks": [
+          ],
+          "anchorX": 0.5,
+          "scaleX": 1,
+          "sizeX": 207,
+          "nodeStroke": {
+            "effectEnable": 0,
+            "strokeAlpha": 1,
+            "panelOpen": 0,
+            "strokeWidth": 0,
+            "strokeColor": -1869573889,
+            "strokeLineType": 0,
+            "strokeType": 0,
+            "class": "MetNodeStroke"
+          }
+        }
+      ],
+      "color": 0,
+      "anchorY": 0.5,
+      "baseOn": 0,
+      "effectEnable": 1,
+      "hasAnimFlag": 0,
+      "skewX": 0,
+      "visible": 1,
+      "nodeShadow": {
+        "shadowAlpha": 0.5,
+        "effectEnable": 0,
+        "shadowWidth": 4,
+        "shadowColor": 255,
+        "panelOpen": 0,
+        "shadowExpand": 0,
+        "class": "MetNodeShadow",
+        "shadowOffsetX": 1,
+        "shadowOffsetY": 1
+      },
+      "effects": [
+      ],
+      "scaleY": 1,
+      "fillEnable": 1,
+      "colorFill": {
+        "fillColor": -320017153,
+        "class": "MetNodeColorFill"
+      },
+      "autoPlay": 0,
+      "delay": 0,
+      "anchorX": 0.5,
+      "scaleX": 1,
+      "defaultState": 0,
+      "currentState": 0,
+      "showCtrls": 0,
+      "clickToPlay": 0,
+      "sizeX": 207,
+      "transition": 0,
+      "nodeStroke": {
+        "effectEnable": 0,
+        "strokeAlpha": 1,
+        "panelOpen": 0,
+        "strokeWidth": 0,
+        "strokeColor": -1869573889,
+        "strokeLineType": 0,
+        "strokeType": 0,
+        "class": "MetNodeStroke"
+      }
+    },
+    {
+      "rotation": 3.141593,
+      "gradientFill": {
+        "gradientAngle": 0,
+        "gradientType": 0,
+        "endPoint": "{0, 0}",
+        "fillAlpha": 1,
+        "class": "MetNodeGradientFill",
+        "startPoint": "{0, 0}",
+        "gradientPoints": [
+        ]
+      },
+      "actions": [
+      ],
+      "radiusY": 16,
+      "class": "ShapeNode",
+      "skewY": 0,
+      "positionX": 91,
+      "opacity": 1,
+      "jpath": [
+        "M 48.000000 0.000000",
+        "L 96.000000 91.000000",
+        "L 0.000000 91.000000",
+        "X",
+        "M 48.000000 0.000000"
+      ],
+      "radiusX": 16,
+      "effectPanelOpen": 1,
+      "sizeY": 91,
+      "fillType": 0,
+      "positionY": 1089.5,
+      "fillPanelOpen": 1,
+      "name": "Triangle 4",
+      "hasActionFlag": 0,
+      "shapeStyle": 3,
+      "imageFill": {
+        "handlerName": 0,
+        "imageRect": "{{0, 0}, {0, 0}}",
+        "contentMode": 0,
+        "presentationHandlerName": 0,
+        "zoom": 1,
+        "class": "MetNodeImageFill",
+        "sourceRect": "{{0, 0}, {0, 0}}"
+      },
+      "id_": "C7716F54-2507-48A3-B6DB-D9BE156384A2",
+      "nodes": [
+      ],
+      "color": 0,
+      "anchorY": 0.5,
+      "baseOn": 0,
+      "effectEnable": 1,
+      "hasAnimFlag": 0,
+      "skewX": 0,
+      "visible": 1,
+      "nodeShadow": {
+        "shadowAlpha": 0.5,
+        "effectEnable": 0,
+        "shadowWidth": 4,
+        "shadowColor": 255,
+        "panelOpen": 0,
+        "shadowExpand": 0,
+        "class": "MetNodeShadow",
+        "shadowOffsetX": 1,
+        "shadowOffsetY": 1
+      },
+      "effects": [
+      ],
+      "scaleY": 1,
+      "fillEnable": 1,
+      "colorFill": {
+        "fillColor": -299484417,
+        "class": "MetNodeColorFill"
+      },
+      "easing": 0,
+      "anchorX": 0.5,
+      "scaleX": 1,
+      "sizeX": 96,
+      "nodeStroke": {
+        "effectEnable": 0,
+        "strokeAlpha": 1,
+        "panelOpen": 0,
+        "strokeWidth": 0,
+        "strokeColor": -1869573889,
+        "strokeLineType": 0,
+        "strokeType": 0,
+        "class": "MetNodeStroke"
+      }
+    },
+    {
+      "rotation": 0,
+      "gradientFill": {
+        "gradientAngle": 0,
+        "gradientType": 0,
+        "endPoint": "{0, 0}",
+        "fillAlpha": 1,
+        "class": "MetNodeGradientFill",
+        "startPoint": "{0, 0}",
+        "gradientPoints": [
+        ]
+      },
+      "actions": [
+      ],
+      "radiusY": 16,
+      "class": "ShapeNode",
+      "skewY": 0,
+      "positionX": 606,
+      "opacity": 1,
+      "jpath": [
+        "M 33.999996 0.000000",
+        "L 67.999992 53.425018",
+        "L 0.000000 53.425018",
+        "X",
+        "M 33.999996 0.000000"
+      ],
+      "radiusX": 16,
+      "effectPanelOpen": 1,
+      "sizeY": 53.42502,
+      "fillType": 0,
+      "positionY": 26.71251,
+      "fillPanelOpen": 1,
+      "name": "Triangle 5",
+      "hasActionFlag": 0,
+      "shapeStyle": 3,
+      "imageFill": {
+        "handlerName": 0,
+        "imageRect": "{{0, 0}, {0, 0}}",
+        "contentMode": 0,
+        "presentationHandlerName": 0,
+        "zoom": 1,
+        "class": "MetNodeImageFill",
+        "sourceRect": "{{0, 0}, {0, 0}}"
+      },
+      "id_": "EC925F73-6B6C-49AB-879B-0EBA223E3024",
+      "nodes": [
+      ],
+      "color": 0,
+      "anchorY": 0.5,
+      "baseOn": 0,
+      "effectEnable": 1,
+      "hasAnimFlag": 0,
+      "skewX": 0,
+      "visible": 1,
+      "nodeShadow": {
+        "shadowAlpha": 0.5,
+        "effectEnable": 0,
+        "shadowWidth": 4,
+        "shadowColor": 255,
+        "panelOpen": 0,
+        "shadowExpand": 0,
+        "class": "MetNodeShadow",
+        "shadowOffsetX": 1,
+        "shadowOffsetY": 1
+      },
+      "effects": [
+      ],
+      "scaleY": 1,
+      "fillEnable": 1,
+      "colorFill": {
+        "fillColor": -299693825,
+        "class": "MetNodeColorFill"
+      },
+      "easing": 0,
+      "anchorX": 0.5,
+      "scaleX": 1,
+      "sizeX": 67.99999,
+      "nodeStroke": {
+        "effectEnable": 0,
+        "strokeAlpha": 1,
+        "panelOpen": 0,
+        "strokeWidth": 0,
+        "strokeColor": -1869573889,
+        "strokeLineType": 0,
+        "strokeType": 0,
+        "class": "MetNodeStroke"
+      }
+    },
+    {
+      "rotation": 0,
+      "gradientFill": {
+        "gradientAngle": 0,
+        "gradientType": 0,
+        "endPoint": "{0, 0}",
+        "fillAlpha": 1,
+        "class": "MetNodeGradientFill",
+        "startPoint": "{0, 0}",
+        "gradientPoints": [
+        ]
+      },
+      "actions": [
+      ],
+      "class": "WebNode",
+      "webType": 1,
+      "interval": 0,
+      "loops": 0,
+      "skewY": 0,
+      "positionX": 192.475,
+      "opacity": 1,
+      "duration": 0,
+      "effectPanelOpen": 1,
+      "transparent": 0,
+      "sizeY": 198,
+      "fillType": 0,
+      "positionY": 807,
+      "fillPanelOpen": 1,
+      "clickable": 0,
+      "name": "Web 1",
+      "hasActionFlag": 0,
+      "imageFill": {
+        "handlerName": 0,
+        "imageRect": "{{0, 0}, {0, 0}}",
+        "contentMode": 0,
+        "presentationHandlerName": 0,
+        "zoom": 1,
+        "class": "MetNodeImageFill",
+        "sourceRect": "{{0, 0}, {0, 0}}"
+      },
+      "id_": "2E8C3330-A188-486F-988F-BB371B85DA21",
+      "nodes": [
+      ],
+      "color": 0,
+      "anchorY": 0.5,
+      "baseOn": 0,
+      "effectEnable": 1,
+      "hasAnimFlag": 0,
+      "skewX": 0,
+      "visible": 1,
+      "nodeShadow": {
+        "shadowAlpha": 0.5,
+        "effectEnable": 0,
+        "shadowWidth": 4,
+        "shadowColor": 255,
+        "panelOpen": 0,
+        "shadowExpand": 0,
+        "class": "MetNodeShadow",
+        "shadowOffsetX": 1,
+        "shadowOffsetY": 1
+      },
+      "effects": [
+      ],
+      "scaleY": 1,
+      "fillEnable": 1,
+      "colorFill": {
+        "fillColor": -320017153,
+        "class": "MetNodeColorFill"
+      },
+      "autoPlay": 0,
+      "delay": 0,
+      "anchorX": 0.5,
+      "scaleX": 1,
+      "defaultState": 0,
+      "currentState": 0,
+      "URL": "www.baidu.com",
+      "autoLoad": 0,
+      "sizeX": 255.05,
+      "transition": 0,
+      "nodeStroke": {
+        "effectEnable": 0,
+        "strokeAlpha": 1,
+        "panelOpen": 0,
+        "strokeWidth": 0,
+        "strokeColor": -1869573889,
+        "strokeLineType": 0,
+        "strokeType": 0,
+        "class": "MetNodeStroke"
+      }
     }
   ],
   "gradientFill": {
@@ -1718,6 +2155,27 @@
     "class": "MetPageGradientFill",
     "startPoint": "{0, 0}",
     "gradientPoints": [
+      {
+        "spliterPercentage": 0.5,
+        "isSpliter": 0,
+        "class": "MetGradientJoint",
+        "location": 0,
+        "color": -1
+      },
+      {
+        "spliterPercentage": 0.5,
+        "isSpliter": 0,
+        "class": "MetGradientJoint",
+        "location": 1,
+        "color": 255
+      },
+      {
+        "spliterPercentage": 0.5,
+        "isSpliter": 1,
+        "class": "MetGradientJoint",
+        "location": 0.5,
+        "color": -1
+      }
     ]
   },
   "imageFill": {

@@ -68,7 +68,7 @@ define(function(require, exports, module) {
             properties: {
                 backgroundColor: 'white',
                 backfaceVisibility: 'visible',
-                border: '2px solid rgb(210, 208, 203)'
+                //border: '2px solid rgb(210, 208, 203)'
             }
         });
 

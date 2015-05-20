@@ -159,7 +159,7 @@ define(function(require, exports, module) {
         }
 
         if(type === "MetAnimNode") {
-            newNode.setMetAnimKeyFrames(nodeDescription.keyframes);
+            newNode.setKeyFrameAnim(nodeDescription.keyframes, nodeDescription.duration);
         }
 
 

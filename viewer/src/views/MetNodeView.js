@@ -227,6 +227,7 @@ define(function(require, exports, module) {
         // In order to behave as expected, scaling must happen before rotation.
         // All others can be composed freely and follow scaling / rotation
         // This won't be a stable sort, but stability doesn't seem to make much difference for this.
+
         this.sizeModifier = new Modifier({
             size: this.size
         });
@@ -277,12 +278,6 @@ define(function(require, exports, module) {
             }.bind(this)
         });
 
-        //console.log(this.name + ' pos(' + posX + ','+ posY + ')' + ' align(' + this.originX + ','+ this.originY + ')');
-
-
-
-
-
         this.modifierChain.addModifier(this.sizeModifier);
         this.modifierChain.addModifier(this.originModifier);
         this.modifierChain.addModifier(this.scaleModifier);
@@ -291,6 +286,29 @@ define(function(require, exports, module) {
         this.modifierChain.addModifier(this.rotZModifier);
         this.modifierChain.addModifier(this.opacityModifier);
         this.modifierChain.addModifier(this.posModifier);
+
+        /////////////////////  Below is COMBINE Modifier ///////////////
+        //this.baseModifier = new Modifier({
+        //    size: this.size,
+        //    origin: [this.originX, this.originY],
+        //    opacity: function() {
+        //            return this.opacity;
+        //        }.bind(this),
+        //
+        //    transform: function() {
+        //
+        //        var posX = Math.round(UnitConverter.ratioXtoPixels(this.xPosition, this.containerSize[0]));
+        //        var posY = Math.round(UnitConverter.ratioXtoPixels(this.yPosition, this.containerSize[1]));
+        //        var scale = Transform.scale(this.scaleX, this.scaleY, this.scaleZ);
+        //        var trans = Transform.translate(posX, posY, 0);
+        //        var rotate = Transform.rotate(this.rotationX, this.rotationY, this.rotationZ);
+        //
+        //        var part_first = Transform.multiply(trans, rotate);
+        //        return Transform.multiply(part_first, scale);
+        //    }.bind(this)
+        //})
+        //
+        //this.modifierChain.addModifier(this.baseModifier);
 
         ////TODO:for draggable node, here is a temporary code snippet
         //var draggable = new Draggable();

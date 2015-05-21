@@ -268,7 +268,14 @@ define(function(require, exports, module) {
             transform: function() {
                 var posX = Math.round(UnitConverter.ratioXtoPixels(this.xPosition, this.containerSize[0]));
                 var posY = Math.round(UnitConverter.ratioXtoPixels(this.yPosition, this.containerSize[1]));
-                return Transform.translate(posX, posY, this.zPosition);
+                var z_adjust = 0;
+                if(this.rotationX !== 0) {
+                    z_adjust = this.size[1];
+                }
+                if(this.rotationY !== 0) {
+                    z_adjust = z_adjust < this.size[0] ? this.size[0] : z_adjust;
+                }
+                return Transform.translate(posX, posY, z_adjust);
             }.bind(this)
         });
 
@@ -300,14 +307,24 @@ define(function(require, exports, module) {
         //        var posX = Math.round(UnitConverter.ratioXtoPixels(this.xPosition, this.containerSize[0]));
         //        var posY = Math.round(UnitConverter.ratioXtoPixels(this.yPosition, this.containerSize[1]));
         //        var scale = Transform.scale(this.scaleX, this.scaleY, this.scaleZ);
-        //        var trans = Transform.translate(posX, posY, 0);
+        //
+        //        var z_adjust = 0;
+        //        if(this.rotationX !== 0) {
+        //            z_adjust = this.size[1];
+        //        }
+        //
+        //        if(this.rotationY !== 0) {
+        //            z_adjust = z_adjust < this.size[0] ? this.size[0] : z_adjust;
+        //        }
+        //
+        //        var trans = Transform.translate(posX, posY, z_adjust);
         //        var rotate = Transform.rotate(this.rotationX, this.rotationY, this.rotationZ);
         //
         //        var part_first = Transform.multiply(trans, rotate);
         //        return Transform.multiply(part_first, scale);
         //    }.bind(this)
         //})
-        //
+
         //this.modifierChain.addModifier(this.baseModifier);
 
         ////TODO:for draggable node, here is a temporary code snippet

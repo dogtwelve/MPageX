@@ -5,8 +5,10 @@ define(function(require, exports, module) {
     var UnitConverter = require('tools/UnitConverter');
     var Surface       = require('famous/core/Surface');
     var ImageSurface  = require('famous/surfaces/ImageSurface');
+    var VideoSurface = require("famous/surfaces/VideoSurface");
     var CanvasSurface  = require('famous/surfaces/CanvasSurface');
     var UnitConverter      = require('tools/UnitConverter');
+    var DebugUtils = require('utils/DebugUtils');
 
     function MetNodeFactory() {
           // Container to store created actors by name.
@@ -141,7 +143,6 @@ define(function(require, exports, module) {
                 return this.id;
             };
 
-            newNode.addSurface(newSurface);
         }
 
         if(type === "MetNode") {
@@ -152,9 +153,18 @@ define(function(require, exports, module) {
                     backfaceVisibility: 'visible',
                     border: '1px solid rgb(210, 208, 203)'
                 },
-                classes: classes
             });
 
+        }
+
+        if(type === "VideoNode") {
+            newSurface = new VideoSurface({
+                size: size
+            });
+            newSurface.setContent("http://developer.qiniu.com/tutorial%2Fqrsbox_video_for_win_web_low_origin.mp4");
+        }
+
+        if(newSurface) {
             newNode.addSurface(newSurface);
         }
 
@@ -175,7 +185,7 @@ define(function(require, exports, module) {
 
         newNode.setPositionPixels(nodeDescription.positionX, nodeDescription.positionY);
 
-        console.log(name +
+        DebugUtils.log(name +
             //" Pos(" + UnitConverter.ratioXtoPixels(newNode.xPosition, containerSize[0]) + "," + UnitConverter.ratioXtoPixels(newNode.yPosition + containerSize[1]) + ") " +
             " Size(" + size[0] + "," + size[1] + ") " +
             " fillColor=" + fillColor + " id_=" + metNodeId);

@@ -13,6 +13,7 @@ define(function(require, exports, module) {
 
     var UnitConverter = require('tools/UnitConverter');
     var BgImageSurface = require('surfaces/BgImageSurface');
+    var DebugUtils = require('utils/DebugUtils');
 
     GenericSync.register({
         'mouse': MouseSync,
@@ -166,10 +167,10 @@ define(function(require, exports, module) {
 
             if(velocity < 0 && velocity < -this.options.velThreshold) {
                 _onForwardOrBackward.call(this, 'forward');
-                console.log("syncSwipe forward:" + velocity);
+                DebugUtils.log("syncSwipe forward:" + velocity);
             } else if(velocity > 0 && velocity > this.options.velThreshold){
                 _onForwardOrBackward.call(this, 'reverse');
-                console.log("syncSwipe backward:" + velocity);
+                DebugUtils.log("syncSwipe backward:" + velocity);
             }
         }).bind(this));
     }

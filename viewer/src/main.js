@@ -3,13 +3,14 @@ define(function(require, exports, module) {
     'use strict';
     // import dependencies
     var Engine = require('famous/core/Engine');
-    var StageView = require('views/StageView');
-    var Director = require('tools/Director');
     var Utility = require('famous/utilities/Utility');
     var Modifier  = require('famous/core/Modifier');
     var Draggable = require('famous/modifiers/Draggable');
     var Scrollview = require("famous/views/Scrollview");
     var ContainerSurface = require("famous/surfaces/ContainerSurface");
+    var StageView = require('views/StageView');
+    var Director = require('tools/Director');
+    var DebugUtils = require('utils/DebugUtils');
 
     // create the main context
     var mainContext = Engine.createContext();
@@ -57,7 +58,7 @@ define(function(require, exports, module) {
 
 
 
-        console.log("dataContent:" +  dataContent);
+        DebugUtils.log("dataContent:" +  dataContent);
 
         var max_page_width = page.width;
 

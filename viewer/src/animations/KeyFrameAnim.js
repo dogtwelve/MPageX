@@ -115,7 +115,7 @@ define(function (require, exports, module) {
         var pos_y = this.y_path.interpolate(time);
         this.actor.setDisplacementPos(pos_x - this.initOffsetX, pos_y - this.initOffsetX);
 
-        console.log(this.actor.name + ' pos(' + pos_x + ','+ pos_y + ')');
+        //console.log(this.actor.name + ' pos(' + pos_x + ','+ pos_y + ')');
 
         if(isFireNextFrame) {
             this.goNextKeyFrame();

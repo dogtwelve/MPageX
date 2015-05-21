@@ -37,7 +37,7 @@ define(function(require, exports, module) {
         // Make sure size is in pixels.
         var size = UnitConverter._unitsToPixels([nodeDescription.sizeX, nodeDescription.sizeY], containerSize);
 
-        var classes = ['z2'];
+        var classes = ['z2', 'backfaceVisibility'];
         var fillColor = UnitConverter.decimalToHexColorString(nodeDescription.colorFill.fillColor);
         var filltype = nodeDescription.fillType;
 

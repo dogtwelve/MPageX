@@ -82,10 +82,26 @@ define(function(require, exports, module) {
             //    },
             //    classes: classes
             //});
+            //
+            //if(filltype === METIMAGEFILLTYPE) {
+            //    newSurface = new ImageSurface({
+            //        size: size,
+            //        content: nodeDescription.imageFill.rawImageURL,
+            //        properties: {
+            //            backfaceVisibility: 'visible',
+            //            backgroundColor: fillColor
+            //        },
+            //        classes: classes
+            //    });
+            //}
+
 
             newSurface = new CanvasSurface({
                     size: size,
-                    classes: classes
+                    classes: classes,
+                    properties: {
+                        backfaceVisibility: 'visible'
+                    }
                 });
 
             newSurface.render = function render() {
@@ -121,25 +137,12 @@ define(function(require, exports, module) {
                         ctx.clip();
                         ctx.fillStyle = fillColor;
                         ctx.fill();
-
-                        //var imageObj = new Image();
-                        //imageObj.src = 'content/images/379335-boeing.jpg';
-                        //imageObj.onload = function() {
-                        //    ctx.drawImage(imageObj, 0, 0, ctx.canvas.width, ctx.canvas.height);
-                        //};
-
                         ctx.restore();
 
                     }
                         break;
 
                 }
-
-
-
-
-
-
                 return this.id;
             };
 
@@ -152,7 +155,7 @@ define(function(require, exports, module) {
                 properties: {
                     backfaceVisibility: 'visible',
                     border: '1px solid rgb(210, 208, 203)'
-                },
+                }
             });
 
         }
@@ -160,9 +163,10 @@ define(function(require, exports, module) {
         if(type === "VideoNode") {
             var videoURL = nodeDescription.videoURL;
             newSurface = new VideoSurface({
-                size: size
+                size: size,
+                classes: classes
             });
-            newSurface.setContent("http://developer.qiniu.com/tutorial%2Fqrsbox_video_for_win_web_low_origin.mp4");
+            newSurface.setContent(videoURL);
         }
 
         if(type === "WebNode") {

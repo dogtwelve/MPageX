@@ -8,7 +8,7 @@
   "width": 640,
   "nodes": [
     {
-      "rotation": 0,
+      "rotation": 1.744828,
       "gradientFill": {
         "gradientAngle": 0,
         "gradientType": 0,
@@ -37,12 +37,12 @@
       "radiusX": 16,
       "effectPanelOpen": 1,
       "sizeY": 135,
-      "fillType": 0,
+      "fillType": 2,
       "positionY": 87.57498,
       "fillPanelOpen": 1,
       "name": "Rectangle 1",
       "hasActionFlag": 0,
-      "shapeStyle": 6,
+      "shapeStyle": 1,
       "imageFill": {
         "handlerName": 0,
         "imageRect": "{{0, 0}, {0, 0}}",
@@ -50,6 +50,7 @@
         "presentationHandlerName": 0,
         "zoom": 1,
         "class": "MetNodeImageFill",
+        "imageURL": "image\/6BC21395-540F-430A-BB0E-406F81ED20A1.png",
         "sourceRect": "{{0, 0}, {0, 0}}"
       },
       "id_": "805C6BA0-B532-49E2-9EDB-C088E0F17D39",
@@ -273,7 +274,7 @@
       }
     },
     {
-      "rotation": 0,
+      "rotation": 0.9263002,
       "gradientFill": {
         "gradientAngle": 0,
         "gradientType": 0,

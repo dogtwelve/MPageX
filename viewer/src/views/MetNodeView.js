@@ -206,15 +206,15 @@ define(function(require, exports, module) {
     };
 
     MetNodeView.prototype.setMetNodeRotateX = function(rotateX) {
-        this.rotateX = rotateX;
+        this.rotationX = rotateX;
     };
 
     MetNodeView.prototype.setMetNodeRotateY = function(rotateY) {
-        this.rotateY = rotateY;
+        this.rotationY = rotateY;
     };
 
     MetNodeView.prototype.setMetNodeRotateZ = function(rotateZ) {
-        this.rotateZ = rotateZ;
+        this.rotationZ = rotateZ;
     };
 
     MetNodeView.prototype.setMetNodeOpacity = function(opacity) {
@@ -257,7 +257,7 @@ define(function(require, exports, module) {
 
         this.scaleModifier = new Modifier({
                 transform: function() {
-                    Transform.scale(this.scaleX, this.scaleY, 1)
+                    return Transform.scale(this.scaleX, this.scaleY, 1)
                 }.bind(this)
             }
         );

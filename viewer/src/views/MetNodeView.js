@@ -27,7 +27,9 @@ define(function(require, exports, module) {
         this.skewY = this.options.skewY;
         this.originX = this.options.anchorX;
         this.originY = this.options.anchorY;
-        this.rotation = this.options.rotation;
+        this.rotationZ = this.options.rotation;
+        this.rotationX =  0;
+        this.rotationY =  0;
         this.opacity = this.options.opacity;
         this.destination = this.options.destination;
         this.name = this.options.name;
@@ -195,12 +197,73 @@ define(function(require, exports, module) {
         this.displacementPosY = posY;
     };
 
+    MetNodeView.prototype.setMetNodeScaleX = function(scaleX) {
+        this.scaleX = scaleX;
+    };
+
+    MetNodeView.prototype.setMetNodeScaleY = function(scaleY) {
+        this.scaleY = scaleY;
+    };
+
+    MetNodeView.prototype.setMetNodeRotateX = function(rotateX) {
+        this.rotationX = rotateX;
+    };
+
+    MetNodeView.prototype.setMetNodeRotateY = function(rotateY) {
+        this.rotationY = rotateY;
+    };
+
+    MetNodeView.prototype.setMetNodeRotateZ = function(rotateZ) {
+        this.rotationZ = rotateZ;
+    };
+
+    MetNodeView.prototype.setMetNodeOpacity = function(opacity) {
+        this.opacity = opacity;
+    };
+
     function _createBaseModifier() {
 
-        this.baseModifier = new Modifier({
-            size: this.size,
-            align: [0, 0],
-            origin: [this.originX, this.originY],
+        // Used for comparing actions and making sure they are sorted in the right order.
+        // In order to behave as expected, scaling must happen before rotation.
+        // All others can be composed freely and follow scaling / rotation
+        // This won't be a stable sort, but stability doesn't seem to make much difference for this.
+        this.sizeModifier = new Modifier({
+            size: this.size
+        });
+        this.originModifier = new Modifier({
+            origin: [this.originX, this.originY]
+        });
+
+        this.rotZModifier = new Modifier({
+                transform: function() {
+                    return Transform.rotateZ(this.rotationZ)
+                }.bind(this)
+            }
+        );
+
+        this.rotXModifier = new Modifier({
+                transform: function() {
+                    return Transform.rotateX(this.rotationX)
+                }.bind(this)
+            }
+        );
+
+        this.rotYModifier = new Modifier({
+                transform: function() {
+                    return Transform.rotateY(this.rotationY)
+                }.bind(this)
+            }
+        );
+
+        this.scaleModifier = new Modifier({
+                transform: function() {
+                    return Transform.scale(this.scaleX, this.scaleY, 1)
+                }.bind(this)
+            }
+        );
+
+        this.posModifier = new Modifier({
+
             transform: function() {
                 var posX = Math.round(UnitConverter.ratioXtoPixels(this.xPosition, this.containerSize[0]));
                 var posY = Math.round(UnitConverter.ratioXtoPixels(this.yPosition, this.containerSize[1]));
@@ -208,9 +271,26 @@ define(function(require, exports, module) {
             }.bind(this)
         });
 
+        this.opacityModifier = new Modifier({
+            opacity: function() {
+                return this.opacity;
+            }.bind(this)
+        });
+
         //console.log(this.name + ' pos(' + posX + ','+ posY + ')' + ' align(' + this.originX + ','+ this.originY + ')');
 
-        this.modifierChain.addModifier(this.baseModifier);
+
+
+
+
+        this.modifierChain.addModifier(this.sizeModifier);
+        this.modifierChain.addModifier(this.originModifier);
+        this.modifierChain.addModifier(this.scaleModifier);
+        this.modifierChain.addModifier(this.rotXModifier);
+        this.modifierChain.addModifier(this.rotYModifier);
+        this.modifierChain.addModifier(this.rotZModifier);
+        this.modifierChain.addModifier(this.opacityModifier);
+        this.modifierChain.addModifier(this.posModifier);
 
         ////TODO:for draggable node, here is a temporary code snippet
         //var draggable = new Draggable();

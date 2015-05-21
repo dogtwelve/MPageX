@@ -4,8 +4,10 @@
 define(function (require, exports, module) {
     'use strict';
 
-    var Timer       = require("famous/utilities/Timer");
-    var MotionPath   = require('utils/MotionPath');
+    var Easing              = require('famous/transitions/Easing');
+    var TweenTransition     = require('famous/transitions/TweenTransition');
+    var Timer               = require("famous/utilities/Timer");
+    var MotionPath          = require('utils/MotionPath');
 
     /** @constructor */
     function KeyFrameAnim(actor, totalTime, keyFrames){
@@ -19,6 +21,7 @@ define(function (require, exports, module) {
         this.totalAnimTime = totalTime * 1000;
         this.initOffsetX = 0;
         this.initOffsetY = 0;
+        this.curveFn = TweenTransition.Curves.linear;
     };
 
     KeyFrameAnim.prototype.activeAnim = function() {
@@ -72,6 +75,33 @@ define(function (require, exports, module) {
 
     };
 
+    KeyFrameAnim.prototype.readyScale = function() {
+        var curFrameDesc = this.keyFrames[this.curAnimFrameIdx];
+        var destFrameDesc = this.keyFrames[this.curAnimFrameIdx + 1];
+        this.startScaleX = curFrameDesc.scaleX;
+        this.startScaleY = curFrameDesc.scaleY;
+        this.destScaleX = destFrameDesc.scaleX;
+        this.destScaleY = destFrameDesc.scaleY;
+    }
+
+    KeyFrameAnim.prototype.readyRotation = function() {
+        var curFrameDesc = this.keyFrames[this.curAnimFrameIdx];
+        var destFrameDesc = this.keyFrames[this.curAnimFrameIdx + 1];
+        this.startRotationX = curFrameDesc.rotationX;
+        this.startRotationY = curFrameDesc.rotationY;
+        this.startRotationZ = curFrameDesc.rotation;
+        this.destRotationX = destFrameDesc.rotationX;
+        this.destRotationY = destFrameDesc.rotationY;
+        this.destRotationZ = destFrameDesc.rotation;
+    }
+
+    KeyFrameAnim.prototype.readyOpacity = function() {
+        var curFrameDesc = this.keyFrames[this.curAnimFrameIdx];
+        var destFrameDesc = this.keyFrames[this.curAnimFrameIdx + 1];
+        this.startOpacity = curFrameDesc.opacity;
+        this.destOpacity = destFrameDesc.opacity;
+    }
+
     KeyFrameAnim.prototype.goNextKeyFrame = function() {
         this.curAnimFrameIdx ++;
         this.curFrameTime = this.keyFrames[this.curAnimFrameIdx].time * 1000;
@@ -83,6 +113,9 @@ define(function (require, exports, module) {
         }
 
         this.readyDisplacement();
+        this.readyScale();
+        this.readyRotation();
+        this.readyOpacity();
     };
 
     KeyFrameAnim.prototype.stopAnim = function() {
@@ -104,13 +137,48 @@ define(function (require, exports, module) {
             isFireNextFrame = true;
         }
 
-        var time = (this.curAnimTime - this.curFrameTime) / (this.nextFrameTime - this.curFrameTime);
+
+        //var time = (this.curAnimTime - this.curFrameTime) / (this.nextFrameTime - this.curFrameTime);
+
+        //this.curveFn((scrollPosition - this.scrollStart) / this.scrollRange);
+        var process = this.curveFn(this.curAnimTime - this.curFrameTime) / (this.nextFrameTime - this.curFrameTime);
+
         //calculate position on entire path (0.0 - 1.0)
-        var pos_x = this.x_path.interpolate(time);
-        var pos_y = this.y_path.interpolate(time);
+        var pos_x = this.x_path.interpolate(process);
+        var pos_y = this.y_path.interpolate(process);
         this.actor.setDisplacementPos(pos_x - this.initOffsetX, pos_y - this.initOffsetY);
 
         //console.log(this.actor.name + ' pos(' + pos_x + ','+ pos_y + ')');
+
+        //calculate current scale
+        var changeScaleX = this.destScaleX - this.startScaleX;
+        if(changeScaleX !== 0) {
+            this.actor.setMetNodeScaleX(this.startScaleX + (changeScaleX * process));
+        }
+        var changeScaleY = this.destScaleY - this.startScaleY;
+        if(changeScaleY !== 0) {
+            this.actor.setMetNodeScaleY(this.startScaleY + (changeScaleY * process));
+        }
+
+        //calculate current rotation
+        var changeRotX = this.destRotationX - this.startRotationX;
+        if(changeRotX) {
+            this.actor.setMetNodeRotateX(this.startRotationX + (changeRotX * process));
+        }
+        var changeRotY = this.destRotationY - this.startRotationY;
+        if(changeRotY) {
+            this.actor.setMetNodeRotateY(this.startRotationY + (changeRotY * process));
+        }
+        var changeRotZ = this.destRotationZ - this.startRotationZ;
+        if(changeRotZ) {
+            this.actor.setMetNodeRotateZ(this.startRotationZ + (changeRotZ * process));
+        }
+
+        //calculate current opacity
+        var changeOpacity = this.destOpacity - this.startOpacity;
+        if(changeOpacity !== 0) {
+            this.actor.setMetNodeOpacity(this.startOpacity + (changeOpacity * process));
+        }
 
         if(isFireNextFrame) {
             this.goNextKeyFrame();

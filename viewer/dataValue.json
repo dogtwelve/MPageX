@@ -1710,7 +1710,7 @@
       }
     },
     {
-      "rotation": 3.141593,
+      "rotation": -3.141592,
       "repeatCount": 0,
       "gradientFill": {
         "gradientAngle": 0,
@@ -1733,7 +1733,7 @@
       "duration": 0,
       "effectPanelOpen": 1,
       "fullScreen": 0,
-      "resourceType": 0,
+      "resourceType": 1,
       "sizeY": 164.05,
       "fillType": 0,
       "positionY": 761.975,
@@ -1865,10 +1865,11 @@
       "scaleX": 1,
       "defaultState": 0,
       "currentState": 0,
-      "showCtrls": 0,
+      "videoURL": "www.baidu.com",
       "clickToPlay": 0,
       "sizeX": 207,
       "transition": 0,
+      "showCtrls": 1,
       "nodeStroke": {
         "effectEnable": 0,
         "strokeAlpha": 1,
@@ -2071,7 +2072,7 @@
       "actions": [
       ],
       "class": "WebNode",
-      "webType": 1,
+      "webType": 2,
       "interval": 0,
       "loops": 0,
       "skewY": 0,
@@ -2131,7 +2132,6 @@
       "scaleX": 1,
       "defaultState": 0,
       "currentState": 0,
-      "URL": "www.baidu.com",
       "autoLoad": 0,
       "sizeX": 255.05,
       "transition": 0,

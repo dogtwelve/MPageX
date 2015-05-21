@@ -38,11 +38,6 @@ define(function (require, exports, module) {
     };
 
     KeyFrameAnim.prototype.readyDisplacement = function() {
-        var points = [];
-        var ctrl_ptsA = [];
-        var ctrl_ptsB = [];
-        var node_count = this.keyFrames.length;
-
         var curFrameDesc = this.keyFrames[this.curAnimFrameIdx];
         var nextFrameDesc = this.keyFrames[this.curAnimFrameIdx + 1];
 
@@ -113,7 +108,7 @@ define(function (require, exports, module) {
         //calculate position on entire path (0.0 - 1.0)
         var pos_x = this.x_path.interpolate(time);
         var pos_y = this.y_path.interpolate(time);
-        this.actor.setDisplacementPos(pos_x - this.initOffsetX, pos_y - this.initOffsetX);
+        this.actor.setDisplacementPos(pos_x - this.initOffsetX, pos_y - this.initOffsetY);
 
         //console.log(this.actor.name + ' pos(' + pos_x + ','+ pos_y + ')');
 

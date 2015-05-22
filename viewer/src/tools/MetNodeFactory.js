@@ -83,68 +83,66 @@ define(function(require, exports, module) {
             //    classes: classes
             //});
             //
-            //if(filltype === METIMAGEFILLTYPE) {
-            //    newSurface = new ImageSurface({
-            //        size: size,
-            //        content: nodeDescription.imageFill.rawImageURL,
-            //        properties: {
-            //            backfaceVisibility: 'visible',
-            //            backgroundColor: fillColor
-            //        },
-            //        classes: classes
-            //    });
-            //}
-
-
-            newSurface = new CanvasSurface({
+            if (filltype === METIMAGEFILLTYPE) {
+                newSurface = new ImageSurface({
+                    size: size,
+                    content: nodeDescription.imageFill.rawImageURL,
+                    //properties: {
+                    //    backgroundColor: fillColor
+                    //},
+                    classes: classes
+                });
+            } else {
+                newSurface = new CanvasSurface({
                     size: size,
                     classes: classes,
                     properties: {
-                        backfaceVisibility: 'visible'
                     }
                 });
 
-            newSurface.render = function render() {
+                newSurface.render = function render() {
 
-                var ctx = this.getContext('2d');
+                    var ctx = this.getContext('2d');
 
-                //ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+                    //ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
 
-                //ctx.fillStyle = fillColor;
-                //ctx.fill();
+                    //ctx.fillStyle = fillColor;
+                    //ctx.fill();
 
 
-
-                switch(filltype) {
-                    case METIMAGEFILLTYPE:
-                    {
-                        var imageObj = new Image();
-                        imageObj.src = nodeDescription.imageFill.rawImageURL;
-                        imageObj.onload = function() {
+                    switch (filltype) {
+                        //case METIMAGEFILLTYPE:
+                        //{
+                        //    var imageObj = new Image();
+                        //    imageObj.src = nodeDescription.imageFill.rawImageURL;
+                        //    imageObj.onload = function() {
+                        //       ctx.save();
+                        //        setJPath(ctx, jpath);
+                        //        ctx.clip();
+                        //        ctx.drawImage(imageObj, 0, 0, ctx.canvas.width, ctx.canvas.height);
+                        //        ctx.restore();
+                        //    };
+                        //}
+                        //    break;
+                        case METCOLORFILLTYPE:
+                        case METGRADIENTFILLTYPE:
+                        {
                             ctx.save();
                             setJPath(ctx, jpath);
                             ctx.clip();
-                            ctx.drawImage(imageObj, 0, 0, ctx.canvas.width, ctx.canvas.height);
+                            ctx.fillStyle = fillColor;
+                            ctx.fill();
                             ctx.restore();
-                        };
-                    }
-                        break;
-                    case METCOLORFILLTYPE:
-                    case METGRADIENTFILLTYPE:
-                    {
-                        ctx.save();
-                        setJPath(ctx, jpath);
-                        ctx.clip();
-                        ctx.fillStyle = fillColor;
-                        ctx.fill();
-                        ctx.restore();
+
+                        }
+                            break;
 
                     }
-                        break;
+                    return this.id;
+                };
+            }
 
-                }
-                return this.id;
-            };
+
 
         }
 

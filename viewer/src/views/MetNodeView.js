@@ -9,6 +9,7 @@ define(function(require, exports, module) {
     var ModifierChain = require('famous/modifiers/ModifierChain');
     var RenderController = require("famous/views/RenderController");
     var TweenTransition    = require('famous/transitions/TweenTransition');
+    var Lightbox = require('famous/views/Lightbox');
     var UnitConverter = require('tools/UnitConverter');
     var MotionPath = require('utils/MotionPath');
     var KeyFrameAnim = require('animations/KeyFrameAnim');
@@ -60,7 +61,6 @@ define(function(require, exports, module) {
                 backgroundColor: 'blue',
                 fontSize: '4em',
                 padding: '.5em',
-                backfaceVisibility: 'visible'
             }
         }
     };
@@ -101,7 +101,17 @@ define(function(require, exports, module) {
         // Ensures metnode always has a position modifier
         _createBaseModifier.call(this);
 
-        rootParent.add(this.modifierChain).add(this.renderController);
+        var root = rootParent.add(this.modifierChain);
+
+        root.add(this.renderController);
+
+        if(this.type == "MetStateNode") {
+            this.lightbox = new Lightbox();
+
+            root.add(this.lightbox);
+            this.stateGroup = [];
+        }
+
 
 
         if (this.mainSurface) {
@@ -114,11 +124,23 @@ define(function(require, exports, module) {
 
         ////children metnodes processing
         var subMetNodes = this.metNodes;
+        var subRoot = this;
+
         for(var metNode in subMetNodes) {
-            subMetNodes[metNode].initMetNode(holdersSync, this);
+            if(this.type == "MetStateNode") {
+                subRoot = new View();
+                this.stateGroup.push(subRoot);
+            }
+            subMetNodes[metNode].initMetNode(holdersSync, subRoot);
         }
 
         this.showMetNode();
+
+        if(this.type == "MetStateNode") {
+            this.lightbox.show(this.stateGroup[1], function() {
+                console.log(this.stateGroup[1]);
+            }.bind(this));
+        }
 
         if(this.curAnim) {
             this.curAnim.activeAnim();
@@ -147,10 +169,6 @@ define(function(require, exports, module) {
             }
         }
     };
-
-    MetNodeView.prototype.updateAnimKeyFrames = function(elapsed) {
-        this.timer += elapsed;
-    }
 
     MetNodeView.prototype.showMetNode = function() {
         this.renderController.show(this,
@@ -183,6 +201,11 @@ define(function(require, exports, module) {
     MetNodeView.prototype.createDisplacementModifier = function() {
         this.displacementPosX = 0;
         this.displacementPosY = 0;
+        if (this.displacementModifier) {
+
+            this.modifierChain.removeModifier(this.displacementModifier);
+            delete this.displacementModifier;
+        }
         this.displacementModifier = new Modifier({
             transform: function() {
                 return Transform.translate(this.displacementPosX, this.displacementPosY, 0);
@@ -275,7 +298,7 @@ define(function(require, exports, module) {
                 if(this.rotationY !== 0) {
                     z_adjust = z_adjust < this.size[0] ? this.size[0] : z_adjust;
                 }
-                return Transform.translate(posX, posY, z_adjust);
+                return Transform.translate(posX, posY, this.zPosition + z_adjust);
             }.bind(this)
         });
 

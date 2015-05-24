@@ -1,33 +1,6 @@
-html {
-  background: #fff;
-}
-
-body {
-  font-family: "Gill Sans", "Gill Sans MT", Calibri, sans-serif;
-  color: rgb(83,83,83);
-  background-color: rgb(220,220,220);
-  font-weight: lighter;
-}
-
-h1 {
-  font-weight: lighter;
-}
-
 .backfaceVisibility {
   -webkit-backface-visibility: visible;
   backface-visibility: visible;
-}
-
-.vertCenter {
-  position: relative;
-  top: 50%;
-  transform: translateY(-50%);
-  -webkit-transform: translateY(-50%);
-  -ms-transform: translateY(-50%);
-}
-
-.code {
-  padding: 1em;
 }
 
 .z1 {

@@ -77,7 +77,6 @@ define(function(require, exports, module) {
                 size: size,
                 content: name,
                 properties: {
-                    backfaceVisibility: 'visible',
                     backgroundColor: fillColor
                 },
                 classes: classes

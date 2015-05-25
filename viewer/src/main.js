@@ -18,7 +18,8 @@ define(function(require, exports, module) {
 
     var context = null;
     var appDims;
-    function getAppDims(origW, origH){
+
+    function getAppDims(container, origW, origH){
         var scaleX = window.innerWidth / origW;
         var scaleY = window.innerHeight / origH;
 
@@ -39,9 +40,10 @@ define(function(require, exports, module) {
     });
 
     function _resize(container, origW, origH){
-        appDims = getAppDims(origW, origH);
-        container.style.width = appDims[0] + "px";
-        container.style.height = appDims[1] + "px";
+        appDims = getAppDims(container, origW, origH);
+        container.style.width = window.innerWidth + "px";
+        container.style.height = window.innerHeight + "px";
+        container.overflow = "hidden";
         container.style.background="black";
 
         //modifier.setTransform(Transform.scale(appDims[2], appDims[2], 1));

@@ -10,7 +10,7 @@ define(function (require, exports, module) {
     var MotionPath          = require('utils/MotionPath');
 
     /** @constructor */
-    function KeyFrameAnim(actor, totalTime, keyFrames){
+    function KeyFrameAnim(actor, totalTime, keyFrames, loop){
         this.actor = actor;
         this.keyFrames = keyFrames;
         this.keyFramesCount = keyFrames.length;
@@ -21,7 +21,7 @@ define(function (require, exports, module) {
         this.totalAnimTime = totalTime * 1000;
         this.initOffsetX = 0;
         this.initOffsetY = 0;
-        this.curveFn = TweenTransition.Curves.linear;
+        this.loop = loop;
     };
 
     KeyFrameAnim.prototype.activeAnim = function() {
@@ -105,6 +105,7 @@ define(function (require, exports, module) {
     KeyFrameAnim.prototype.goNextKeyFrame = function() {
         this.curAnimFrameIdx ++;
         this.curFrameTime = this.keyFrames[this.curAnimFrameIdx].time * 1000;
+        this.curveFn = TweenTransition.Curves.linear;
 
         if(this.curAnimFrameIdx < (this.keyFramesCount - 2)) {
             this.nextFrameTime = this.keyFrames[this.curAnimFrameIdx + 1].time * 1000;
@@ -119,6 +120,7 @@ define(function (require, exports, module) {
     };
 
     KeyFrameAnim.prototype.stopAnim = function() {
+        this.actor.resetMetNodePosAdjustZ();
         if(this.animTimer) {
             Timer.clear(this.animTimer);
             delete this.animTimer;
@@ -130,7 +132,11 @@ define(function (require, exports, module) {
         var isFireNextFrame = false;
 
         if(this.curAnimTime > this.totalAnimTime) {
-            this.resetAnim();
+            if(this.loop){
+                this.resetAnim();
+            } else {
+                this.stopAnim();
+            }
             return;
         } else if(this.curAnimTime >= this.nextFrameTime) {
             this.curAnimTime = this.nextFrameTime;

@@ -15,7 +15,7 @@ define(function(require, exports, module) {
           this.metNodesFromFactory = {};
     }
 
-    MetNodeFactory.prototype.makeMetNode = function(nodeDescription, containerSize) {
+    MetNodeFactory.prototype.makeMetNode = function(nodeDescription, containerSize, zPosition) {
 
         if (nodeDescription.zPosition && nodeDescription.properties) {
             nodeDescription.properties.zPosition = nodeDescription.zPosition;
@@ -49,7 +49,7 @@ define(function(require, exports, module) {
             size: size,
             metNodeId: id,
             name: name,
-            zPosition: 0,
+            zPosition: zPosition,
             opacity: opacity !== undefined ? opacity : 1,
             scaleX: scaleX,
             scaleY: scaleY,
@@ -73,16 +73,16 @@ define(function(require, exports, module) {
 
 
         if(type === "ShapeNode") {
-            //newSurface = new Surface({
-            //    size: size,
-            //    content: name,
-            //    properties: {
-            //        backfaceVisibility: 'visible',
-            //        backgroundColor: fillColor
-            //    },
-            //    classes: classes
-            //});
-            //
+            newSurface = new Surface({
+                size: size,
+                content: name,
+                properties: {
+                    backfaceVisibility: 'visible',
+                    backgroundColor: fillColor
+                },
+                classes: classes
+            });
+
             if (filltype === METIMAGEFILLTYPE) {
                 newSurface = new ImageSurface({
                     size: size,
@@ -93,53 +93,53 @@ define(function(require, exports, module) {
                     classes: classes
                 });
             } else {
-                newSurface = new CanvasSurface({
-                    size: size,
-                    classes: classes,
-                    properties: {
-                    }
-                });
-
-                newSurface.render = function render() {
-
-                    var ctx = this.getContext('2d');
-
-                    //ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-
-                    //ctx.fillStyle = fillColor;
-                    //ctx.fill();
-
-
-                    switch (filltype) {
-                        //case METIMAGEFILLTYPE:
-                        //{
-                        //    var imageObj = new Image();
-                        //    imageObj.src = nodeDescription.imageFill.rawImageURL;
-                        //    imageObj.onload = function() {
-                        //       ctx.save();
-                        //        setJPath(ctx, jpath);
-                        //        ctx.clip();
-                        //        ctx.drawImage(imageObj, 0, 0, ctx.canvas.width, ctx.canvas.height);
-                        //        ctx.restore();
-                        //    };
-                        //}
-                        //    break;
-                        case METCOLORFILLTYPE:
-                        case METGRADIENTFILLTYPE:
-                        {
-                            ctx.save();
-                            setJPath(ctx, jpath);
-                            ctx.clip();
-                            ctx.fillStyle = fillColor;
-                            ctx.fill();
-                            ctx.restore();
-
-                        }
-                            break;
-
-                    }
-                    return this.id;
-                };
+                //newSurface = new CanvasSurface({
+                //    size: size,
+                //    classes: classes,
+                //    properties: {
+                //    }
+                //});
+                //
+                //newSurface.render = function render() {
+                //
+                //    var ctx = this.getContext('2d');
+                //
+                //    //ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+                //
+                //    //ctx.fillStyle = fillColor;
+                //    //ctx.fill();
+                //
+                //
+                //    switch (filltype) {
+                //        //case METIMAGEFILLTYPE:
+                //        //{
+                //        //    var imageObj = new Image();
+                //        //    imageObj.src = nodeDescription.imageFill.rawImageURL;
+                //        //    imageObj.onload = function() {
+                //        //       ctx.save();
+                //        //        setJPath(ctx, jpath);
+                //        //        ctx.clip();
+                //        //        ctx.drawImage(imageObj, 0, 0, ctx.canvas.width, ctx.canvas.height);
+                //        //        ctx.restore();
+                //        //    };
+                //        //}
+                //        //    break;
+                //        case METCOLORFILLTYPE:
+                //        case METGRADIENTFILLTYPE:
+                //        {
+                //            ctx.save();
+                //            setJPath(ctx, jpath);
+                //            ctx.clip();
+                //            ctx.fillStyle = fillColor;
+                //            ctx.fill();
+                //            ctx.restore();
+                //
+                //        }
+                //            break;
+                //
+                //    }
+                //    return this.id;
+                //};
             }
 
 
@@ -172,7 +172,7 @@ define(function(require, exports, module) {
             newSurface = new Surface({
                 size: size
             });
-            newSurface.setContent(webUrl);
+            newSurface.setContent("<DIV><IFRAME src=\"" + webUrl + "\"</IFRAME></DIV>");
         }
 
         if(newSurface) {
@@ -185,11 +185,13 @@ define(function(require, exports, module) {
 
 
         var subMetNodes = nodeDescription.nodes;
+        var curMetPosZ = zPosition;
         for(var subMetNodenode in subMetNodes) {
             var newSubNode = this.makeMetNode(
                 subMetNodes[subMetNodenode],
-                size);
-            newNode.addSubMetNode(newSubNode);
+                size, curMetPosZ);
+            newNode.addSubMetNode(newSubNode.metNode, newSubNode.zPos);
+            curMetPosZ = newSubNode.zPos;
         }
 
         this.metNodesFromFactory[metNodeId] = newNode;
@@ -199,9 +201,10 @@ define(function(require, exports, module) {
         DebugUtils.log(name +
             //" Pos(" + UnitConverter.ratioXtoPixels(newNode.xPosition, containerSize[0]) + "," + UnitConverter.ratioXtoPixels(newNode.yPosition + containerSize[1]) + ") " +
             " Size(" + size[0] + "," + size[1] + ") " +
+            " zPosition=" + zPosition +
             " fillColor=" + fillColor + " id_=" + metNodeId);
 
-        return newNode;
+        return {metNode:newNode, zPos:curMetPosZ};
 
     }
 

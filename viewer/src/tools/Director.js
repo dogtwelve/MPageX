@@ -10,9 +10,11 @@ define(function(require, exports, module) {
 
     Director.prototype.populateStage = function(stage, nodeDescriptions) {
         var nodeFactory = new MetNodeFactory();
+        var zPos = 1;
         for (var nodeName in nodeDescriptions) {
-            var newNode = nodeFactory.makeMetNode(nodeDescriptions[nodeName], stage.options.containerSize);
-            this.metnodes[nodeName] = newNode;
+            var newNode = nodeFactory.makeMetNode(nodeDescriptions[nodeName], stage.options.containerSize, zPos);
+            this.metnodes[nodeName] = newNode.metNode;
+            zPos = newNode.zPos;
         }
 
         for (var nodeToStage in this.metnodes) {

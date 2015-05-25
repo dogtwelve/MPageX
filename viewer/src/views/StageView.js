@@ -6,6 +6,8 @@ define(function(require, exports, module) {
     var View          = require('famous/core/View');
     var Surface       = require('famous/core/Surface');
 
+    var ImageSurface  = require('famous/surfaces/ImageSurface');
+
     var GenericSync   = require('famous/inputs/GenericSync');
     var MouseSync     = require('famous/inputs/MouseSync');
     var TouchSync     = require('famous/inputs/TouchSync');

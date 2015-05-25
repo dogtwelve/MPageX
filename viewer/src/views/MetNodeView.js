@@ -293,10 +293,10 @@ define(function(require, exports, module) {
                 var posY = Math.round(UnitConverter.ratioXtoPixels(this.yPosition, this.containerSize[1]));
                 var z_adjust = 0;
                 if(this.rotationX !== 0) {
-                    z_adjust = this.size[1];
+                    z_adjust = this.size[1]/2;
                 }
                 if(this.rotationY !== 0) {
-                    z_adjust = z_adjust < this.size[0] ? this.size[0] : z_adjust;
+                    z_adjust = z_adjust < this.size[0]/2 ? this.size[0]/2 : z_adjust;
                 }
                 return Transform.translate(posX, posY, this.zPosition + z_adjust);
             }.bind(this)

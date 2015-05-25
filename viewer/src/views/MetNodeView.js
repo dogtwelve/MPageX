@@ -13,6 +13,7 @@ define(function(require, exports, module) {
     var UnitConverter = require('tools/UnitConverter');
     var MotionPath = require('utils/MotionPath');
     var KeyFrameAnim = require('animations/KeyFrameAnim');
+    var DebugUtils = require('utils/DebugUtils');
 
     function MetNodeView() {
         View.apply(this, arguments);
@@ -22,6 +23,7 @@ define(function(require, exports, module) {
         this.xPosition = this.options.xPosition;
         this.yPosition = this.options.yPosition;
         this.zPosition = this.options.zPosition;
+        this.z_adjust = 0;
         this.scaleX = this.options.scaleX;
         this.scaleY = this.options.scaleY;
         this.skewX = this.options.skewX;
@@ -155,8 +157,8 @@ define(function(require, exports, module) {
         return this.timer >= 0 ? true : false;
     };
 
-    MetNodeView.prototype.setKeyFrameAnim = function(metKeyFramesAnim, duration) {
-        this.curAnim = new KeyFrameAnim(this, duration, metKeyFramesAnim);
+    MetNodeView.prototype.setKeyFrameAnim = function(metKeyFramesAnim, duration, loop) {
+        this.curAnim = new KeyFrameAnim(this, duration, metKeyFramesAnim, loop);
     };
 
     MetNodeView.prototype.updateMetNode = function(elapsed) {
@@ -220,6 +222,30 @@ define(function(require, exports, module) {
         this.displacementPosY = posY;
     };
 
+    MetNodeView.prototype.setMetNodePosAdjustZ = function(zPos) {
+        if(this.z_adjust === 0) {
+            this.z_adjust = zPos;
+            DebugUtils.log(this.name + " zPos_adjust=" + this.z_adjust);
+            var subMetNodes = this.metNodes;
+            for(var subMetNodenode in subMetNodes) {
+                var newAdjustPosZ = subMetNodes[subMetNodenode].setMetNodePosAdjustZ(zPos + 1);
+                zPos = newAdjustPosZ;
+            }
+
+        }
+
+        return zPos;
+    };
+
+    MetNodeView.prototype.resetMetNodePosAdjustZ = function() {
+        var subMetNodes = this.metNodes;
+        this.z_adjust = 0;
+        DebugUtils.log(this.name + " zPos_adjust reset=" + this.z_adjust);
+        for(var subMetNodenode in subMetNodes) {
+            subMetNodes[subMetNodenode].resetMetNodePosAdjustZ();
+        }
+    };
+
     MetNodeView.prototype.setMetNodeScaleX = function(scaleX) {
         this.scaleX = scaleX;
     };
@@ -230,10 +256,22 @@ define(function(require, exports, module) {
 
     MetNodeView.prototype.setMetNodeRotateX = function(rotateX) {
         this.rotationX = rotateX;
+        if(rotateX !== 0) {
+            this.setMetNodePosAdjustZ(this.z_adjust);
+        } else {
+            this.resetMetNodePosAdjustZ();
+        }
+        //DebugUtils.log(this.name + " rotationX=" + this.rotationX);
     };
 
     MetNodeView.prototype.setMetNodeRotateY = function(rotateY) {
         this.rotationY = rotateY;
+        if(rotateY !== 0) {
+            this.setMetNodePosAdjustZ(this.z_adjust);
+        } else {
+            this.resetMetNodePosAdjustZ();
+        }
+        //DebugUtils.log(this.name + " rotationY=" + this.rotationY);
     };
 
     MetNodeView.prototype.setMetNodeRotateZ = function(rotateZ) {
@@ -291,14 +329,14 @@ define(function(require, exports, module) {
             transform: function() {
                 var posX = Math.round(UnitConverter.ratioXtoPixels(this.xPosition, this.containerSize[0]));
                 var posY = Math.round(UnitConverter.ratioXtoPixels(this.yPosition, this.containerSize[1]));
-                var z_adjust = 0;
-                if(this.rotationX !== 0) {
-                    z_adjust = this.size[1]/2;
-                }
-                if(this.rotationY !== 0) {
-                    z_adjust = z_adjust < this.size[0]/2 ? this.size[0]/2 : z_adjust;
-                }
-                return Transform.translate(posX, posY, this.zPosition + z_adjust);
+                //var z_adjust = 0;
+                //if(this.rotationX !== 0) {
+                //    z_adjust = this.size[1]/2;
+                //}
+                //if(this.rotationY !== 0) {
+                //    z_adjust = z_adjust < this.size[0]/2 ? this.size[0]/2 : z_adjust;
+                //}
+                return Transform.translate(posX, posY, this.zPosition + this.z_adjust);
             }.bind(this)
         });
 

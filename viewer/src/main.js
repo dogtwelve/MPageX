@@ -27,14 +27,13 @@ define(function(require, exports, module) {
         var scale = Math.min(scaleX, scaleY);
         //var scale = 1;
 
-        var appWidth = Math.round(origW * scale);
-        var appHeight = Math.round(origH * scale);
+        var appWidth = origW * scale;
+        var appHeight = origH * scale;
 
         return [appWidth, appHeight, scale];
     }
 
     var modifier = new Modifier({
-        size: [640, 1136],
         origin: [0.5, 0],
         align: [0.5, 0]
     });
@@ -43,16 +42,11 @@ define(function(require, exports, module) {
         appDims = getAppDims(origW, origH);
         container.style.width = appDims[0] + "px";
         container.style.height = appDims[1] + "px";
+        container.style.background="black";
 
         //modifier.setTransform(Transform.scale(appDims[2], appDims[2], 1));
-        //modifier.sizeFrom([640, undefined]);
-        var scale = appDims[2];
-        var trans = Transform.translate(0, 0, 0);
-        //var rotate = Transform.rotate(this.rotationX, this.rotationY, this.rotationZ);
-        var scale = Transform.scale(scale, scale, 1);
-
-        var mult = Transform.multiply(trans, scale);
-        modifier.transformFrom(mult);
+        modifier.sizeFrom([origW, undefined]);
+        modifier.transformFrom(Transform.scale(appDims[2], appDims[2], 1));
     }
 
     function _init(origW, origH){
@@ -100,19 +94,13 @@ define(function(require, exports, module) {
             page = content;
             pages[page.id_] = page;
         } else if(content instanceof Array) {
-
             for(var contentPage in content) {
                 page = content[contentPage];
                 pages[page.id_] = page;
             }
-            //from the head page
-            page = content[0];
-
         } else {
-            var dataContent = content.pagesData;
-            page = dataContent[0];
+            DebugUtils.log("current json data format is not supported!");
         }
-
 
 
         DebugUtils.log("dataContent:" +  dataContent);
@@ -125,8 +113,8 @@ define(function(require, exports, module) {
 
         var pageView = new StageView({
             pageId:  page.id_,
-            size: [page.width, page.height],
-            pageDesc: page
+            pageDesc: page,
+            contextSize: [page.width, page.height]
         });
 
         director.populateStage(pageView, page.nodes);
@@ -150,8 +138,8 @@ define(function(require, exports, module) {
             var subpage = pages[page.pageIDs[subpageIdx]];
             var subpageView = new StageView({
                 pageId:  page.id_,
-                size: [page.width, page.height],
-                pageDesc: subpage
+                pageDesc: subpage,
+                contextSize: [page.width, page.height]
             });
 
             director.populateStage(subpageView, subpage.nodes);
@@ -174,11 +162,11 @@ define(function(require, exports, module) {
             draggable.subscribe(pageViews[pageView].scrollRecieverSurface);
         }
 
-        var originScrollviewModifier = new Modifier({
-            size:[max_page_width, max_page_height],
-            origin: [0, 0],
-            align: [0, 0]
-        });
+        //var originScrollviewModifier = new Modifier({
+        //    size:[max_page_width, max_page_height],
+        //    origin: [0.5, 0],
+        //    align: [0.5, 0]
+        //});
 
         // create the main context
         _init(max_page_width, max_page_height);

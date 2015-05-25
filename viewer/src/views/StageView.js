@@ -29,6 +29,7 @@ define(function(require, exports, module) {
         this._arrowData = this.options.arrowData;
         this.containerSize = this.options.size;
         this.pageDesc = this.options.pageDesc;
+        this.containerSize = this.options.contextSize;
 
         _setupScrollRecieverSurface.call(this);
         _handleScroll.call(this);
@@ -43,7 +44,7 @@ define(function(require, exports, module) {
             speed: 4,
             step: 10
         },
-        containerSize: [window.innerWidth, window.innerHeight]
+        //containerSize: [window.innerWidth, window.innerHeight]
     };
 
     StageView.prototype = Object.create(View.prototype);

@@ -1,19 +1,21 @@
 define(function(require, exports, module) {
     'use strict';
-    var View          = require('famous/core/View');
-    var Surface       = require('famous/core/Surface');
-    var Modifier      = require('famous/core/Modifier');
-    var StateModifier = require('famous/modifiers/StateModifier');
-    var Draggable = require('famous/modifiers/Draggable');
-    var Transform     = require('famous/core/Transform');
-    var ModifierChain = require('famous/modifiers/ModifierChain');
-    var RenderController = require("famous/views/RenderController");
-    var TweenTransition    = require('famous/transitions/TweenTransition');
-    var Lightbox = require('famous/views/Lightbox');
-    var UnitConverter = require('tools/UnitConverter');
-    var MotionPath = require('utils/MotionPath');
-    var KeyFrameAnim = require('animations/KeyFrameAnim');
-    var DebugUtils = require('utils/DebugUtils');
+    var RenderNode          = require('famous/core/RenderNode');
+    var View                = require('famous/core/View');
+    var Surface             = require('famous/core/Surface');
+    var Modifier            = require('famous/core/Modifier');
+    var StateModifier       = require('famous/modifiers/StateModifier');
+    var Draggable           = require('famous/modifiers/Draggable');
+    var Transform           = require('famous/core/Transform');
+    var ModifierChain       = require('famous/modifiers/ModifierChain');
+    var RenderController    = require("famous/views/RenderController");
+    var TweenTransition     = require('famous/transitions/TweenTransition');
+    var Timer               = require("famous/utilities/Timer");
+    var Lightbox            = require('famous/views/Lightbox');
+    var UnitConverter       = require('tools/UnitConverter');
+    var MotionPath          = require('utils/MotionPath');
+    var KeyFrameAnim        = require('animations/KeyFrameAnim');
+    var DebugUtils          = require('utils/DebugUtils');
 
     function MetNodeView() {
         View.apply(this, arguments);
@@ -110,7 +112,13 @@ define(function(require, exports, module) {
         if(this.type == "MetStateNode") {
             this.lightbox = new Lightbox();
 
-            root.add(this.lightbox);
+            //set lightbox origin equal this view
+            var mod = new Modifier({
+                size: this.size,
+                origin: [this.originX, this.originY]
+            });
+
+            root.add(mod).add(this.lightbox);
             this.stateGroup = [];
         }
 
@@ -130,7 +138,7 @@ define(function(require, exports, module) {
 
         for(var metNode in subMetNodes) {
             if(this.type == "MetStateNode") {
-                subRoot = new View();
+                subRoot = new RenderNode();
                 this.stateGroup.push(subRoot);
             }
             subMetNodes[metNode].initMetNode(holdersSync, subRoot);
@@ -139,14 +147,28 @@ define(function(require, exports, module) {
         this.showMetNode();
 
         if(this.type == "MetStateNode") {
-            this.lightbox.show(this.stateGroup[1], function() {
-                console.log(this.stateGroup[1]);
-            }.bind(this));
+            this.curStateIdx = 0;
+            this.stateShowElapsed = 2000;
+            this.showState();
         }
 
         if(this.curAnim) {
             this.curAnim.activeAnim();
         }
+    };
+
+    MetNodeView.prototype.showState = function() {
+        this.lightbox.show(this.stateGroup[this.curStateIdx], function() {
+            if(!this.stateTimer) {
+                this.stateTimer = Timer.setInterval(
+                    function(){
+                        this.showState();
+                    }.bind(this),
+                    this.stateShowElapsed);
+            }
+
+        }.bind(this));
+        this.curStateIdx = (this.curStateIdx + 1) % this.stateGroup.length;
     };
 
     MetNodeView.prototype.setActivated = function() {
@@ -225,12 +247,13 @@ define(function(require, exports, module) {
     MetNodeView.prototype.setMetNodePosAdjustZ = function(zPos) {
         if(this.z_adjust === 0) {
             this.z_adjust = zPos;
-            DebugUtils.log(this.name + " zPos_adjust=" + this.z_adjust);
             var subMetNodes = this.metNodes;
             for(var subMetNodenode in subMetNodes) {
                 var newAdjustPosZ = subMetNodes[subMetNodenode].setMetNodePosAdjustZ(zPos + 1);
                 zPos = newAdjustPosZ;
             }
+
+            //DebugUtils.log(this.name + " zPos_adjust=" + this.z_adjust);
 
         }
 
@@ -240,10 +263,11 @@ define(function(require, exports, module) {
     MetNodeView.prototype.resetMetNodePosAdjustZ = function() {
         var subMetNodes = this.metNodes;
         this.z_adjust = 0;
-        DebugUtils.log(this.name + " zPos_adjust reset=" + this.z_adjust);
         for(var subMetNodenode in subMetNodes) {
             subMetNodes[subMetNodenode].resetMetNodePosAdjustZ();
         }
+
+        //DebugUtils.log(this.name + " zPos_adjust reset=" + this.z_adjust);
     };
 
     MetNodeView.prototype.setMetNodeScaleX = function(scaleX) {

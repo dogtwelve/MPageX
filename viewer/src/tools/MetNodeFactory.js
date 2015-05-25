@@ -145,7 +145,12 @@ define(function(require, exports, module) {
 
         }
 
-        if(type === "MetNode") {
+        //below is for debug info
+        if(
+            type === "MetNode"
+            || type === "MetStateNode"
+            || type === "MetScrollNode"
+        ) {
             newSurface = new Surface({
                 size: size,
                 content: name,

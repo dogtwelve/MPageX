@@ -33,9 +33,3 @@
 .z10 {
   z-index: 10;
 }
-
-#met-view{
-    margin-right:auto;
-    margin-left:auto;
-    overflow: hidden
-}

@@ -249,7 +249,7 @@ define(function(require, exports, module) {
             this.z_adjust = zPos;
             var subMetNodes = this.metNodes;
             for(var subMetNodenode in subMetNodes) {
-                var newAdjustPosZ = subMetNodes[subMetNodenode].setMetNodePosAdjustZ(zPos + 1);
+                var newAdjustPosZ = subMetNodes[subMetNodenode].setMetNodePosAdjustZ(zPos + 2);
                 zPos = newAdjustPosZ;
             }
 

@@ -47,7 +47,8 @@ define(function(require, exports, module) {
     function _resize(){
         var contextContainer = document.getElementById("met-view");
         //TODO: i would do this in CSS, and not call _resize on contextContainer
-        //_resize(contextContainer, origW, origH);        contextContainer.style.width = window.innerWidth + "px";
+        //_resize(contextContainer, origW, origH);
+        contextContainer.style.width = window.innerWidth + "px";
         contextContainer.style.height = window.innerHeight + "px";
         contextContainer.overflow = "hidden";
         contextContainer.style.background="black";
@@ -58,7 +59,8 @@ define(function(require, exports, module) {
     function _init(){
         var contextContainer = document.getElementById("met-view");
         //TODO: i would do this in CSS, and not call _resize on contextContainer
-        //_resize(contextContainer, origW, origH);        contextContainer.style.width = window.innerWidth + "px";
+        //_resize(contextContainer, origW, origH);
+        contextContainer.style.width = window.innerWidth + "px";
         contextContainer.style.height = window.innerHeight + "px";
         contextContainer.overflow = "hidden";
         contextContainer.style.background="black";

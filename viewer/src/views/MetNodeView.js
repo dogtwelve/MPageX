@@ -197,7 +197,7 @@ define(function(require, exports, module) {
     MetNodeView.prototype.showMetNode = function() {
         this.renderController.show(this,
             {
-                curve:TweenTransition.Curves.linear,
+                //curve:TweenTransition.Curves.linear,
                 duration: 0
             }
         );
@@ -207,7 +207,7 @@ define(function(require, exports, module) {
     MetNodeView.prototype.hideMetNode = function() {
         this.renderController.hide(
             {
-                curve:TweenTransition.Curves.linear,
+                //curve:TweenTransition.Curves.linear,
                 duration: 0
             }
             //,

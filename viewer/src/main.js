@@ -33,10 +33,10 @@ define(function(require, exports, module) {
         var scale = Math.min(scaleX, scaleY);
         //var scale = 1;
 
-        var appWidth = origW * scale;
-        var appHeight = origH * scale;
+        var pageWidth = origW * scale;
+        var pageHeight = origH * scale;
 
-        return [appWidth, appHeight, scale];
+        return [pageWidth, pageHeight, scale];
     }
 
     var modifier = new Modifier({
@@ -131,10 +131,13 @@ define(function(require, exports, module) {
 
         var subpage_counts = page.pageIDs.length;
 
+        var viewPortSize = context.getSize();
+
         var pageView = new StageView({
             pageId:  page.id_,
             pageDesc: page,
-            contextSize: [page.width, page.height]
+            contextSize: [page.width, page.height],
+            bgSize: viewPortSize
         });
 
         director.populateStage(pageView, page.nodes);
@@ -159,7 +162,8 @@ define(function(require, exports, module) {
             var subpageView = new StageView({
                 pageId:  page.id_,
                 pageDesc: subpage,
-                contextSize: [page.width, page.height]
+                contextSize: [page.width, page.height],
+                bgSize: viewPortSize
             });
 
             director.populateStage(subpageView, subpage.nodes);
@@ -171,10 +175,10 @@ define(function(require, exports, module) {
         var scrollview = new Scrollview();
         scrollview.sequenceFrom(pageViews);
 
-        var contextSize = context.getSize();
+
         draggable.setOptions({
                 xRange: [0, 0],
-                yRange: [- (max_page_height - contextSize[1]), 0]
+                yRange: [- (max_page_height - viewPortSize[1]), 0]
             }
         );
 
@@ -195,7 +199,9 @@ define(function(require, exports, module) {
 
         modifier.transformFrom(Transform.scale(appDims[2], appDims[2], 1));
 
-        renderController.show(scrollview);
+        renderController.show(scrollview, {
+                duration: 0
+        });
     }
 
     _init();

@@ -169,12 +169,12 @@ define(function(require, exports, module) {
         var scrollview = new Scrollview();
         scrollview.sequenceFrom(pageViews);
 
-        ////var contextSize = context.getSize();
-        //var draggable = new Draggable({
-        //        xRange: [0, 0],
-        //        yRange: [- (max_page_height - window.innerHeight), 0]
-        //    }
-        //);
+        var contextSize = context.getSize();
+        draggable.setOptions({
+                xRange: [0, 0],
+                yRange: [- (max_page_height - contextSize[1]), 0]
+            }
+        );
 
         for(var pageView in pageViews) {
             draggable.subscribe(pageViews[pageView].scrollRecieverSurface);

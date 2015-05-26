@@ -79,12 +79,14 @@ define(function(require, exports, module) {
         ////无填充
         var METNONEFILLTYPE = 3;
 
+        var classes = ['z1'];
 
         if(this.pageDesc.fillType == METCOLORFILLTYPE) {
             var fillColor = UnitConverter.decimalToHexColorString(this.pageDesc.colorFill.fillColor);
             this.scrollRecieverSurface = new Surface({
                 //size: [undefined, undefined] // Take up the entire view
                 size: this.containerSize,
+                classes: classes,
                 properties: {
                     backgroundColor: fillColor,
                     backfaceVisibility: 'visible'
@@ -96,6 +98,7 @@ define(function(require, exports, module) {
             this.scrollRecieverSurface = new BgImageSurface({
                 size: this.containerSize,
                 content: fillImage,
+                classes: classes,
                 sizeMode: BgImageSurface.SizeMode.ASPECTFILL,
                 properties: {
                     backgroundColor: 'black'
@@ -104,6 +107,7 @@ define(function(require, exports, module) {
         } else {
             this.scrollRecieverSurface = new Surface({
                 size: this.containerSize,
+                classes: classes,
                 properties: {
                     backgroundColor: 'white',
                     backfaceVisibility: 'visible'

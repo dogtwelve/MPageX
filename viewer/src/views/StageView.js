@@ -5,6 +5,8 @@ define(function(require, exports, module) {
 
     var View          = require('famous/core/View');
     var Surface       = require('famous/core/Surface');
+    var ContainerSurface = require('famous/surfaces/ContainerSurface');
+    var Modifier      = require('famous/core/Modifier');
 
     var ImageSurface  = require('famous/surfaces/ImageSurface');
 
@@ -27,11 +29,12 @@ define(function(require, exports, module) {
         View.apply(this, arguments);
         this.worldScrollValue = 0;
         this._arrowData = this.options.arrowData;
-        this.containerSize = this.options.size;
         this.pageDesc = this.options.pageDesc;
         this.containerSize = this.options.contextSize;
+        this.bgSize = this.options.bgSize;
 
         _setupScrollRecieverSurface.call(this);
+        _setupContextContainer.call(this);
         _handleScroll.call(this);
         _handleSwipe.call(this);
         _setupArrowKeyBreakpoints.call(this, 16, 60);
@@ -69,6 +72,23 @@ define(function(require, exports, module) {
         this._arrowData.breakpoints = newBreakpoints;
     };
 
+    function _setupContextContainer(){
+        //this.contextContainer = new ContainerSurface({
+        //    //size: [1000, 600]
+        //    //properties: {
+        //    //    overflow: 'hidden'
+        //    //}
+        //
+        //    //properties: {
+        //    //    backgroundImage: 'url(' + this.pageDesc.imageFill.rawImageURL + ')'
+        //    //}
+        //});
+        //
+        //this.add(this.contextContainer);
+        //
+        //this.contextContainer.context.setPerspective(3000);
+    }
+
     function _setupScrollRecieverSurface() {
         ////单色填充
         var METCOLORFILLTYPE = 0;
@@ -85,18 +105,17 @@ define(function(require, exports, module) {
             var fillColor = UnitConverter.decimalToHexColorString(this.pageDesc.colorFill.fillColor);
             this.scrollRecieverSurface = new Surface({
                 //size: [undefined, undefined] // Take up the entire view
-                size: this.containerSize,
+                size: this.bgSize,
                 classes: classes,
                 properties: {
-                    backgroundColor: fillColor,
-                    backfaceVisibility: 'visible'
+                    backgroundColor: fillColor
                 }
             });
         } else if(this.pageDesc.fillType == METIMAGEFILLTYPE) {
             var fillImage = this.pageDesc.imageFill.rawImageURL;
             var contentMode = this.pageDesc.imageFill.contentMode;
             this.scrollRecieverSurface = new BgImageSurface({
-                size: this.containerSize,
+                size: this.bgSize,
                 content: fillImage,
                 classes: classes,
                 sizeMode: BgImageSurface.SizeMode.ASPECTFILL,
@@ -106,17 +125,21 @@ define(function(require, exports, module) {
             });
         } else {
             this.scrollRecieverSurface = new Surface({
-                size: this.containerSize,
+                size: this.bgSize,
                 classes: classes,
                 properties: {
-                    backgroundColor: 'white',
-                    backfaceVisibility: 'visible'
+                    backgroundColor: 'gray',
                 }
             });
         }
 
+        var modifier = new Modifier({
+            size: this.bgSize,
+            origin: [0.5, 0.5],
+            align: [0.5, 0.5]
+        });
 
-        this.add(this.scrollRecieverSurface);
+        this.add(modifier).add(this.scrollRecieverSurface);
     }
 
     function _handleScroll() {

@@ -25,6 +25,7 @@ define(function (require, exports, module) {
     };
 
     KeyFrameAnim.prototype.activeAnim = function() {
+        this.stopAnim();
         this.readyAnim();
         this.animTimer = Timer.setInterval(function(){this.updateAnim();}.bind(this), this.elapsed);
     };
@@ -132,12 +133,7 @@ define(function (require, exports, module) {
         var isFireNextFrame = false;
 
         if(this.curAnimTime > this.totalAnimTime) {
-            if(this.loop){
-                this.resetAnim();
-            } else {
-                this.stopAnim();
-            }
-            return;
+            this.curAnimTime = this.totalAnimTime;
         } else if(this.curAnimTime >= this.nextFrameTime) {
             this.curAnimTime = this.nextFrameTime;
             isFireNextFrame = true;
@@ -188,6 +184,16 @@ define(function (require, exports, module) {
 
         if(isFireNextFrame) {
             this.goNextKeyFrame();
+        }
+
+        if(this.curAnimTime >= this.totalAnimTime) {
+
+            if(this.loop){
+                this.resetAnim();
+            } else {
+                this.stopAnim();
+            }
+            return;
         }
     };
 

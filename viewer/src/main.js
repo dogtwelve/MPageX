@@ -12,6 +12,7 @@ define(function(require, exports, module) {
     var Draggable = require('famous/modifiers/Draggable');
     var Scrollview = require("famous/views/Scrollview");
     var ContainerSurface = require("famous/surfaces/ContainerSurface");
+    var RenderController    = require("famous/views/RenderController");
     var StageView = require('views/StageView');
     var Director = require('tools/Director');
     var DebugUtils = require('utils/DebugUtils');
@@ -19,9 +20,13 @@ define(function(require, exports, module) {
     var context = null;
     var appDims;
 
-    function getAppDims(container, origW, origH){
-        var scaleX = window.innerWidth / origW;
-        var scaleY = window.innerHeight / origH;
+    var renderController = new RenderController();
+    var draggable = new Draggable();
+
+    function getPageDims(context, origW, origH){
+        var size = context.getSize();
+        var scaleX = size[0] / origW;
+        var scaleY = size[1] / origH;
 
         //here we are going to let the bottom of the screen be cut off to allow fit to more
         //devices
@@ -39,29 +44,40 @@ define(function(require, exports, module) {
         align: [0.5, 0]
     });
 
-    function _resize(container, origW, origH){
-        appDims = getAppDims(container, origW, origH);
-        container.style.width = window.innerWidth + "px";
-        container.style.height = window.innerHeight + "px";
-        container.overflow = "hidden";
-        container.style.background="black";
-
-        //modifier.setTransform(Transform.scale(appDims[2], appDims[2], 1));
-        modifier.sizeFrom([origW, undefined]);
-        modifier.transformFrom(Transform.scale(appDims[2], appDims[2], 1));
-    }
-
-    function _init(origW, origH){
+    function _resize(){
         var contextContainer = document.getElementById("met-view");
         //TODO: i would do this in CSS, and not call _resize on contextContainer
-        _resize(contextContainer, origW, origH);
+        //_resize(contextContainer, origW, origH);        contextContainer.style.width = window.innerWidth + "px";
+        contextContainer.style.height = window.innerHeight + "px";
+        contextContainer.overflow = "hidden";
+        contextContainer.style.background="black";
 
+
+    }
+
+    function _init(){
+        var contextContainer = document.getElementById("met-view");
+        //TODO: i would do this in CSS, and not call _resize on contextContainer
+        //_resize(contextContainer, origW, origH);        contextContainer.style.width = window.innerWidth + "px";
+        contextContainer.style.height = window.innerHeight + "px";
+        contextContainer.overflow = "hidden";
+        contextContainer.style.background="black";
         //create the new one
+
         context = Engine.createContext(contextContainer);
         context.setPerspective(3000);
 
-        Engine.on("resize", function(){_resize(contextContainer);});
-        Engine.on("orientationchange", function(){_resize(contextContainer);});
+        Engine.on("resize",
+            function() {
+                _resize();
+                Utility.loadURL("dataValue.json", initApp);
+
+            });
+        Engine.on("orientationchange",
+            function(){
+                _resize();
+                Utility.loadURL("dataValue.json", initApp);
+            });
     }
 
     function _loadApp(){
@@ -153,12 +169,12 @@ define(function(require, exports, module) {
         var scrollview = new Scrollview();
         scrollview.sequenceFrom(pageViews);
 
-        //var contextSize = context.getSize();
-        var draggable = new Draggable({
-                xRange: [0, 0],
-                yRange: [- (max_page_height - window.innerHeight), 0]
-            }
-        );
+        ////var contextSize = context.getSize();
+        //var draggable = new Draggable({
+        //        xRange: [0, 0],
+        //        yRange: [- (max_page_height - window.innerHeight), 0]
+        //    }
+        //);
 
         for(var pageView in pageViews) {
             draggable.subscribe(pageViews[pageView].scrollRecieverSurface);
@@ -170,11 +186,20 @@ define(function(require, exports, module) {
         //    align: [0.5, 0]
         //});
 
-        // create the main context
-        _init(max_page_width, max_page_height);
-        context.add(modifier).add(draggable).add(scrollview);
+
+
+        appDims = getPageDims(context, max_page_width, max_page_height);
+        modifier.sizeFrom([max_page_width, undefined]);
+
+        modifier.transformFrom(Transform.scale(appDims[2], appDims[2], 1));
+
+        renderController.show(scrollview);
     }
 
+    _init();
+    // create the main context
+    _resize();
+    context.add(modifier).add(draggable).add(renderController);
     Utility.loadURL("dataValue.json", initApp);
 
 

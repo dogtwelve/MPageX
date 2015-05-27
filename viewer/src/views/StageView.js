@@ -115,7 +115,7 @@ define(function(require, exports, module) {
             var fillImage = this.pageDesc.imageFill.rawImageURL;
             var contentMode = this.pageDesc.imageFill.contentMode;
             this.scrollRecieverSurface = new BgImageSurface({
-                size: this.bgSize,
+                size: this.containerSize,
                 content: fillImage,
                 classes: classes,
                 sizeMode: BgImageSurface.SizeMode.ASPECTFILL,
@@ -125,10 +125,10 @@ define(function(require, exports, module) {
             });
         } else {
             this.scrollRecieverSurface = new Surface({
-                size: this.bgSize,
+                size: this.containerSize,
                 classes: classes,
                 properties: {
-                    backgroundColor: 'gray',
+                    backgroundColor: 'gray'
                 }
             });
         }
@@ -139,7 +139,7 @@ define(function(require, exports, module) {
             align: [0.5, 0.5]
         });
 
-        this.add(modifier).add(this.scrollRecieverSurface);
+        this.add(this.scrollRecieverSurface);
     }
 
     function _handleScroll() {

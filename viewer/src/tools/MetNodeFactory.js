@@ -164,11 +164,12 @@ define(function(require, exports, module) {
 
         if(type === "VideoNode") {
             var videoURL = nodeDescription.videoURL;
-            newSurface = new VideoSurface({
+            newSurface = new Surface({
+                //src: videoURL,
                 size: size,
                 classes: classes
             });
-            newSurface.setContent(videoURL);
+            newSurface.setContent("<video controls height=" + size[1]+ "px" + " poster=\"image/BBB_480_Poster.jpg\" src=\"http://clips.vorwaerts-gmbh.de/VfE_html5.mp4\" width=" + size[0]+ "px></video>");
         }
 
         if(type === "WebNode") {

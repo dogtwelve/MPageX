@@ -169,7 +169,34 @@ define(function(require, exports, module) {
                 size: size,
                 classes: classes
             });
-            newSurface.setContent("<video controls height=" + size[1]+ "px" + " poster=\"image/BBB_480_Poster.jpg\" src=\"http://clips.vorwaerts-gmbh.de/VfE_html5.mp4\" width=" + size[0]+ "px></video>");
+            var video_dom_id = "video-" + nodeDescription.id_;
+            var videoParam = "<video id=" + video_dom_id;
+
+            if(nodeDescription.autoplay === 1) {
+                videoParam += " autoplay ";
+            }
+
+            if(nodeDescription.showCtrls === 1) {
+                videoParam += " controls ";
+            }
+
+            if(nodeDescription.cover === 1) {
+                videoParam += " poster=" + "image/BBB_480_Poster.jpg";
+            }
+
+            newSurface.setContent(videoParam + " src=\"" + videoURL + "\" width=" + size[0]+ "px" + " height=" + size[1]+ "px" + " </video>");
+
+            newSurface.on("click", function() {
+                var video = document.getElementById(video_dom_id);
+
+                if(newSurface.videoPlay === true) {
+                    video.pause();
+                    newSurface.videoPlay = false;
+                } else {
+                    video.play();
+                    newSurface.videoPlay = true;
+                }
+            })
         }
 
         if(type === "WebNode") {

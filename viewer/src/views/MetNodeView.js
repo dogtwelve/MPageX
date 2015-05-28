@@ -12,6 +12,8 @@ define(function(require, exports, module) {
     var TweenTransition     = require('famous/transitions/TweenTransition');
     var Timer               = require("famous/utilities/Timer");
     var Lightbox            = require('famous/views/Lightbox');
+    var EdgeSwapper            = require('famous/views/EdgeSwapper');
+    var Flipper            = require('famous/views/Flipper');
     var UnitConverter       = require('tools/UnitConverter');
     var MotionPath          = require('utils/MotionPath');
     var KeyFrameAnim        = require('animations/KeyFrameAnim');
@@ -45,6 +47,7 @@ define(function(require, exports, module) {
         this.containerSize = this.options.containerSize;
         this.renderController = new RenderController();
         this.timer = -1;
+        this.nodeDescription = this.options.nodeDescription;
         //console.log(this.name + " containerSize(" + this.containerSize[0] + "," + this.containerSize[1] + ")");
         _listenToScroll.call(this);
     }
@@ -110,15 +113,27 @@ define(function(require, exports, module) {
         root.add(this.renderController);
 
         if(this.type == "MetStateNode") {
-            this.lightbox = new Lightbox();
-
-            //set lightbox origin equal this view
             var mod = new Modifier({
                 size: this.size,
-                origin: [this.originX, this.originY]
+                origin: [0.5, 0.5]
             });
+            if(this.nodeDescription.transition === 3) {
+                this.stateViewPlayer = new EdgeSwapper();
+                root.add(this.stateViewPlayer);
+            } else if(this.nodeDescription.transition === 4) {
+                this.stateViewPlayer = new Flipper({direction: Flipper.DIRECTION_X});
+                root.add(this.stateViewPlayer);
+            } else if(this.nodeDescription.transition === 5) {
+                this.stateViewPlayer = new Flipper({direction: Flipper.DIRECTION_Y});
+                root.add(this.stateViewPlayer);
+            } else {
 
-            root.add(mod).add(this.lightbox);
+                this.stateViewPlayer = new Lightbox();
+                //set lightbox origin equal this view
+
+                root.add(mod).add(this.stateViewPlayer);
+            }
+
             this.stateGroup = [];
         }
 
@@ -158,16 +173,42 @@ define(function(require, exports, module) {
     };
 
     MetNodeView.prototype.showState = function() {
-        this.lightbox.show(this.stateGroup[this.curStateIdx], function() {
+        if(
+            this.nodeDescription.transition === 4 ||
+            this.nodeDescription.transition === 5
+        ) {
+            this.stateViewPlayer.setFront(this.stateGroup[this.curStateIdx]);
+            this.stateViewPlayer.setBack(this.stateGroup[this.curStateIdx + 1]);
+            this.toggle = false;
             if(!this.stateTimer) {
                 this.stateTimer = Timer.setInterval(
-                    function(){
-                        this.showState();
-                    }.bind(this),
-                    this.stateShowElapsed);
+                    function () {
+                        var angle = this.toggle ? 0 : Math.PI;
+                        this.curStateIdx = (this.curStateIdx + 1) % this.stateGroup.length;
+                        this.stateViewPlayer.setAngle(angle, {duration: 500}, function () {
+                                if (this.toggle) {
+                                    this.stateViewPlayer.setFront(this.stateGroup[this.curStateIdx]);
+                                } else {
+                                    this.stateViewPlayer.setBack(this.stateGroup[this.curStateIdx]);
+                                }
+                                this.resetMetNodePosAdjustZ();
+                            }.bind(this));
+                        this.toggle = !this.toggle;
+                        this.setMetNodePosAdjustZ(this.zPosition);
+                    }.bind(this), this.stateShowElapsed);
             }
+        } else {
+            this.stateViewPlayer.show(this.stateGroup[this.curStateIdx], function() {
+                if(!this.stateTimer) {
+                    this.stateTimer = Timer.setInterval(
+                        function(){
+                            this.showState();
+                        }.bind(this),
+                        this.stateShowElapsed);
+                }
 
-        }.bind(this));
+            }.bind(this));
+        }
         this.curStateIdx = (this.curStateIdx + 1) % this.stateGroup.length;
     };
 

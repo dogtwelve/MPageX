@@ -839,86 +839,146 @@ define(function(require, exports, module) {
     //mainContext.add(cmod).add(controller);
     //mainContext.setPerspective(1000);
 
-    ////draggable pos////
-    //http://stackoverflow.com/questions/26193020/famo-us-get-the-new-position-of-a-draggable-surface
+    //////draggable pos////
+    ////http://stackoverflow.com/questions/26193020/famo-us-get-the-new-position-of-a-draggable-surface
+    //
+    //var Engine = require('famous/core/Engine');
+    //var Surface = require('famous/core/Surface');
+    //var Transform = require('famous/core/Transform');
+    //var Modifier = require('famous/core/Modifier');
+    //var StateModifier = require('famous/modifiers/StateModifier');
+    //var Draggable = require('famous/modifiers/Draggable');
+    //var TransitionableTransform = require('famous/transitions/TransitionableTransform');
+    //
+    //var mainContext = Engine.createContext();
+    //
+    //var transTransform = new TransitionableTransform();
+    //transTransform.set(Transform.translate(100, 0, 0));
+    //
+    //var surface = new Surface({
+    //    size: [300, 100],
+    //    properties: {
+    //        backgroundColor: 'rgba(255,0,0,0.1)',
+    //        cursor: 'pointer'
+    //    }
+    //});
+    //
+    //var dragSurface = new Surface({
+    //    content: 'Drag Me',
+    //    size: [100, 100],
+    //    properties: {
+    //        backgroundColor: 'rgba(0,0,0,0.1)',
+    //        cursor: 'pointer'
+    //    }
+    //});
+    //
+    //var modifier = new Modifier({
+    //    origin: [0, 0],
+    //    align: [0, 0],
+    //    transform: transTransform
+    //});
+    //
+    //var draggable = new Draggable();
+    //
+    //draggable.subscribe(dragSurface);
+    //
+    //var content = 'Not Draggable';
+    //surface.setContent(content);
+    //
+    //mainContext.add(modifier).add(surface);
+    //mainContext.add(draggable).add(dragSurface);
+    //
+    //draggable.on('update', function (e) {
+    //    var pos = e.position;
+    //    surface.setContent('Draggable Position is '+pos);
+    //    transTransform.set(Transform.translate(pos[0]+100, pos[1], 0));
+    //})
+    //
+    //draggable.on('end', function (e) {
+    //    var pos = e.position;
+    //    surface.setContent('Draggable End Position is '+pos);
+    //    transTransform.set(Transform.translate(pos[0]+100, pos[1], 0));
+    //})
+    //
+    ///**************************************
+    // ************ Attribution :)
+    // **************************************/
+    //
+    //var desc = new Surface({
+    //    content:'<a href="http://stackoverflow.com/users/2597114/talves"><img src="http://stackoverflow.com/users/flair/2597114.png" width="208" height="58" alt="profile for talves at Stack Overflow" title="profile for talves at Stack Overflow"></a>',
+    //    classes: ['double-sided', 'double-font'],
+    //    properties: {
+    //        textAlign: 'center',
+    //        lineHeight: '80px'
+    //    }
+    //});
+    //
+    //desc._mod = new Modifier({
+    //    size: [200, 20],
+    //    align: [0.5, 1],
+    //    origin: [0, 0],
+    //    transform: Transform.translate(-100, -100, 0)
+    //});
+    //
+    //mainContext.add(desc._mod).add(desc);
 
-    var Engine = require('famous/core/Engine');
-    var Surface = require('famous/core/Surface');
-    var Transform = require('famous/core/Transform');
-    var Modifier = require('famous/core/Modifier');
-    var StateModifier = require('famous/modifiers/StateModifier');
-    var Draggable = require('famous/modifiers/Draggable');
-    var TransitionableTransform = require('famous/transitions/TransitionableTransform');
+    ////Animating blur with the famous framework///
+    //http://stackoverflow.com/questions/23295895/animating-blur-with-the-famous-framework
+    var Engine            = require('famous/core/Engine');
+    var Surface           = require('famous/core/Surface');
+    var StateModifier     = require('famous/modifiers/StateModifier');
+    var Transitionable    = require('famous/transitions/Transitionable');
+    var SnapTransition    = require('famous/transitions/SnapTransition');
 
-    var mainContext = Engine.createContext();
+    Transitionable.registerMethod('snap', SnapTransition);
 
-    var transTransform = new TransitionableTransform();
-    transTransform.set(Transform.translate(100, 0, 0));
+    var snap   = { method :'snap',  period: 400,  dampingRatio: 0.7   };
+
+    var context = Engine.createContext();
 
     var surface = new Surface({
-        size: [300, 100],
+        size: [200,200],
         properties: {
-            backgroundColor: 'rgba(255,0,0,0.1)',
-            cursor: 'pointer'
+            backgroundColor: 'red'
         }
     });
 
-    var dragSurface = new Surface({
-        content: 'Drag Me',
-        size: [100, 100],
-        properties: {
-            backgroundColor: 'rgba(0,0,0,0.1)',
-            cursor: 'pointer'
-        }
-    });
+    var transitionable;
+    var final_pos;
 
-    var modifier = new Modifier({
-        origin: [0, 0],
-        align: [0, 0],
-        transform: transTransform
-    });
+    var blurred = false;
 
-    var draggable = new Draggable();
+    var blur_from_to = function(i,f,transition){
 
-    draggable.subscribe(dragSurface);
+        var initial_pos = i;
+        final_pos = f;
 
-    var content = 'Not Draggable';
-    surface.setContent(content);
+        transitionable = new Transitionable(initial_pos);
 
-    mainContext.add(modifier).add(surface);
-    mainContext.add(draggable).add(dragSurface);
+        transitionable.set(final_pos, transition);
 
-    draggable.on('update', function (e) {
-        var pos = e.position;
-        surface.setContent('Draggable Position is '+pos);
-        transTransform.set(Transform.translate(pos[0]+100, pos[1], 0));
-    })
+        Engine.on('prerender', prerender);
+    }
 
-    draggable.on('end', function (e) {
-        var pos = e.position;
-        surface.setContent('Draggable End Position is '+pos);
-        transTransform.set(Transform.translate(pos[0]+100, pos[1], 0));
-    })
+    var prerender = function(){
 
-    /**************************************
-     ************ Attribution :)
-     **************************************/
+        current_pos = transitionable.get();
 
-    var desc = new Surface({
-        content:'<a href="http://stackoverflow.com/users/2597114/talves"><img src="http://stackoverflow.com/users/flair/2597114.png" width="208" height="58" alt="profile for talves at Stack Overflow" title="profile for talves at Stack Overflow"></a>',
-        classes: ['double-sided', 'double-font'],
-        properties: {
-            textAlign: 'center',
-            lineHeight: '80px'
-        }
-    });
+        var blur_string = 'blur('+ current_pos + 'px)';
 
-    desc._mod = new Modifier({
-        size: [200, 20],
-        align: [0.5, 1],
-        origin: [0, 0],
-        transform: Transform.translate(-100, -100, 0)
-    });
+        surface.setProperties({ webkitFilter:blur_string});
 
-    mainContext.add(desc._mod).add(desc);
+        if (current_pos == final_pos) {
+            Engine.removeListener('prerender',prerender);
+        };
+    }
+
+    surface.on("click", function(){
+
+        blurred ? blur_from_to(10,0,snap) : blur_from_to(0,10,snap) ;
+        blurred = !blurred;
+
+    } );
+
+    context.add(new StateModifier({origin:[0.5,0.5]})).add(surface);
 });

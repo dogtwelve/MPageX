@@ -1397,52 +1397,161 @@ define(function(require, exports, module) {
     //var appView   = new AppView();
     //mainContext.add(appView);
 
-    ////Drag a Famous surface and have it transition back to origin on mouseup
-    //http://stackoverflow.com/questions/23129805/drag-a-famous-surface-and-have-it-transition-back-to-origin-on-mouseup
+    //////Drag a Famous surface and have it transition back to origin on mouseup
+    ////http://stackoverflow.com/questions/23129805/drag-a-famous-surface-and-have-it-transition-back-to-origin-on-mouseup
+    //
+    //var Engine              = require("famous/core/Engine");
+    //var Surface             = require("famous/core/Surface");
+    ////var Modifier             = require("famous/core/Modifier");
+    //var StateModifier       = require("famous/modifiers/StateModifier");
+    //var Draggable           = require("famous/modifiers/Draggable");
+    //var Transform           = require("famous/core/Transform");
+    //var Transitionable      = require("famous/transitions/Transitionable");
+    //
+    //var SnapTransition = require("famous/transitions/SnapTransition");
+    //Transitionable.registerMethod('snap', SnapTransition);
+    //
+    //var mainContext = Engine.createContext();
+    //
+    //var surface = new Surface({
+    //    size: [200, 200],
+    //    content: 'drag',
+    //    properties: {
+    //        backgroundColor: 'rgba(200, 200, 200, 0.5)',
+    //        lineHeight: '200px',
+    //        textAlign: 'center',
+    //        cursor: 'pointer'
+    //    }
+    //});
+    //
+    //var draggable = new Draggable({
+    //    xRange: [-220, 220],
+    //    yRange: [-220, 220]
+    //});
+    //
+    //surface.pipe(draggable);
+    //
+    //var mod = new StateModifier();
+    //
+    //var trans = {
+    //    method: 'snap',
+    //    period: 300,
+    //    dampingRatio: 0.3,
+    //    velocity: 0
+    //};
+    //
+    //surface.on('mouseup', function() {
+    //    draggable.setPosition([0,0,0], trans);
+    //});
+    //
+    //mainContext.add(mod).add(draggable).add(surface);
 
-    var Engine              = require("famous/core/Engine");
-    var Surface             = require("famous/core/Surface");
-    //var Modifier             = require("famous/core/Modifier");
-    var StateModifier       = require("famous/modifiers/StateModifier");
-    var Draggable           = require("famous/modifiers/Draggable");
-    var Transform           = require("famous/core/Transform");
-    var Transitionable      = require("famous/transitions/Transitionable");
 
-    var SnapTransition = require("famous/transitions/SnapTransition");
-    Transitionable.registerMethod('snap', SnapTransition);
+    ////How to get Famo.us draggable modifier's render node
+    //http://stackoverflow.com/questions/28866020/how-to-get-famo-us-draggable-modifiers-render-node
+    var Engine = require('famous/core/Engine');
+    var Surface = require('famous/core/Surface');
+    var Transform = require('famous/core/Transform');
+    var Modifier = require('famous/core/Modifier');
+    var StateModifier = require('famous/modifiers/StateModifier');
+    var Draggable = require('famous/modifiers/Draggable');
+    var TransitionableTransform = require('famous/transitions/TransitionableTransform');
+    var View = require('famous/core/View');
+    var RenderNode = require('famous/core/RenderNode');
+    var RenderController = require('famous/views/RenderController');
+
+    /*
+     * @name DragTest
+     * @constructor
+     * @description
+     */
+
+    function DragTest() {
+        View.apply(this, arguments);
+        _createDragSurface.call(this);
+    }
+
+    DragTest.prototype = Object.create(View.prototype);
+    DragTest.prototype.constructor = DragTest;
+
+    DragTest.DEFAULT_OPTIONS = {};
+
+    function _endingDrag(e) {
+        console.log('end position', e.position, this);
+        if (e.position[0] < -180) {
+            this.renderController.hide(this.nodePlayer, function() {
+                this.surface.emit('removed', {
+                    removedNode: this.nodePlayer
+                });
+            }.bind(this));
+        } else {
+            this.draggable.setPosition([0, 0, 0], {
+                duration: 300
+            });
+        }
+    }
+
+    function _updatingDrag(e) {
+        console.log('update position', e.position);
+        this.surface.setContent('Position ' + e.position);
+    }
+
+
+    function _createDragSurface() {
+        var yOffset = 0;
+        for (var i = 0; i < 2; i++) {
+
+
+            var dragSurface = new Surface({
+                content: 'this is a drag surface',
+                size: [150, 150],
+                properties: {
+                    marginLeft: '10px',
+                    backgroundColor: 'grey'
+                }
+
+            });
+            var dragSurfaceModifier = new StateModifier({
+                origin: [0, 0],
+                align: [0.5, yOffset]
+            });
+            yOffset += 0.3;
+
+            var draggable = new Draggable({
+                xRange: [-220, 0],
+                yRange: [0, 0]
+            });
+
+            var renderController = new RenderController();
+            this.add(renderController);
+
+            var nodePlayer = new RenderNode();
+            nodePlayer.add(dragSurfaceModifier).add(draggable).add(dragSurface);
+            renderController.show(nodePlayer)
+
+            draggable.on('end', _endingDrag.bind({
+                draggable: draggable,
+                renderController: renderController,
+                nodePlayer: nodePlayer,
+                surface: dragSurface
+            }));
+            draggable.on('update', _updatingDrag.bind({
+                surface: dragSurface
+            }));
+
+            draggable.subscribe(dragSurface);
+            dragSurface.pipe(this._eventOutput); // so we can emit a custom removed event to this widget
+
+        }
+
+    }
 
     var mainContext = Engine.createContext();
 
-    var surface = new Surface({
-        size: [200, 200],
-        content: 'drag',
-        properties: {
-            backgroundColor: 'rgba(200, 200, 200, 0.5)',
-            lineHeight: '200px',
-            textAlign: 'center',
-            cursor: 'pointer'
-        }
+    var dragTest = new DragTest();
+    mainContext.add(dragTest);
+
+    dragTest.on('removed', function(e) {
+        console.log('removed ', e.removedNode);
     });
-
-    var draggable = new Draggable({
-        xRange: [-220, 220],
-        yRange: [-220, 220]
-    });
-
-    surface.pipe(draggable);
-
-    var mod = new StateModifier();
-
-    var trans = {
-        method: 'snap',
-        period: 300,
-        dampingRatio: 0.3,
-        velocity: 0
-    };
-
-    surface.on('mouseup', function() {
-        draggable.setPosition([0,0,0], trans);
-    });
-
-    mainContext.add(mod).add(draggable).add(surface);
 });

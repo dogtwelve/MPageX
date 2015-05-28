@@ -59,7 +59,8 @@ define(function(require, exports, module) {
             anchorY: anchorY,
             rotation: rotation,
             containerSize: containerSize,
-            type: type
+            type: type,
+            nodeDescription: nodeDescription
         });
 
         ////单色填充

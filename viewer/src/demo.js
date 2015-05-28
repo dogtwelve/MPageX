@@ -1197,203 +1197,252 @@ define(function(require, exports, module) {
     //
     //module.exports = null;
 
-    ///Button with “ripple effect” in Famo.us !
-    // Import additional modules to be used in this view
-    var Engine          = require('famous/core/Engine');
-    var View = require('famous/core/View');
-    var Surface = require('famous/core/Surface');
-    var Transform = require('famous/core/Transform');
-    var StateModifier = require('famous/modifiers/StateModifier');
-    var Lightbox        = require('famous/views/Lightbox');
-    var Easing          = require('famous/transitions/Easing');
+    /////Button with “ripple effect” in Famo.us !
+    //// Import additional modules to be used in this view
+    //var Engine          = require('famous/core/Engine');
+    //var View = require('famous/core/View');
+    //var Surface = require('famous/core/Surface');
+    //var Transform = require('famous/core/Transform');
+    //var StateModifier = require('famous/modifiers/StateModifier');
+    //var Lightbox        = require('famous/views/Lightbox');
+    //var Easing          = require('famous/transitions/Easing');
+    //
+    //
+    //// Constructor function for our class
+    //function AppView() {
+    //    // Applies View's constructor function to class
+    //    View.apply(this, arguments);
+    //
+    //    // this.options.size is created from any options passed
+    //    // in during instantiation and the default options:
+    //    // When the constructor function runs, it sets
+    //    // .options property to the values specified in
+    //    // .DEFAULT_OPTIONS and then overwrites them
+    //    // with the values passed in during construction via
+    //    // (this, arguments),
+    //    // eg. getting called by:
+    //    // var slideView = new SlideView({size: [100, 100]});
+    //    this.rootModifier = new StateModifier({
+    //        size: this.options.backgroundSize,
+    //        origin: [0.5, 0.5]
+    //    });
+    //
+    //    this.mainNode = this.add(this.rootModifier);
+    //
+    //    // make sure you invoke the helper function
+    //    // in the right context by using .call()
+    //    _createBackground.call(this);
+    //
+    //    // one inital animation - just for demo...
+    //    this.rippleSpot.lightbox.show(this.rippleSpot);
+    //    setTimeout(function(){
+    //        this.rippleSpot.lightbox.hide();
+    //    }.bind(this), 300);
+    //
+    //    // main event listener => buttons emit their events to this handler
+    //    this.on('click', function(e) {
+    //        this.doRipple(e);
+    //    });
+    //
+    //}
+    //
+    //// Establishes prototype chain for class to inherit from View
+    //AppView.prototype = Object.create(View.prototype);
+    //AppView.prototype.constructor = AppView;
+    //
+    //// Default options for class, eg. the size properties
+    //AppView.DEFAULT_OPTIONS = {
+    //    backgroundSize: [400, 400],
+    //    maxRippleSpotSize: [400, 400]
+    //};
+    //
+    //
+    //
+    //// Define your helper functions and prototype methods here:
+    //// the _ before the function name indicates it's
+    ////a private function
+    //function _createBackground() {
+    //
+    //    this.mainView = new View();
+    //
+    //    // .backgroundSurface - class is required to calculate positions!
+    //    this.backgroundSurface = new Surface({
+    //        content: 'click me',
+    //        classes: ['backgroundSurface'],
+    //        properties: {
+    //            color: 'white',
+    //            textAlign: 'center',
+    //            fontSize: '30px',
+    //            lineHeight: '100px',
+    //            backgroundColor: '#FA5C4F',
+    //            boxShadow: '0 10px 20px -5px rgba(0, 0, 0, 0.5)'
+    //        }
+    //    });
+    //
+    //    this.mainView.add(this.backgroundSurface);
+    //
+    //    // click handler for clicking on red background
+    //    this.backgroundSurface.on('click', function(e) {
+    //        console.log ("red background clicked");
+    //        // sends 'click'-event to view's output => triggers ripple-effect
+    //        this._eventOutput.emit('click', e);
+    //    }.bind(this));
+    //
+    //
+    //    // 2nd surface to check event-handling
+    //    this.greenButton = new Surface({
+    //        size: [200,50],
+    //        content: 'BUTTON',
+    //        properties: {
+    //            color: 'white',
+    //            textAlign: 'center',
+    //            fontSize: '15px',
+    //            lineHeight: '50px',
+    //            backgroundColor: 'green',
+    //            boxShadow: '0 10px 20px -5px rgba(0, 0, 0, 0.5)'
+    //        }
+    //    });
+    //    this.mainView
+    //        .add(new StateModifier({transform: Transform.translate(100, 200, 0)}))
+    //        .add(this.greenButton);
+    //
+    //
+    //    // click handler for green button
+    //    this.greenButton.on('click', function(e) {
+    //        console.log ("green button clicked");
+    //        // sends 'click'-event to view's output => triggers ripple-effect
+    //        this._eventOutput.emit('click', e);
+    //    }.bind(this));
+    //
+    //
+    //    // surface for ripple animation (white circle)
+    //    this.rippleSpot = new Surface({
+    //        size: this.options.maxRippleSpotSize,
+    //        properties: {
+    //            backgroundColor: 'white',
+    //            borderRadius: (this.options.maxRippleSpotSize[0]/2) + 'px',
+    //            boxShadow: '0 10px 20px -5px rgba(0, 0, 0, 0.5)'
+    //        }
+    //    });
+    //    this.rippleSpotModifier = new StateModifier({
+    //        transform: Transform.translate(0, 0, 0)
+    //    });
+    //
+    //    // lightbox with transitions for the ripple animation
+    //    this.rippleSpot.lightbox = new Lightbox({
+    //        //for transition parameters see http://famo.us/university/famous-101/slideshow/24/
+    //        inTransform: Transform.scale(0.1, 0.1, 1),
+    //        inTransition: {duration:300, curve:Easing.linear},
+    //        inOpacity: 0.3,
+    //        showOpacity: 0,
+    //        outOpacity: 0,
+    //        outTransform: Transform.scale(0.05, 0.05, 1),
+    //        outTransition: {duration:10, curve:Easing.linear}
+    //    });
+    //
+    //    // add ripple to view
+    //    this.mainView.add(this.rippleSpotModifier).add(this.rippleSpot.lightbox);
+    //    // add view to app
+    //    this.mainNode.add(this.mainView);
+    //
+    //
+    //}
+    //
+    //
+    //// Start ripplin'...
+    //AppView.prototype.doRipple = function(e) {
+    //
+    //    // select backgroundSurface and read css 3d-matrix to calcluate position
+    //    var matrixElement = document.getElementsByClassName('backgroundSurface')[0].style;
+    //    var matrix3d =  matrixElement.getPropertyValue('transform')
+    //        || matrixElement.getPropertyValue('-moz-transform')
+    //        || matrixElement.getPropertyValue('-webkit-transform')
+    //        || matrixElement.getPropertyValue('-ms-transform')
+    //        || matrixElement.getPropertyValue('-o-transform');
+    //    // parse css value of 3d-matrix (regex)
+    //    var matrixPattern = /^\w*\((((\d+)|(\d*\.\d+)),\s*)*((\d+)|(\d*\.\d+))\)/i;
+    //    var matrixValue = [];
+    //    if (matrixPattern.test(matrix3d)) {
+    //        // only continue if pattern matches / correct 3d-matrix-value was found
+    //        var matrixCopy = matrix3d.replace(/^\w*\(/, '').replace(')', '');
+    //        // finally: store 3d matrix in array
+    //        matrixValue = matrixCopy.split(/\s*,\s*/);
+    //
+    //        // x/y-position of the background Surface
+    //        var deltaX = matrixValue[12];
+    //        var deltaY = matrixValue[13];
+    //
+    //        this.backgroundSurface.setContent('x: ' + e.x + ' / y: ' + e.y);
+    //        // calculate new position for transform of rippleSpot surface
+    //        this.rippleSpotModifier.setTransform(Transform.translate(
+    //            e.x - deltaX - this.options.backgroundSize[0]/2,
+    //            e.y - deltaY - this.options.backgroundSize[1]/2,
+    //            0));
+    //        this.rippleSpot.lightbox.show(this.rippleSpot);
+    //        // after end of transform hide rippleSport surface
+    //        // hack? no callback-solution for this found
+    //        setTimeout(function(){
+    //            this.rippleSpot.lightbox.hide();
+    //        }.bind(this), 300); // 300ms - same as duration of transform!
+    //    }
+    //
+    //};
+    //
+    //
+    //
+    //var mainContext = Engine.createContext();
+    ////// Custom Modules
+    ////var AppView         = require('AppView');
+    //
+    //var appView   = new AppView();
+    //mainContext.add(appView);
 
+    ////Drag a Famous surface and have it transition back to origin on mouseup
+    //http://stackoverflow.com/questions/23129805/drag-a-famous-surface-and-have-it-transition-back-to-origin-on-mouseup
 
-    // Constructor function for our class
-    function AppView() {
-        // Applies View's constructor function to class
-        View.apply(this, arguments);
+    var Engine              = require("famous/core/Engine");
+    var Surface             = require("famous/core/Surface");
+    //var Modifier             = require("famous/core/Modifier");
+    var StateModifier       = require("famous/modifiers/StateModifier");
+    var Draggable           = require("famous/modifiers/Draggable");
+    var Transform           = require("famous/core/Transform");
+    var Transitionable      = require("famous/transitions/Transitionable");
 
-        // this.options.size is created from any options passed
-        // in during instantiation and the default options:
-        // When the constructor function runs, it sets
-        // .options property to the values specified in
-        // .DEFAULT_OPTIONS and then overwrites them
-        // with the values passed in during construction via
-        // (this, arguments),
-        // eg. getting called by:
-        // var slideView = new SlideView({size: [100, 100]});
-        this.rootModifier = new StateModifier({
-            size: this.options.backgroundSize,
-            origin: [0.5, 0.5]
-        });
-
-        this.mainNode = this.add(this.rootModifier);
-
-        // make sure you invoke the helper function
-        // in the right context by using .call()
-        _createBackground.call(this);
-
-        // one inital animation - just for demo...
-        this.rippleSpot.lightbox.show(this.rippleSpot);
-        setTimeout(function(){
-            this.rippleSpot.lightbox.hide();
-        }.bind(this), 300);
-
-        // main event listener => buttons emit their events to this handler
-        this.on('click', function(e) {
-            this.doRipple(e);
-        });
-
-    }
-
-    // Establishes prototype chain for class to inherit from View
-    AppView.prototype = Object.create(View.prototype);
-    AppView.prototype.constructor = AppView;
-
-    // Default options for class, eg. the size properties
-    AppView.DEFAULT_OPTIONS = {
-        backgroundSize: [400, 400],
-        maxRippleSpotSize: [400, 400]
-    };
-
-
-
-    // Define your helper functions and prototype methods here:
-    // the _ before the function name indicates it's
-    //a private function
-    function _createBackground() {
-
-        this.mainView = new View();
-
-        // .backgroundSurface - class is required to calculate positions!
-        this.backgroundSurface = new Surface({
-            content: 'click me',
-            classes: ['backgroundSurface'],
-            properties: {
-                color: 'white',
-                textAlign: 'center',
-                fontSize: '30px',
-                lineHeight: '100px',
-                backgroundColor: '#FA5C4F',
-                boxShadow: '0 10px 20px -5px rgba(0, 0, 0, 0.5)'
-            }
-        });
-
-        this.mainView.add(this.backgroundSurface);
-
-        // click handler for clicking on red background
-        this.backgroundSurface.on('click', function(e) {
-            console.log ("red background clicked");
-            // sends 'click'-event to view's output => triggers ripple-effect
-            this._eventOutput.emit('click', e);
-        }.bind(this));
-
-
-        // 2nd surface to check event-handling
-        this.greenButton = new Surface({
-            size: [200,50],
-            content: 'BUTTON',
-            properties: {
-                color: 'white',
-                textAlign: 'center',
-                fontSize: '15px',
-                lineHeight: '50px',
-                backgroundColor: 'green',
-                boxShadow: '0 10px 20px -5px rgba(0, 0, 0, 0.5)'
-            }
-        });
-        this.mainView
-            .add(new StateModifier({transform: Transform.translate(100, 200, 0)}))
-            .add(this.greenButton);
-
-
-        // click handler for green button
-        this.greenButton.on('click', function(e) {
-            console.log ("green button clicked");
-            // sends 'click'-event to view's output => triggers ripple-effect
-            this._eventOutput.emit('click', e);
-        }.bind(this));
-
-
-        // surface for ripple animation (white circle)
-        this.rippleSpot = new Surface({
-            size: this.options.maxRippleSpotSize,
-            properties: {
-                backgroundColor: 'white',
-                borderRadius: (this.options.maxRippleSpotSize[0]/2) + 'px',
-                boxShadow: '0 10px 20px -5px rgba(0, 0, 0, 0.5)'
-            }
-        });
-        this.rippleSpotModifier = new StateModifier({
-            transform: Transform.translate(0, 0, 0)
-        });
-
-        // lightbox with transitions for the ripple animation
-        this.rippleSpot.lightbox = new Lightbox({
-            //for transition parameters see http://famo.us/university/famous-101/slideshow/24/
-            inTransform: Transform.scale(0.1, 0.1, 1),
-            inTransition: {duration:300, curve:Easing.linear},
-            inOpacity: 0.3,
-            showOpacity: 0,
-            outOpacity: 0,
-            outTransform: Transform.scale(0.05, 0.05, 1),
-            outTransition: {duration:10, curve:Easing.linear}
-        });
-
-        // add ripple to view
-        this.mainView.add(this.rippleSpotModifier).add(this.rippleSpot.lightbox);
-        // add view to app
-        this.mainNode.add(this.mainView);
-
-
-    }
-
-
-    // Start ripplin'...
-    AppView.prototype.doRipple = function(e) {
-
-        // select backgroundSurface and read css 3d-matrix to calcluate position
-        var matrixElement = document.getElementsByClassName('backgroundSurface')[0].style;
-        var matrix3d =  matrixElement.getPropertyValue('transform')
-            || matrixElement.getPropertyValue('-moz-transform')
-            || matrixElement.getPropertyValue('-webkit-transform')
-            || matrixElement.getPropertyValue('-ms-transform')
-            || matrixElement.getPropertyValue('-o-transform');
-        // parse css value of 3d-matrix (regex)
-        var matrixPattern = /^\w*\((((\d+)|(\d*\.\d+)),\s*)*((\d+)|(\d*\.\d+))\)/i;
-        var matrixValue = [];
-        if (matrixPattern.test(matrix3d)) {
-            // only continue if pattern matches / correct 3d-matrix-value was found
-            var matrixCopy = matrix3d.replace(/^\w*\(/, '').replace(')', '');
-            // finally: store 3d matrix in array
-            matrixValue = matrixCopy.split(/\s*,\s*/);
-
-            // x/y-position of the background Surface
-            var deltaX = matrixValue[12];
-            var deltaY = matrixValue[13];
-
-            this.backgroundSurface.setContent('x: ' + e.x + ' / y: ' + e.y);
-            // calculate new position for transform of rippleSpot surface
-            this.rippleSpotModifier.setTransform(Transform.translate(
-                e.x - deltaX - this.options.backgroundSize[0]/2,
-                e.y - deltaY - this.options.backgroundSize[1]/2,
-                0));
-            this.rippleSpot.lightbox.show(this.rippleSpot);
-            // after end of transform hide rippleSport surface
-            // hack? no callback-solution for this found
-            setTimeout(function(){
-                this.rippleSpot.lightbox.hide();
-            }.bind(this), 300); // 300ms - same as duration of transform!
-        }
-
-    };
-
-
+    var SnapTransition = require("famous/transitions/SnapTransition");
+    Transitionable.registerMethod('snap', SnapTransition);
 
     var mainContext = Engine.createContext();
-    //// Custom Modules
-    //var AppView         = require('AppView');
 
-    var appView   = new AppView();
-    mainContext.add(appView);
+    var surface = new Surface({
+        size: [200, 200],
+        content: 'drag',
+        properties: {
+            backgroundColor: 'rgba(200, 200, 200, 0.5)',
+            lineHeight: '200px',
+            textAlign: 'center',
+            cursor: 'pointer'
+        }
+    });
+
+    var draggable = new Draggable({
+        xRange: [-220, 220],
+        yRange: [-220, 220]
+    });
+
+    surface.pipe(draggable);
+
+    var mod = new StateModifier();
+
+    var trans = {
+        method: 'snap',
+        period: 300,
+        dampingRatio: 0.3,
+        velocity: 0
+    };
+
+    surface.on('mouseup', function() {
+        draggable.setPosition([0,0,0], trans);
+    });
+
+    mainContext.add(mod).add(draggable).add(surface);
 });

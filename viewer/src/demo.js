@@ -1383,171 +1383,205 @@ define(function(require, exports, module) {
     //});
 
 
-    ///////////////////implement google paper button effects
-    /////////http://stackoverflow.com/questions/24946191/how-to-implement-google-paper-button-effects
-    var Surface = require('famous/core/Surface');
-    var Timer = require('famous/utilities/Timer');
-    var Transitionable = require('famous/transitions/Transitionable');
+    /////////////////////implement google paper button effects
+    ///////////http://stackoverflow.com/questions/24946191/how-to-implement-google-paper-button-effects
+    //var Surface = require('famous/core/Surface');
+    //var Timer = require('famous/utilities/Timer');
+    //var Transitionable = require('famous/transitions/Transitionable');
+    //
+    //// Extend the button surface to tap into .render()
+    //function RippleSurface(options) {
+    //    Surface.apply(this, arguments);
+    //
+    //    this.gradientOpacity = new Transitionable(0);
+    //    this.gradientRadius = new Transitionable(0);
+    //
+    //    // Use light or dark gradient?
+    //    if (options.tint === 'light') {
+    //        // radiate light to dark
+    //        this.firstStop = '255,255,255';
+    //    } else {
+    //        // radiate dark to light by default
+    //        this.firstStop = '0,0,0';
+    //    }
+    //
+    //    // Hold on to offsetX/Y throughout render loop during transition
+    //    this.offsetX = 0;
+    //    this.offsetY = 0;
+    //
+    //    this.on('mousedown', this.ripple);
+    //    this.on('mouseup', this.smooth);
+    //    this.on('mouseleave', this.smooth);
+    //
+    //    this.on('deploy', this.postDeploy);
+    //}
+    //
+    //RippleSurface.prototype = Object.create(Surface.prototype);
+    //RippleSurface.prototype.constructor = RippleSurface;
+    //
+    //RippleSurface.prototype.postDeploy = function () {
+    //    // Have to do this here in order to account for undefined or boolean sizes
+    //    var width = (typeof this.size[0] === 'number') ? this.size[0] : this._currentTarget.clientWidth;
+    //    var height = (typeof this.size[1] === 'number') ? this.size[1] : this._currentTarget.clientHeight;
+    //
+    //    // Maximum radius large enough to cover the surface from corner to corner
+    //    this.gradientMaxRadius = Math.round(Math.sqrt(width * width + height * height));
+    //
+    //    // Based on "feels good" numbers of growing 100px in 300 milliseconds
+    //    this.gradientDuration = (this.gradientMaxRadius / 100) * 300;
+    //};
+    //
+    //RippleSurface.prototype.render = function () {
+    //    var gradientOpacity = this.gradientOpacity.get();
+    //    var gradientRadius = this.gradientRadius.get();
+    //
+    //    // My apologies for this. Interpolation is coming in ECMAScript 6!
+    //    this.setProperties({
+    //        backgroundImage: 'radial-gradient(circle at ' + this.offsetX + ' ' + this.offsetY + ', rgba(' + this.firstStop + ',' + gradientOpacity + '), rgba(' + this.firstStop + ',' + gradientOpacity + ') ' + gradientRadius + 'px, rgba(0,0,0,0) ' + gradientRadius + 'px)'
+    //    });
+    //
+    //    // return what Surface expects
+    //    return this.id;
+    //};
+    //
+    //RippleSurface.prototype.ripple = function (data) {
+    //    this.offsetX = (data.offsetX || data.layerX) + 'px';
+    //    this.offsetY = (data.offsetY || data.layerY) + 'px';
+    //
+    //    this.gradientOpacity.set(0.1);
+    //    this.gradientRadius.set(0);
+    //    this.gradientRadius.set(this.gradientMaxRadius, {
+    //        duration: this.gradientDuration,
+    //        curve: 'easeOut'
+    //    });
+    //};
+    //
+    //RippleSurface.prototype.smooth = function (data) {
+    //    this.gradientOpacity.set(0, {
+    //        duration: 300,
+    //        curve: 'easeOut'
+    //    });
+    //};
+    //
+    //
+    //var Engine = require('famous/core/Engine');
+    //var StateModifier = require('famous/modifiers/StateModifier');
+    //var Transform = require('famous/core/Transform');
+    //
+    //
+    //var mainContext = Engine.createContext();
+    //
+    //// Test light tint
+    //var surface = new RippleSurface({
+    //    content: 'Primary',
+    //    size: [150, 44],
+    //    tint: 'light',
+    //    properties: {
+    //        fontFamily: 'Helvetica Neue',
+    //        fontSize: '18px',
+    //        fontWeight: '300',
+    //        textAlign: 'center',
+    //        lineHeight: '44px',
+    //        background: '#3799dc'
+    //    }
+    //});
+    //
+    //var modifier = new StateModifier({
+    //    transform: Transform.translate(50, 50, 0)
+    //});
+    //
+    //// Test dark tint
+    //var surface2 = new RippleSurface({
+    //    content: 'Secondary',
+    //    size: [150, 44],
+    //    properties: {
+    //        fontFamily: 'Helvetica Neue',
+    //        fontSize: '18px',
+    //        fontWeight: '300',
+    //        textAlign: 'center',
+    //        lineHeight: '44px',
+    //        background: '#ecf0f1'
+    //    }
+    //});
+    //
+    //var modifier2 = new StateModifier({
+    //    transform: Transform.translate(250, 50, 0)
+    //});
+    //
+    //// Test undefined and boolean sizes
+    //var surface3 = new RippleSurface({
+    //    content: 'Big Button',
+    //    size: [undefined, true],
+    //    properties: {
+    //        fontFamily: 'Helvetica Neue',
+    //        fontSize: '18px',
+    //        fontWeight: '300',
+    //        textAlign: 'center',
+    //        lineHeight: '150px',
+    //        background: '#1abc9c'
+    //    }
+    //});
+    //
+    //var modifier3 = new StateModifier({
+    //    size: [150, 150],
+    //    transform: Transform.translate(450, 50, 0)
+    //});
+    //
+    //// Test timing
+    //var surface4 = new RippleSurface({
+    //    content: 'Long Button',
+    //    size: [400, 44],
+    //    properties: {
+    //        fontFamily: 'Helvetica Neue',
+    //        fontSize: '18px',
+    //        fontWeight: '300',
+    //        textAlign: 'center',
+    //        lineHeight: '44px',
+    //        background: '#e74c3c'
+    //    }
+    //});
+    //
+    //var modifier4 = new StateModifier({
+    //    transform: Transform.translate(50, 250, 0)
+    //});
+    //
+    //
+    //mainContext.add(modifier).add(surface);
+    //mainContext.add(modifier2).add(surface2);
+    //mainContext.add(modifier3).add(surface3);
+    //mainContext.add(modifier4).add(surface4);
 
-    // Extend the button surface to tap into .render()
-    function RippleSurface(options) {
-        Surface.apply(this, arguments);
-
-        this.gradientOpacity = new Transitionable(0);
-        this.gradientRadius = new Transitionable(0);
-
-        // Use light or dark gradient?
-        if (options.tint === 'light') {
-            // radiate light to dark
-            this.firstStop = '255,255,255';
-        } else {
-            // radiate dark to light by default
-            this.firstStop = '0,0,0';
-        }
-
-        // Hold on to offsetX/Y throughout render loop during transition
-        this.offsetX = 0;
-        this.offsetY = 0;
-
-        this.on('mousedown', this.ripple);
-        this.on('mouseup', this.smooth);
-        this.on('mouseleave', this.smooth);
-
-        this.on('deploy', this.postDeploy);
-    }
-
-    RippleSurface.prototype = Object.create(Surface.prototype);
-    RippleSurface.prototype.constructor = RippleSurface;
-
-    RippleSurface.prototype.postDeploy = function () {
-        // Have to do this here in order to account for undefined or boolean sizes
-        var width = (typeof this.size[0] === 'number') ? this.size[0] : this._currentTarget.clientWidth;
-        var height = (typeof this.size[1] === 'number') ? this.size[1] : this._currentTarget.clientHeight;
-
-        // Maximum radius large enough to cover the surface from corner to corner
-        this.gradientMaxRadius = Math.round(Math.sqrt(width * width + height * height));
-
-        // Based on "feels good" numbers of growing 100px in 300 milliseconds
-        this.gradientDuration = (this.gradientMaxRadius / 100) * 300;
-    };
-
-    RippleSurface.prototype.render = function () {
-        var gradientOpacity = this.gradientOpacity.get();
-        var gradientRadius = this.gradientRadius.get();
-
-        // My apologies for this. Interpolation is coming in ECMAScript 6!
-        this.setProperties({
-            backgroundImage: 'radial-gradient(circle at ' + this.offsetX + ' ' + this.offsetY + ', rgba(' + this.firstStop + ',' + gradientOpacity + '), rgba(' + this.firstStop + ',' + gradientOpacity + ') ' + gradientRadius + 'px, rgba(0,0,0,0) ' + gradientRadius + 'px)'
-        });
-
-        // return what Surface expects
-        return this.id;
-    };
-
-    RippleSurface.prototype.ripple = function (data) {
-        this.offsetX = (data.offsetX || data.layerX) + 'px';
-        this.offsetY = (data.offsetY || data.layerY) + 'px';
-
-        this.gradientOpacity.set(0.1);
-        this.gradientRadius.set(0);
-        this.gradientRadius.set(this.gradientMaxRadius, {
-            duration: this.gradientDuration,
-            curve: 'easeOut'
-        });
-    };
-
-    RippleSurface.prototype.smooth = function (data) {
-        this.gradientOpacity.set(0, {
-            duration: 300,
-            curve: 'easeOut'
-        });
-    };
-
-
-    var Engine = require('famous/core/Engine');
-    var StateModifier = require('famous/modifiers/StateModifier');
-    var Transform = require('famous/core/Transform');
-
+    ////Scrollview paginated////
+    //http://stackoverflow.com/questions/23649958/how-to-swipe-between-surfaces-in-famo-us
+    var Engine           = require("famous/core/Engine");
+    var Surface          = require("famous/core/Surface");
+    var Scrollview       = require("famous/views/Scrollview");
 
     var mainContext = Engine.createContext();
 
-    // Test light tint
-    var surface = new RippleSurface({
-        content: 'Primary',
-        size: [150, 44],
-        tint: 'light',
-        properties: {
-            fontFamily: 'Helvetica Neue',
-            fontSize: '18px',
-            fontWeight: '300',
-            textAlign: 'center',
-            lineHeight: '44px',
-            background: '#3799dc'
-        }
+    var scrollview = new Scrollview({
+        direction: 0,
+        paginated: true
     });
+    var surfaces = [];
 
-    var modifier = new StateModifier({
-        transform: Transform.translate(50, 50, 0)
-    });
+    scrollview.sequenceFrom(surfaces);
 
-    // Test dark tint
-    var surface2 = new RippleSurface({
-        content: 'Secondary',
-        size: [150, 44],
-        properties: {
-            fontFamily: 'Helvetica Neue',
-            fontSize: '18px',
-            fontWeight: '300',
-            textAlign: 'center',
-            lineHeight: '44px',
-            background: '#ecf0f1'
-        }
-    });
+    for (var i = 0; i < 10; i++) {
+        surface = new Surface({
+            content: "Surface: " + (i + 1),
+            size: [window.innerWidth, window.innerHeight],
+            properties: {
+                backgroundColor: "hsl(" + (i * 360 / 10) + ", 100%, 50%)",
+                lineHeight: window.innerHeight/10 + "px",
+                textAlign: "center"
+            }
+        });
 
-    var modifier2 = new StateModifier({
-        transform: Transform.translate(250, 50, 0)
-    });
+        surface.pipe(scrollview);
 
-    // Test undefined and boolean sizes
-    var surface3 = new RippleSurface({
-        content: 'Big Button',
-        size: [undefined, true],
-        properties: {
-            fontFamily: 'Helvetica Neue',
-            fontSize: '18px',
-            fontWeight: '300',
-            textAlign: 'center',
-            lineHeight: '150px',
-            background: '#1abc9c'
-        }
-    });
+        surfaces.push(surface);
+    }
 
-    var modifier3 = new StateModifier({
-        size: [150, 150],
-        transform: Transform.translate(450, 50, 0)
-    });
-
-    // Test timing
-    var surface4 = new RippleSurface({
-        content: 'Long Button',
-        size: [400, 44],
-        properties: {
-            fontFamily: 'Helvetica Neue',
-            fontSize: '18px',
-            fontWeight: '300',
-            textAlign: 'center',
-            lineHeight: '44px',
-            background: '#e74c3c'
-        }
-    });
-
-    var modifier4 = new StateModifier({
-        transform: Transform.translate(50, 250, 0)
-    });
-
-
-    mainContext.add(modifier).add(surface);
-    mainContext.add(modifier2).add(surface2);
-    mainContext.add(modifier3).add(surface3);
-    mainContext.add(modifier4).add(surface4);
+    mainContext.add(scrollview);
 });

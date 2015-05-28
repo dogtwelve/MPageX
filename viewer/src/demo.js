@@ -1055,145 +1055,345 @@ define(function(require, exports, module) {
     //
     //mainContext.add(centerModifier).add(centerCircle);
 
-    //Famo.us Transition Button (ripple)  registerProperty
-    ////jsfiddle.net/sunrising/U3eLc/light
-    var Engine = require('famous/core/Engine');
+    ////Famo.us Transition Button (ripple)  registerProperty
+    //////jsfiddle.net/sunrising/U3eLc/light
+    //var Engine = require('famous/core/Engine');
+    //var Surface = require('famous/core/Surface');
+    //var StateModifier = require('famous/modifiers/StateModifier');
+    //var Transitionable = require('famous/transitions/Transitionable');
+    //var SnapTransition = require('famous/transitions/SnapTransition');
+    //
+    //Transitionable.registerMethod('snap', SnapTransition);
+    //
+    //var snap = {
+    //    method: 'snap',
+    //    period: 400,
+    //    dampingRatio: 0.1
+    //};
+    //var snap2 = {
+    //    method: 'snap',
+    //    period: 200,
+    //    dampingRatio: 1
+    //};
+    //
+    //var context = Engine.createContext();
+    //
+    //function PropertyTransitionable() {
+    //    this._trans = {};
+    //    this._fns = {};
+    //    this._renders = {};
+    //}
+    //
+    //PropertyTransitionable.prototype.constructor = PropertyTransitionable;
+    //
+    //PropertyTransitionable.prototype.registerProperty = function (property, initial, fn) {
+    //    this._fns[property] = fn;
+    //    this._trans[property] = new Transitionable(initial);
+    //
+    //    var propertyUpper = 'set' + property[0].toUpperCase() + property.substr(1);
+    //
+    //    this[propertyUpper] = function (object, value, transition, callback) {
+    //
+    //        var existing = this._renders[property];
+    //
+    //        if (existing) Engine.removeListener('prerender', existing);
+    //
+    //        this._renders[property] = function () {
+    //            var currentPos = this._trans[property].get();
+    //            var calculated = this._fns[property](currentPos);
+    //            var properties = {};
+    //
+    //            properties[property] = calculated;
+    //
+    //            object.setProperties(properties);
+    //        }.bind(this);
+    //
+    //        this._trans[property].halt();
+    //
+    //        this._trans[property].set(value, transition, function () {
+    //            Engine.removeListener('prerender', this._renders[property]);
+    //            if (callback) callback();
+    //        }.bind(this));
+    //
+    //        Engine.on('prerender', this._renders[property]);
+    //    }.bind(this);
+    //};
+    //
+    //PropertyTransitionable.DEFAULT_OPTIONS = {};
+    //
+    //var surface = new Surface({
+    //    size: [200, 200],
+    //    content: 'Click me!',
+    //    properties: {
+    //        backgroundColor: 'rgb(0,255,0)',
+    //        fontSize: "14px",
+    //        lineHeight: "190px",
+    //        fontFamily: "arial",
+    //        textAlign: 'center',
+    //        webkitUserSelect: 'none'
+    //    }
+    //});
+    //
+    //var state = false;
+    //
+    //var propertyTransitionable = new PropertyTransitionable();
+    //
+    //propertyTransitionable.registerProperty('borderRadius', 0, function (value) {
+    //    return Math.round(value) + '%';
+    //});
+    //
+    //
+    //propertyTransitionable.registerProperty('border', 0, function (value) {
+    //    return Math.round(value) + 'px solid black';
+    //});
+    //
+    //propertyTransitionable.registerProperty('backgroundColor', 0, function (value) {
+    //    var rounded = Math.round(value);
+    //    return 'rgb(' + rounded + ',' + (255 - rounded) + ',0)';
+    //});
+    //
+    //propertyTransitionable.registerProperty('boxShadow', 0, function (value) {
+    //    var rounded = Math.round(value);
+    //    var string = '0px ' + rounded + 'px ' + rounded + 'px rgba(0,0,0,0.5), ';
+    //    string += 'inset 0px ' + rounded + 'px ' + rounded + 'px rgba(255,255,255,0.5), ';
+    //    string += 'inset 0px ' + -rounded + 'px ' + rounded + 'px rgba(0,0,0,0.5)  ';
+    //    return string;
+    //});
+    //
+    //propertyTransitionable.registerProperty('fontSize', 14, function (value) {
+    //    return Math.round(value) + 'px';
+    //});
+    //
+    //propertyTransitionable.registerProperty('color', 0, function (value) {
+    //    var rounded = Math.round(value);
+    //    return 'rgb(' + rounded + ',' + rounded + ',' + rounded + ')';
+    //});
+    //
+    //surface.on('click', function () {
+    //
+    //    if (state) {
+    //        propertyTransitionable.setBorderRadius(surface, 0, snap2);
+    //        propertyTransitionable.setBorder(surface, 0, snap2);
+    //        propertyTransitionable.setBackgroundColor(surface, 0, snap2);
+    //        propertyTransitionable.setBoxShadow(surface, 0, snap2);
+    //        propertyTransitionable.setFontSize(surface, 14, snap2);
+    //        propertyTransitionable.setColor(surface, 0, snap2);
+    //    } else {
+    //        propertyTransitionable.setBorderRadius(surface, 50, snap);
+    //        propertyTransitionable.setBorder(surface, 8, snap);
+    //        propertyTransitionable.setBackgroundColor(surface, 255, snap);
+    //        propertyTransitionable.setBoxShadow(surface, 20, snap);
+    //        propertyTransitionable.setFontSize(surface, 36, snap);
+    //        propertyTransitionable.setColor(surface, 255, snap);
+    //    }
+    //
+    //    state = !state;
+    //});
+    //
+    //context.add(new StateModifier({
+    //    align: [0.5,0.5],
+    //    origin: [0.5, 0.5]
+    //})).add(surface);
+    //
+    //module.exports = null;
+
+    ///Button with “ripple effect” in Famo.us !
+    // Import additional modules to be used in this view
+    var Engine          = require('famous/core/Engine');
+    var View = require('famous/core/View');
     var Surface = require('famous/core/Surface');
+    var Transform = require('famous/core/Transform');
     var StateModifier = require('famous/modifiers/StateModifier');
-    var Transitionable = require('famous/transitions/Transitionable');
-    var SnapTransition = require('famous/transitions/SnapTransition');
+    var Lightbox        = require('famous/views/Lightbox');
+    var Easing          = require('famous/transitions/Easing');
 
-    Transitionable.registerMethod('snap', SnapTransition);
 
-    var snap = {
-        method: 'snap',
-        period: 400,
-        dampingRatio: 0.1
-    };
-    var snap2 = {
-        method: 'snap',
-        period: 200,
-        dampingRatio: 1
-    };
+    // Constructor function for our class
+    function AppView() {
+        // Applies View's constructor function to class
+        View.apply(this, arguments);
 
-    var context = Engine.createContext();
+        // this.options.size is created from any options passed
+        // in during instantiation and the default options:
+        // When the constructor function runs, it sets
+        // .options property to the values specified in
+        // .DEFAULT_OPTIONS and then overwrites them
+        // with the values passed in during construction via
+        // (this, arguments),
+        // eg. getting called by:
+        // var slideView = new SlideView({size: [100, 100]});
+        this.rootModifier = new StateModifier({
+            size: this.options.backgroundSize,
+            origin: [0.5, 0.5]
+        });
 
-    function PropertyTransitionable() {
-        this._trans = {};
-        this._fns = {};
-        this._renders = {};
+        this.mainNode = this.add(this.rootModifier);
+
+        // make sure you invoke the helper function
+        // in the right context by using .call()
+        _createBackground.call(this);
+
+        // one inital animation - just for demo...
+        this.rippleSpot.lightbox.show(this.rippleSpot);
+        setTimeout(function(){
+            this.rippleSpot.lightbox.hide();
+        }.bind(this), 300);
+
+        // main event listener => buttons emit their events to this handler
+        this.on('click', function(e) {
+            this.doRipple(e);
+        });
+
     }
 
-    PropertyTransitionable.prototype.constructor = PropertyTransitionable;
+    // Establishes prototype chain for class to inherit from View
+    AppView.prototype = Object.create(View.prototype);
+    AppView.prototype.constructor = AppView;
 
-    PropertyTransitionable.prototype.registerProperty = function (property, initial, fn) {
-        this._fns[property] = fn;
-        this._trans[property] = new Transitionable(initial);
-
-        var propertyUpper = 'set' + property[0].toUpperCase() + property.substr(1);
-
-        this[propertyUpper] = function (object, value, transition, callback) {
-
-            var existing = this._renders[property];
-
-            if (existing) Engine.removeListener('prerender', existing);
-
-            this._renders[property] = function () {
-                var currentPos = this._trans[property].get();
-                var calculated = this._fns[property](currentPos);
-                var properties = {};
-
-                properties[property] = calculated;
-
-                object.setProperties(properties);
-            }.bind(this);
-
-            this._trans[property].halt();
-
-            this._trans[property].set(value, transition, function () {
-                Engine.removeListener('prerender', this._renders[property]);
-                if (callback) callback();
-            }.bind(this));
-
-            Engine.on('prerender', this._renders[property]);
-        }.bind(this);
+    // Default options for class, eg. the size properties
+    AppView.DEFAULT_OPTIONS = {
+        backgroundSize: [400, 400],
+        maxRippleSpotSize: [400, 400]
     };
 
-    PropertyTransitionable.DEFAULT_OPTIONS = {};
 
-    var surface = new Surface({
-        size: [200, 200],
-        content: 'Click me!',
-        properties: {
-            backgroundColor: 'rgb(0,255,0)',
-            fontSize: "14px",
-            lineHeight: "190px",
-            fontFamily: "arial",
-            textAlign: 'center',
-            webkitUserSelect: 'none'
+
+    // Define your helper functions and prototype methods here:
+    // the _ before the function name indicates it's
+    //a private function
+    function _createBackground() {
+
+        this.mainView = new View();
+
+        // .backgroundSurface - class is required to calculate positions!
+        this.backgroundSurface = new Surface({
+            content: 'click me',
+            classes: ['backgroundSurface'],
+            properties: {
+                color: 'white',
+                textAlign: 'center',
+                fontSize: '30px',
+                lineHeight: '100px',
+                backgroundColor: '#FA5C4F',
+                boxShadow: '0 10px 20px -5px rgba(0, 0, 0, 0.5)'
+            }
+        });
+
+        this.mainView.add(this.backgroundSurface);
+
+        // click handler for clicking on red background
+        this.backgroundSurface.on('click', function(e) {
+            console.log ("red background clicked");
+            // sends 'click'-event to view's output => triggers ripple-effect
+            this._eventOutput.emit('click', e);
+        }.bind(this));
+
+
+        // 2nd surface to check event-handling
+        this.greenButton = new Surface({
+            size: [200,50],
+            content: 'BUTTON',
+            properties: {
+                color: 'white',
+                textAlign: 'center',
+                fontSize: '15px',
+                lineHeight: '50px',
+                backgroundColor: 'green',
+                boxShadow: '0 10px 20px -5px rgba(0, 0, 0, 0.5)'
+            }
+        });
+        this.mainView
+            .add(new StateModifier({transform: Transform.translate(100, 200, 0)}))
+            .add(this.greenButton);
+
+
+        // click handler for green button
+        this.greenButton.on('click', function(e) {
+            console.log ("green button clicked");
+            // sends 'click'-event to view's output => triggers ripple-effect
+            this._eventOutput.emit('click', e);
+        }.bind(this));
+
+
+        // surface for ripple animation (white circle)
+        this.rippleSpot = new Surface({
+            size: this.options.maxRippleSpotSize,
+            properties: {
+                backgroundColor: 'white',
+                borderRadius: (this.options.maxRippleSpotSize[0]/2) + 'px',
+                boxShadow: '0 10px 20px -5px rgba(0, 0, 0, 0.5)'
+            }
+        });
+        this.rippleSpotModifier = new StateModifier({
+            transform: Transform.translate(0, 0, 0)
+        });
+
+        // lightbox with transitions for the ripple animation
+        this.rippleSpot.lightbox = new Lightbox({
+            //for transition parameters see http://famo.us/university/famous-101/slideshow/24/
+            inTransform: Transform.scale(0.1, 0.1, 1),
+            inTransition: {duration:300, curve:Easing.linear},
+            inOpacity: 0.3,
+            showOpacity: 0,
+            outOpacity: 0,
+            outTransform: Transform.scale(0.05, 0.05, 1),
+            outTransition: {duration:10, curve:Easing.linear}
+        });
+
+        // add ripple to view
+        this.mainView.add(this.rippleSpotModifier).add(this.rippleSpot.lightbox);
+        // add view to app
+        this.mainNode.add(this.mainView);
+
+
+    }
+
+
+    // Start ripplin'...
+    AppView.prototype.doRipple = function(e) {
+
+        // select backgroundSurface and read css 3d-matrix to calcluate position
+        var matrixElement = document.getElementsByClassName('backgroundSurface')[0].style;
+        var matrix3d =  matrixElement.getPropertyValue('transform')
+            || matrixElement.getPropertyValue('-moz-transform')
+            || matrixElement.getPropertyValue('-webkit-transform')
+            || matrixElement.getPropertyValue('-ms-transform')
+            || matrixElement.getPropertyValue('-o-transform');
+        // parse css value of 3d-matrix (regex)
+        var matrixPattern = /^\w*\((((\d+)|(\d*\.\d+)),\s*)*((\d+)|(\d*\.\d+))\)/i;
+        var matrixValue = [];
+        if (matrixPattern.test(matrix3d)) {
+            // only continue if pattern matches / correct 3d-matrix-value was found
+            var matrixCopy = matrix3d.replace(/^\w*\(/, '').replace(')', '');
+            // finally: store 3d matrix in array
+            matrixValue = matrixCopy.split(/\s*,\s*/);
+
+            // x/y-position of the background Surface
+            var deltaX = matrixValue[12];
+            var deltaY = matrixValue[13];
+
+            this.backgroundSurface.setContent('x: ' + e.x + ' / y: ' + e.y);
+            // calculate new position for transform of rippleSpot surface
+            this.rippleSpotModifier.setTransform(Transform.translate(
+                e.x - deltaX - this.options.backgroundSize[0]/2,
+                e.y - deltaY - this.options.backgroundSize[1]/2,
+                0));
+            this.rippleSpot.lightbox.show(this.rippleSpot);
+            // after end of transform hide rippleSport surface
+            // hack? no callback-solution for this found
+            setTimeout(function(){
+                this.rippleSpot.lightbox.hide();
+            }.bind(this), 300); // 300ms - same as duration of transform!
         }
-    });
 
-    var state = false;
-
-    var propertyTransitionable = new PropertyTransitionable();
-
-    propertyTransitionable.registerProperty('borderRadius', 0, function (value) {
-        return Math.round(value) + '%';
-    });
+    };
 
 
-    propertyTransitionable.registerProperty('border', 0, function (value) {
-        return Math.round(value) + 'px solid black';
-    });
 
-    propertyTransitionable.registerProperty('backgroundColor', 0, function (value) {
-        var rounded = Math.round(value);
-        return 'rgb(' + rounded + ',' + (255 - rounded) + ',0)';
-    });
+    var mainContext = Engine.createContext();
+    //// Custom Modules
+    //var AppView         = require('AppView');
 
-    propertyTransitionable.registerProperty('boxShadow', 0, function (value) {
-        var rounded = Math.round(value);
-        var string = '0px ' + rounded + 'px ' + rounded + 'px rgba(0,0,0,0.5), ';
-        string += 'inset 0px ' + rounded + 'px ' + rounded + 'px rgba(255,255,255,0.5), ';
-        string += 'inset 0px ' + -rounded + 'px ' + rounded + 'px rgba(0,0,0,0.5)  ';
-        return string;
-    });
-
-    propertyTransitionable.registerProperty('fontSize', 14, function (value) {
-        return Math.round(value) + 'px';
-    });
-
-    propertyTransitionable.registerProperty('color', 0, function (value) {
-        var rounded = Math.round(value);
-        return 'rgb(' + rounded + ',' + rounded + ',' + rounded + ')';
-    });
-
-    surface.on('click', function () {
-
-        if (state) {
-            propertyTransitionable.setBorderRadius(surface, 0, snap2);
-            propertyTransitionable.setBorder(surface, 0, snap2);
-            propertyTransitionable.setBackgroundColor(surface, 0, snap2);
-            propertyTransitionable.setBoxShadow(surface, 0, snap2);
-            propertyTransitionable.setFontSize(surface, 14, snap2);
-            propertyTransitionable.setColor(surface, 0, snap2);
-        } else {
-            propertyTransitionable.setBorderRadius(surface, 50, snap);
-            propertyTransitionable.setBorder(surface, 8, snap);
-            propertyTransitionable.setBackgroundColor(surface, 255, snap);
-            propertyTransitionable.setBoxShadow(surface, 20, snap);
-            propertyTransitionable.setFontSize(surface, 36, snap);
-            propertyTransitionable.setColor(surface, 255, snap);
-        }
-
-        state = !state;
-    });
-
-    context.add(new StateModifier({
-        align: [0.5,0.5],
-        origin: [0.5, 0.5]
-    })).add(surface);
-
-    module.exports = null;
+    var appView   = new AppView();
+    mainContext.add(appView);
 });

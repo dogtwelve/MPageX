@@ -202,9 +202,12 @@ define(function(require, exports, module) {
         if(type === "WebNode") {
             var webUrl = nodeDescription.URL;
             newSurface = new Surface({
-                size: size
+                size: size,
+                properties: {
+                    backgroundColor: 'white'
+                }
             });
-            newSurface.setContent("<DIV><IFRAME src=\"" + webUrl + "\"</IFRAME></DIV>");
+            newSurface.setContent("<iframe src=\"" + webUrl + "\"" + " width=" + size[0]+ "px" + " height=" + size[1]+ "px </iframe>");
         }
 
         if(newSurface) {

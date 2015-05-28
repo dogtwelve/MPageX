@@ -752,91 +752,173 @@ define(function(require, exports, module) {
 
 
     ///light box/////////////
+    //var Engine = require('famous/core/Engine');
+    //var Surface = require('famous/core/Surface');
+    //var GridLayout = require('famous/views/GridLayout');
+    //var StateModifier = require('famous/modifiers/StateModifier');
+    //var Transform = require('famous/core/Transform');
+    //var RenderNode = require('famous/core/RenderNode');
+    //var RenderController = require('famous/views/RenderController');
+    //var Lightbox = require('famous/views/Lightbox');
+    //var Easing = require('famous/transitions/Easing');
+    //
+    //var mainContext = Engine.createContext();
+    //
+    //var grid = new GridLayout({
+    //    dimensions: [8, 8],
+    //});
+    //
+    //var surfaces = [];
+    //
+    //var showing;
+    //
+    //grid.sequenceFrom(surfaces);
+    //
+    //var cmod = new StateModifier({
+    //    origin: [0.5, 0.5],
+    //    align: [0.5, 0.5]
+    //});
+    //var controller = new Lightbox({
+    //    inTransition: true,
+    //    outTransition: false,
+    //    overlap: true
+    //});
+    //controller.hide();
+    //
+    //function newSurface(id) {
+    //    var surface = new Surface({
+    //        size: [undefined, undefined],
+    //        content: id + 1,
+    //        properties: {
+    //            backgroundColor: "hsl(" + (id * 70 / 64) + ", 60%, 70%)",
+    //            lineHeight: '50px',
+    //            textAlign: 'center',
+    //            cursor: 'pointer'
+    //        }
+    //    });
+    //
+    //    surface._smod = new StateModifier({
+    //        size: [420,420],
+    //        origin: [0.5, 0.5],
+    //        align: [0.5, 0.5]
+    //    });
+    //    surface._rnode = new RenderNode();
+    //    surface._rnode.add(surface._smod).add(surface);
+    //
+    //    surfaces.push(surface);
+    //
+    //    surface.on('click', function(context, e) {
+    //        if (this === showing) {
+    //            controller.hide({ curve:Easing.inElastic, duration: 1000 }, function(){
+    //                gridModifier.setTransform(Transform.scale(1,1,1),
+    //                    { curve:Easing.outElastic, duration: 1000 });
+    //            });
+    //            showing = null;
+    //        } else {
+    //            showing = this;
+    //            gridModifier.setTransform(Transform.scale(0.001, 0.001, 0.001),
+    //                { curve:Easing.outCurve, duration: 300 });
+    //            cmod.setTransform(Transform.translate(0, 0, 0.0001));
+    //            controller.show(this._rnode, { curve:Easing.outElastic, duration: 2400 });
+    //        }
+    //
+    //    }.bind(surface, mainContext));
+    //}
+    //
+    //for(var i = 0; i < 64; i++) {
+    //    newSurface(i);
+    //}
+    //
+    //var gridModifier = new StateModifier({
+    //    size: [400, 400],
+    //    align: [0.5, 0.5],
+    //    origin: [0.5, 0.5]
+    //});
+    //
+    //mainContext.add(gridModifier).add(grid);
+    //mainContext.add(cmod).add(controller);
+    //mainContext.setPerspective(1000);
+
+    ////draggable pos////
+    //http://stackoverflow.com/questions/26193020/famo-us-get-the-new-position-of-a-draggable-surface
+
     var Engine = require('famous/core/Engine');
     var Surface = require('famous/core/Surface');
-    var GridLayout = require('famous/views/GridLayout');
-    var StateModifier = require('famous/modifiers/StateModifier');
     var Transform = require('famous/core/Transform');
-    var RenderNode = require('famous/core/RenderNode');
-    var RenderController = require('famous/views/RenderController');
-    var Lightbox = require('famous/views/Lightbox');
-    var Easing = require('famous/transitions/Easing');
+    var Modifier = require('famous/core/Modifier');
+    var StateModifier = require('famous/modifiers/StateModifier');
+    var Draggable = require('famous/modifiers/Draggable');
+    var TransitionableTransform = require('famous/transitions/TransitionableTransform');
 
     var mainContext = Engine.createContext();
 
-    var grid = new GridLayout({
-        dimensions: [8, 8],
+    var transTransform = new TransitionableTransform();
+    transTransform.set(Transform.translate(100, 0, 0));
+
+    var surface = new Surface({
+        size: [300, 100],
+        properties: {
+            backgroundColor: 'rgba(255,0,0,0.1)',
+            cursor: 'pointer'
+        }
     });
 
-    var surfaces = [];
-
-    var showing;
-
-    grid.sequenceFrom(surfaces);
-
-    var cmod = new StateModifier({
-        origin: [0.5, 0.5],
-        align: [0.5, 0.5]
-    });
-    var controller = new Lightbox({
-        inTransition: true,
-        outTransition: false,
-        overlap: true
-    });
-    controller.hide();
-
-    function newSurface(id) {
-        var surface = new Surface({
-            size: [undefined, undefined],
-            content: id + 1,
-            properties: {
-                backgroundColor: "hsl(" + (id * 70 / 64) + ", 60%, 70%)",
-                lineHeight: '50px',
-                textAlign: 'center',
-                cursor: 'pointer'
-            }
-        });
-
-        surface._smod = new StateModifier({
-            size: [420,420],
-            origin: [0.5, 0.5],
-            align: [0.5, 0.5]
-        });
-        surface._rnode = new RenderNode();
-        surface._rnode.add(surface._smod).add(surface);
-
-        surfaces.push(surface);
-
-        surface.on('click', function(context, e) {
-            if (this === showing) {
-                controller.hide({ curve:Easing.inElastic, duration: 1000 }, function(){
-                    gridModifier.setTransform(Transform.scale(1,1,1),
-                        { curve:Easing.outElastic, duration: 1000 });
-                });
-                showing = null;
-            } else {
-                showing = this;
-                gridModifier.setTransform(Transform.scale(0.001, 0.001, 0.001),
-                    { curve:Easing.outCurve, duration: 300 });
-                cmod.setTransform(Transform.translate(0, 0, 0.0001));
-                controller.show(this._rnode, { curve:Easing.outElastic, duration: 2400 });
-            }
-
-        }.bind(surface, mainContext));
-    }
-
-    for(var i = 0; i < 64; i++) {
-        newSurface(i);
-    }
-
-    var gridModifier = new StateModifier({
-        size: [400, 400],
-        align: [0.5, 0.5],
-        origin: [0.5, 0.5]
+    var dragSurface = new Surface({
+        content: 'Drag Me',
+        size: [100, 100],
+        properties: {
+            backgroundColor: 'rgba(0,0,0,0.1)',
+            cursor: 'pointer'
+        }
     });
 
-    mainContext.add(gridModifier).add(grid);
-    mainContext.add(cmod).add(controller);
-    mainContext.setPerspective(1000);
+    var modifier = new Modifier({
+        origin: [0, 0],
+        align: [0, 0],
+        transform: transTransform
+    });
 
+    var draggable = new Draggable();
+
+    draggable.subscribe(dragSurface);
+
+    var content = 'Not Draggable';
+    surface.setContent(content);
+
+    mainContext.add(modifier).add(surface);
+    mainContext.add(draggable).add(dragSurface);
+
+    draggable.on('update', function (e) {
+        var pos = e.position;
+        surface.setContent('Draggable Position is '+pos);
+        transTransform.set(Transform.translate(pos[0]+100, pos[1], 0));
+    })
+
+    draggable.on('end', function (e) {
+        var pos = e.position;
+        surface.setContent('Draggable End Position is '+pos);
+        transTransform.set(Transform.translate(pos[0]+100, pos[1], 0));
+    })
+
+    /**************************************
+     ************ Attribution :)
+     **************************************/
+
+    var desc = new Surface({
+        content:'<a href="http://stackoverflow.com/users/2597114/talves"><img src="http://stackoverflow.com/users/flair/2597114.png" width="208" height="58" alt="profile for talves at Stack Overflow" title="profile for talves at Stack Overflow"></a>',
+        classes: ['double-sided', 'double-font'],
+        properties: {
+            textAlign: 'center',
+            lineHeight: '80px'
+        }
+    });
+
+    desc._mod = new Modifier({
+        size: [200, 20],
+        align: [0.5, 1],
+        origin: [0, 0],
+        transform: Transform.translate(-100, -100, 0)
+    });
+
+    mainContext.add(desc._mod).add(desc);
 });

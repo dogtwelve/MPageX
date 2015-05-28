@@ -1054,4 +1054,146 @@ define(function(require, exports, module) {
     //});
     //
     //mainContext.add(centerModifier).add(centerCircle);
+
+    //Famo.us Transition Button (ripple)  registerProperty
+    ////jsfiddle.net/sunrising/U3eLc/light
+    var Engine = require('famous/core/Engine');
+    var Surface = require('famous/core/Surface');
+    var StateModifier = require('famous/modifiers/StateModifier');
+    var Transitionable = require('famous/transitions/Transitionable');
+    var SnapTransition = require('famous/transitions/SnapTransition');
+
+    Transitionable.registerMethod('snap', SnapTransition);
+
+    var snap = {
+        method: 'snap',
+        period: 400,
+        dampingRatio: 0.1
+    };
+    var snap2 = {
+        method: 'snap',
+        period: 200,
+        dampingRatio: 1
+    };
+
+    var context = Engine.createContext();
+
+    function PropertyTransitionable() {
+        this._trans = {};
+        this._fns = {};
+        this._renders = {};
+    }
+
+    PropertyTransitionable.prototype.constructor = PropertyTransitionable;
+
+    PropertyTransitionable.prototype.registerProperty = function (property, initial, fn) {
+        this._fns[property] = fn;
+        this._trans[property] = new Transitionable(initial);
+
+        var propertyUpper = 'set' + property[0].toUpperCase() + property.substr(1);
+
+        this[propertyUpper] = function (object, value, transition, callback) {
+
+            var existing = this._renders[property];
+
+            if (existing) Engine.removeListener('prerender', existing);
+
+            this._renders[property] = function () {
+                var currentPos = this._trans[property].get();
+                var calculated = this._fns[property](currentPos);
+                var properties = {};
+
+                properties[property] = calculated;
+
+                object.setProperties(properties);
+            }.bind(this);
+
+            this._trans[property].halt();
+
+            this._trans[property].set(value, transition, function () {
+                Engine.removeListener('prerender', this._renders[property]);
+                if (callback) callback();
+            }.bind(this));
+
+            Engine.on('prerender', this._renders[property]);
+        }.bind(this);
+    };
+
+    PropertyTransitionable.DEFAULT_OPTIONS = {};
+
+    var surface = new Surface({
+        size: [200, 200],
+        content: 'Click me!',
+        properties: {
+            backgroundColor: 'rgb(0,255,0)',
+            fontSize: "14px",
+            lineHeight: "190px",
+            fontFamily: "arial",
+            textAlign: 'center',
+            webkitUserSelect: 'none'
+        }
+    });
+
+    var state = false;
+
+    var propertyTransitionable = new PropertyTransitionable();
+
+    propertyTransitionable.registerProperty('borderRadius', 0, function (value) {
+        return Math.round(value) + '%';
+    });
+
+
+    propertyTransitionable.registerProperty('border', 0, function (value) {
+        return Math.round(value) + 'px solid black';
+    });
+
+    propertyTransitionable.registerProperty('backgroundColor', 0, function (value) {
+        var rounded = Math.round(value);
+        return 'rgb(' + rounded + ',' + (255 - rounded) + ',0)';
+    });
+
+    propertyTransitionable.registerProperty('boxShadow', 0, function (value) {
+        var rounded = Math.round(value);
+        var string = '0px ' + rounded + 'px ' + rounded + 'px rgba(0,0,0,0.5), ';
+        string += 'inset 0px ' + rounded + 'px ' + rounded + 'px rgba(255,255,255,0.5), ';
+        string += 'inset 0px ' + -rounded + 'px ' + rounded + 'px rgba(0,0,0,0.5)  ';
+        return string;
+    });
+
+    propertyTransitionable.registerProperty('fontSize', 14, function (value) {
+        return Math.round(value) + 'px';
+    });
+
+    propertyTransitionable.registerProperty('color', 0, function (value) {
+        var rounded = Math.round(value);
+        return 'rgb(' + rounded + ',' + rounded + ',' + rounded + ')';
+    });
+
+    surface.on('click', function () {
+
+        if (state) {
+            propertyTransitionable.setBorderRadius(surface, 0, snap2);
+            propertyTransitionable.setBorder(surface, 0, snap2);
+            propertyTransitionable.setBackgroundColor(surface, 0, snap2);
+            propertyTransitionable.setBoxShadow(surface, 0, snap2);
+            propertyTransitionable.setFontSize(surface, 14, snap2);
+            propertyTransitionable.setColor(surface, 0, snap2);
+        } else {
+            propertyTransitionable.setBorderRadius(surface, 50, snap);
+            propertyTransitionable.setBorder(surface, 8, snap);
+            propertyTransitionable.setBackgroundColor(surface, 255, snap);
+            propertyTransitionable.setBoxShadow(surface, 20, snap);
+            propertyTransitionable.setFontSize(surface, 36, snap);
+            propertyTransitionable.setColor(surface, 255, snap);
+        }
+
+        state = !state;
+    });
+
+    context.add(new StateModifier({
+        align: [0.5,0.5],
+        origin: [0.5, 0.5]
+    })).add(surface);
+
+    module.exports = null;
 });

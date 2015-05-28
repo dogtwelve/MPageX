@@ -133,11 +133,11 @@ define(function(require, exports, module) {
             });
         }
 
-        var modifier = new Modifier({
-            size: this.bgSize,
-            origin: [0.5, 0.5],
-            align: [0.5, 0.5]
-        });
+        //var modifier = new Modifier({
+        //    size: this.bgSize,
+        //    origin: [0.5, 0.5],
+        //    align: [0.5, 0.5]
+        //});
 
         this.add(this.scrollRecieverSurface);
     }

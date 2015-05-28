@@ -922,63 +922,136 @@ define(function(require, exports, module) {
     //
     //mainContext.add(desc._mod).add(desc);
 
-    ////Animating blur with the famous framework///
-    //http://stackoverflow.com/questions/23295895/animating-blur-with-the-famous-framework
-    var Engine            = require('famous/core/Engine');
-    var Surface           = require('famous/core/Surface');
-    var StateModifier     = require('famous/modifiers/StateModifier');
-    var Transitionable    = require('famous/transitions/Transitionable');
-    var SnapTransition    = require('famous/transitions/SnapTransition');
+    //////Animating blur with the famous framework///
+    ////http://stackoverflow.com/questions/23295895/animating-blur-with-the-famous-framework
+    //var Engine            = require('famous/core/Engine');
+    //var Surface           = require('famous/core/Surface');
+    //var StateModifier     = require('famous/modifiers/StateModifier');
+    //var Transitionable    = require('famous/transitions/Transitionable');
+    //var SnapTransition    = require('famous/transitions/SnapTransition');
+    //
+    //Transitionable.registerMethod('snap', SnapTransition);
+    //
+    //var snap   = { method :'snap',  period: 400,  dampingRatio: 0.7   };
+    //
+    //var context = Engine.createContext();
+    //
+    //var surface = new Surface({
+    //    size: [200,200],
+    //    properties: {
+    //        backgroundColor: 'red'
+    //    }
+    //});
+    //
+    //var transitionable;
+    //var final_pos;
+    //
+    //var blurred = false;
+    //
+    //var blur_from_to = function(i,f,transition){
+    //
+    //    var initial_pos = i;
+    //    final_pos = f;
+    //
+    //    transitionable = new Transitionable(initial_pos);
+    //
+    //    transitionable.set(final_pos, transition);
+    //
+    //    Engine.on('prerender', prerender);
+    //}
+    //
+    //var prerender = function(){
+    //
+    //    current_pos = transitionable.get();
+    //
+    //    var blur_string = 'blur('+ current_pos + 'px)';
+    //
+    //    surface.setProperties({ webkitFilter:blur_string});
+    //
+    //    if (current_pos == final_pos) {
+    //        Engine.removeListener('prerender',prerender);
+    //    };
+    //}
+    //
+    //surface.on("click", function(){
+    //
+    //    blurred ? blur_from_to(10,0,snap) : blur_from_to(0,10,snap) ;
+    //    blurred = !blurred;
+    //
+    //} );
+    //
+    //context.add(new StateModifier({origin:[0.5,0.5]})).add(surface);
 
-    Transitionable.registerMethod('snap', SnapTransition);
 
-    var snap   = { method :'snap',  period: 400,  dampingRatio: 0.7   };
-
-    var context = Engine.createContext();
-
-    var surface = new Surface({
-        size: [200,200],
-        properties: {
-            backgroundColor: 'red'
-        }
-    });
-
-    var transitionable;
-    var final_pos;
-
-    var blurred = false;
-
-    var blur_from_to = function(i,f,transition){
-
-        var initial_pos = i;
-        final_pos = f;
-
-        transitionable = new Transitionable(initial_pos);
-
-        transitionable.set(final_pos, transition);
-
-        Engine.on('prerender', prerender);
-    }
-
-    var prerender = function(){
-
-        current_pos = transitionable.get();
-
-        var blur_string = 'blur('+ current_pos + 'px)';
-
-        surface.setProperties({ webkitFilter:blur_string});
-
-        if (current_pos == final_pos) {
-            Engine.removeListener('prerender',prerender);
-        };
-    }
-
-    surface.on("click", function(){
-
-        blurred ? blur_from_to(10,0,snap) : blur_from_to(0,10,snap) ;
-        blurred = !blurred;
-
-    } );
-
-    context.add(new StateModifier({origin:[0.5,0.5]})).add(surface);
+    //////draw a line
+    ////http://stackoverflow.com/questions/26886424/how-to-simply-draw-a-line-in-famo-us
+    //var Engine = require('famous/core/Engine');
+    //var OptionsManager = require('famous/core/OptionsManager');
+    //var Surface = require('famous/core/Surface');
+    //// var ImageSurface = require('famous/surfaces/ImageSurface');
+    //// var InputSurface = require('famous/surfaces/InputSurface');
+    //
+    //// var StateModifier = require('famous/modifiers/StateModifier');
+    //var Modifier = require('famous/core/Modifier');
+    //var RenderNode = require('famous/core/RenderNode');
+    //var Transform = require('famous/core/Transform');
+    //
+    //// var Transitionable = require('famous/transitions/Transitionable');
+    //// var GenericSync = require('famous/inputs/GenericSync');
+    //// var MouseSync = require('famous/inputs/MouseSync');
+    //// var TouchSync = require('famous/inputs/TouchSync');
+    //
+    //var mainContext = Engine.createContext();
+    //mainContext.setPerspective(1000);
+    //
+    //var splash = new Surface({ content: 'Famo.us Application'});
+    //
+    //var line = new Surface({
+    //    size:[80,1],
+    //    classes: ['double-sided'],
+    //    properties: {
+    //        backgroundColor: 'rgba(0,0,0,1.0)',
+    //        cursor: 'pointer'
+    //    }
+    //});
+    //
+    //mainContext.add(splash);
+    //
+    //var initialTime = Date.now();
+    //var centerSpinModifier = new Modifier({
+    //    origin: [0, 0],
+    //    align: [0.5, 0.5],
+    //    transform: function() {
+    //        var radians = 0.001 * (Date.now() - initialTime);
+    //        return Transform.rotateAxis([0,0,1], radians);
+    //    }
+    //});
+    //
+    //var angle = 45;
+    //var angleModifier = new Modifier({
+    //    origin: [0, 0],
+    //    align: [0.5, 0.5],
+    //    transform: function() {
+    //        var radians = Math.PI/180 * angle;
+    //        return Transform.rotateAxis([0,0,1], radians);
+    //    }
+    //});
+    //
+    //mainContext.add(angleModifier).add(line);
+    //
+    //var centerModifier = new Modifier({
+    //    origin: [0.5, 0.5],
+    //    align: [0.5, 0.5]
+    //});
+    //var centerCircle = new Surface({
+    //    origin: [0.5, 0.5],
+    //    align: [0.5, 0.5],
+    //    size: [20,20],
+    //    properties: {
+    //        borderRadius: '10px',
+    //        backgroundColor: 'rgba(255,0,0,0.25)'
+    //    }
+    //});
+    //
+    //mainContext.add(centerModifier).add(centerCircle);
 });

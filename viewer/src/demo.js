@@ -435,145 +435,408 @@ define(function(require, exports, module) {
 
     ////http://stackoverflow.com/questions/27714976/famo-us-access-to-collisiondata-upon-collision-event
 
+    //var Engine = require('famous/core/Engine');
+    //var Surface = require('famous/core/Surface');
+    //var ImageSurface = require('famous/surfaces/ImageSurface');
+    //var RenderNode = require('famous/core/RenderNode');
+    //var View = require('famous/core/View');
+    //var Transform = require('famous/core/Transform');
+    //var StateModifier = require('famous/modifiers/StateModifier');
+    //var Modifier = require('famous/core/Modifier');
+    //
+    //var PhysicsEngine = require('famous/physics/PhysicsEngine');
+    //var Force = require('famous/physics/forces/Force');
+    //var Body = require('famous/physics/bodies/Body');
+    //var Circle = require('famous/physics/bodies/Circle');
+    //var Wall = require('famous/physics/constraints/Wall');
+    //var Vector = require('famous/math/Vector');
+    //var Collision = require('famous/physics/constraints/Collision');
+    //
+    //var context = Engine.createContext();
+    //context.setPerspective(1000);
+    //
+    //var collision = new Collision();
+    //collision.on('collision', function(data){
+    //    console.log('target', data.target.uniqueID, 'bumped source', data.source.uniqueID);
+    //    console.log('target surface', data.target.surface);
+    //    console.log('source surface', data.source.surface);
+    //    data.source.surface.setOptions({
+    //        properties: {backgroundColor: 'blue'}
+    //    });
+    //    data.target.surface.setOptions({
+    //        properties: {backgroundColor: 'red'}
+    //    });
+    //});
+    //var physicsOrigin = [0.5, 0.5];
+    //
+    //colourPallete = ['#000', '#000', '#000'];
+    //
+    //var node = new RenderNode();
+    //var physicsEngine = new PhysicsEngine();
+    //
+    //var dimX;
+    //var dimY;
+    //
+    //var surface = new Surface({
+    //    content: 'Click to set Body in motion. On collision, target will set backround RED and source will be BLUE',
+    //    size: [undefined, undefined],
+    //    properties: {
+    //        backgroundColor: 'rgba(0, 126, 0, 0.15)'
+    //    }
+    //});
+    //context.add(new Modifier({
+    //    align: physicsOrigin,
+    //    origin: physicsOrigin
+    //})).add(node);
+    //context.add(surface);
+    //node.add(physicsEngine);
+    //
+    //surface.on('click', function (event) {
+    //    console.log('x ' + event.clientX);
+    //    console.log('y ' + event.clientY);
+    //    var x = event.clientX - (dimX * physicsOrigin[0]);
+    //    var y = event.clientY - (dimY * physicsOrigin[1]);
+    //    var cBall = createBall;
+    //    setTimeout(function () {
+    //        createBall(x, y);
+    //    }, 0);
+    //
+    //});
+    //
+    //var balls = [];
+    //
+    //var gravity = new Force([0, 0.00025, 0]);
+    //
+    //Engine.nextTick(function(){
+    //    var size = context.getSize();
+    //    console.log('After tick=' + size);
+    //    dimX = size[0];
+    //    dimY = size[1];
+    //
+    //    var leftWall = new Wall({
+    //        normal: [1, 0, 0],
+    //        distance: Math.round(dimX / 2.0),
+    //        restitution: 0.5
+    //    });
+    //    var rightWall = new Wall({
+    //        normal: [-1, 0, 0],
+    //        distance: Math.round(dimX / 2.0),
+    //        restitution: 0.5
+    //    });
+    //    var topWall = new Wall({
+    //        normal: [0, 1, 0],
+    //        distance: Math.round(dimY / 2.0),
+    //        restitution: 0.5
+    //    });
+    //    var bottomWall = new Wall({
+    //        normal: [0, -1, 0],
+    //        distance: Math.round(dimY / 2.0),
+    //        restitution: 0.5
+    //    });
+    //
+    //    physicsEngine.attach([leftWall, rightWall, topWall, bottomWall], balls);
+    //
+    //});
+    //
+    //
+    //function setGravity() {
+    //    //gravity.applyForce(this);
+    //    return this.getTransform();
+    //}
+    //
+    //var uniqueID = 0;
+    //function createBall(x, y) {
+    //    var radius = (Math.random() * 48) + 12;
+    //    var colour = Math.floor((Math.random() * 3));
+    //    var ball = new ImageSurface({
+    //        content: 'http://code.famo.us/assets/famous_logo.svg',
+    //        size: [radius * 2, radius * 2],
+    //        properties: {
+    //            borderRadius: (radius * 2) + 'px'
+    //        }
+    //    });
+    //    ball.particle = new Circle({
+    //        radius: radius,
+    //        position: [x, y, 0]
+    //    });
+    //    ball.particle.uniqueID = 'particle' + uniqueID;
+    //    ball.particle.surface = ball;
+    //    uniqueID += 1;
+    //    physicsEngine.addBody(ball.particle);
+    //    physicsEngine.attach(collision, balls, ball.particle);
+    //    ball.state = new Modifier();
+    //    ball.state.transformFrom(setGravity.bind(ball.particle));
+    //    node.add(ball.state).add(ball);
+    //    ball.sleeping = false;
+    //    ball.on("click", function () {
+    //        console.log('clicked ball');
+    //        physicsEngine.removeBody(this.particle);
+    //    });
+    //
+    //    balls.push(ball.particle);
+    //    ball.particle.setVelocity([(Math.random() * 4) - 2, (Math.random() * 4) - 2, 0]);
+    //}
+
+
+
+    ///////////////////implement google paper button effects
+    /////////http://stackoverflow.com/questions/24946191/how-to-implement-google-paper-button-effects
+    //var Surface = require('famous/core/Surface');
+    //var Timer = require('famous/utilities/Timer');
+    //var Transitionable = require('famous/transitions/Transitionable');
+    //
+    //// Extend the button surface to tap into .render()
+    //function RippleSurface(options) {
+    //    Surface.apply(this, arguments);
+    //
+    //    this.gradientOpacity = new Transitionable(0);
+    //    this.gradientRadius = new Transitionable(0);
+    //
+    //    // Use light or dark gradient?
+    //    if (options.tint === 'light') {
+    //        // radiate light to dark
+    //        this.firstStop = '255,255,255';
+    //    } else {
+    //        // radiate dark to light by default
+    //        this.firstStop = '0,0,0';
+    //    }
+    //
+    //    // Hold on to offsetX/Y throughout render loop during transition
+    //    this.offsetX = 0;
+    //    this.offsetY = 0;
+    //
+    //    this.on('mousedown', this.ripple);
+    //    this.on('mouseup', this.smooth);
+    //    this.on('mouseleave', this.smooth);
+    //
+    //    this.on('deploy', this.postDeploy);
+    //}
+    //
+    //RippleSurface.prototype = Object.create(Surface.prototype);
+    //RippleSurface.prototype.constructor = RippleSurface;
+    //
+    //RippleSurface.prototype.postDeploy = function () {
+    //    // Have to do this here in order to account for undefined or boolean sizes
+    //    var width = (typeof this.size[0] === 'number') ? this.size[0] : this._currTarget.clientWidth;
+    //    var height = (typeof this.size[1] === 'number') ? this.size[1] : this._currTarget.clientHeight;
+    //
+    //    // Maximum radius large enough to cover the surface from corner to corner
+    //    this.gradientMaxRadius = Math.round(Math.sqrt(width * width + height * height));
+    //
+    //    // Based on "feels good" numbers of growing 100px in 300 milliseconds
+    //    this.gradientDuration = (this.gradientMaxRadius / 100) * 300;
+    //};
+    //
+    //RippleSurface.prototype.render = function () {
+    //    var gradientOpacity = this.gradientOpacity.get();
+    //    var gradientRadius = this.gradientRadius.get();
+    //
+    //    // My apologies for this. Interpolation is coming in ECMAScript 6!
+    //    this.setProperties({
+    //        backgroundImage: 'radial-gradient(circle at ' + this.offsetX + ' ' + this.offsetY + ', rgba(' + this.firstStop + ',' + gradientOpacity + '), rgba(' + this.firstStop + ',' + gradientOpacity + ') ' + gradientRadius + 'px, rgba(0,0,0,0) ' + gradientRadius + 'px)'
+    //    });
+    //
+    //    // return what Surface expects
+    //    return this.id;
+    //};
+    //
+    //RippleSurface.prototype.ripple = function (data) {
+    //    this.offsetX = (data.offsetX || data.layerX) + 'px';
+    //    this.offsetY = (data.offsetY || data.layerY) + 'px';
+    //
+    //    this.gradientOpacity.set(0.1);
+    //    this.gradientRadius.set(0);
+    //    this.gradientRadius.set(this.gradientMaxRadius, {
+    //        duration: this.gradientDuration,
+    //        curve: 'easeOut'
+    //    });
+    //};
+    //
+    //RippleSurface.prototype.smooth = function (data) {
+    //    this.gradientOpacity.set(0, {
+    //        duration: 300,
+    //        curve: 'easeOut'
+    //    });
+    //};
+    //
+    ////module.exports = RippleSurface;
+    //
+    //
+    //var Engine = require('famous/core/Engine');
+    //var StateModifier = require('famous/modifiers/StateModifier');
+    //var Transform = require('famous/core/Transform');
+    //
+    ////var RippleSurface = require('RippleSurface');
+    //
+    //var mainContext = Engine.createContext();
+    //
+    //// Test light tint
+    //var surface = new RippleSurface({
+    //    content: 'Primary',
+    //    size: [150, 44],
+    //    tint: 'light',
+    //    properties: {
+    //        fontFamily: 'Helvetica Neue',
+    //        fontSize: '18px',
+    //        fontWeight: '300',
+    //        textAlign: 'center',
+    //        lineHeight: '44px',
+    //        background: '#3799dc'
+    //    }
+    //});
+    //
+    //var modifier = new StateModifier({
+    //    transform: Transform.translate(50, 50, 0)
+    //});
+    //
+    //// Test dark tint
+    //var surface2 = new RippleSurface({
+    //    content: 'Secondary',
+    //    size: [150, 44],
+    //    properties: {
+    //        fontFamily: 'Helvetica Neue',
+    //        fontSize: '18px',
+    //        fontWeight: '300',
+    //        textAlign: 'center',
+    //        lineHeight: '44px',
+    //        background: '#ecf0f1'
+    //    }
+    //});
+    //
+    //var modifier2 = new StateModifier({
+    //    transform: Transform.translate(250, 50, 0)
+    //});
+    //
+    //// Test undefined and boolean sizes
+    //var surface3 = new RippleSurface({
+    //    content: 'Big Button',
+    //    size: [undefined, true],
+    //    properties: {
+    //        fontFamily: 'Helvetica Neue',
+    //        fontSize: '18px',
+    //        fontWeight: '300',
+    //        textAlign: 'center',
+    //        lineHeight: '150px',
+    //        background: '#1abc9c'
+    //    }
+    //});
+    //
+    //var modifier3 = new StateModifier({
+    //    size: [150, 150],
+    //    transform: Transform.translate(450, 50, 0)
+    //});
+    //
+    //// Test timing
+    //var surface4 = new RippleSurface({
+    //    content: 'Long Button',
+    //    size: [400, 44],
+    //    properties: {
+    //        fontFamily: 'Helvetica Neue',
+    //        fontSize: '18px',
+    //        fontWeight: '300',
+    //        textAlign: 'center',
+    //        lineHeight: '44px',
+    //        background: '#e74c3c'
+    //    }
+    //});
+    //
+    //var modifier4 = new StateModifier({
+    //    transform: Transform.translate(50, 250, 0)
+    //});
+    //
+    //
+    //mainContext.add(modifier).add(surface);
+    //mainContext.add(modifier2).add(surface2);
+    //mainContext.add(modifier3).add(surface3);
+    //mainContext.add(modifier4).add(surface4);
+
+
+    ///light box/////////////
     var Engine = require('famous/core/Engine');
     var Surface = require('famous/core/Surface');
-    var ImageSurface = require('famous/surfaces/ImageSurface');
-    var RenderNode = require('famous/core/RenderNode');
-    var View = require('famous/core/View');
-    var Transform = require('famous/core/Transform');
+    var GridLayout = require('famous/views/GridLayout');
     var StateModifier = require('famous/modifiers/StateModifier');
-    var Modifier = require('famous/core/Modifier');
+    var Transform = require('famous/core/Transform');
+    var RenderNode = require('famous/core/RenderNode');
+    var RenderController = require('famous/views/RenderController');
+    var Lightbox = require('famous/views/Lightbox');
+    var Easing = require('famous/transitions/Easing');
 
-    var PhysicsEngine = require('famous/physics/PhysicsEngine');
-    var Force = require('famous/physics/forces/Force');
-    var Body = require('famous/physics/bodies/Body');
-    var Circle = require('famous/physics/bodies/Circle');
-    var Wall = require('famous/physics/constraints/Wall');
-    var Vector = require('famous/math/Vector');
-    var Collision = require('famous/physics/constraints/Collision');
+    var mainContext = Engine.createContext();
 
-    var context = Engine.createContext();
-    context.setPerspective(1000);
-
-    var collision = new Collision();
-    collision.on('collision', function(data){
-        console.log('target', data.target.uniqueID, 'bumped source', data.source.uniqueID);
-        console.log('target surface', data.target.surface);
-        console.log('source surface', data.source.surface);
-        data.source.surface.setOptions({
-            properties: {backgroundColor: 'blue'}
-        });
-        data.target.surface.setOptions({
-            properties: {backgroundColor: 'red'}
-        });
-    });
-    var physicsOrigin = [0.5, 0.5];
-
-    colourPallete = ['#000', '#000', '#000'];
-
-    var node = new RenderNode();
-    var physicsEngine = new PhysicsEngine();
-
-    var dimX;
-    var dimY;
-
-    var surface = new Surface({
-        content: 'Click to set Body in motion. On collision, target will set backround RED and source will be BLUE',
-        size: [undefined, undefined],
-        properties: {
-            backgroundColor: 'rgba(0, 126, 0, 0.15)'
-        }
-    });
-    context.add(new Modifier({
-        align: physicsOrigin,
-        origin: physicsOrigin
-    })).add(node);
-    context.add(surface);
-    node.add(physicsEngine);
-
-    surface.on('click', function (event) {
-        console.log('x ' + event.clientX);
-        console.log('y ' + event.clientY);
-        var x = event.clientX - (dimX * physicsOrigin[0]);
-        var y = event.clientY - (dimY * physicsOrigin[1]);
-        var cBall = createBall;
-        setTimeout(function () {
-            createBall(x, y);
-        }, 0);
-
+    var grid = new GridLayout({
+        dimensions: [8, 8],
     });
 
-    var balls = [];
+    var surfaces = [];
 
-    var gravity = new Force([0, 0.00025, 0]);
+    var showing;
 
-    Engine.nextTick(function(){
-        var size = context.getSize();
-        console.log('After tick=' + size);
-        dimX = size[0];
-        dimY = size[1];
+    grid.sequenceFrom(surfaces);
 
-        var leftWall = new Wall({
-            normal: [1, 0, 0],
-            distance: Math.round(dimX / 2.0),
-            restitution: 0.5
-        });
-        var rightWall = new Wall({
-            normal: [-1, 0, 0],
-            distance: Math.round(dimX / 2.0),
-            restitution: 0.5
-        });
-        var topWall = new Wall({
-            normal: [0, 1, 0],
-            distance: Math.round(dimY / 2.0),
-            restitution: 0.5
-        });
-        var bottomWall = new Wall({
-            normal: [0, -1, 0],
-            distance: Math.round(dimY / 2.0),
-            restitution: 0.5
-        });
-
-        physicsEngine.attach([leftWall, rightWall, topWall, bottomWall], balls);
-
+    var cmod = new StateModifier({
+        origin: [0.5, 0.5],
+        align: [0.5, 0.5]
     });
+    var controller = new Lightbox({
+        inTransition: true,
+        outTransition: false,
+        overlap: true
+    });
+    controller.hide();
 
-
-    function setGravity() {
-        //gravity.applyForce(this);
-        return this.getTransform();
-    }
-
-    var uniqueID = 0;
-    function createBall(x, y) {
-        var radius = (Math.random() * 48) + 12;
-        var colour = Math.floor((Math.random() * 3));
-        var ball = new ImageSurface({
-            content: 'http://code.famo.us/assets/famous_logo.svg',
-            size: [radius * 2, radius * 2],
+    function newSurface(id) {
+        var surface = new Surface({
+            size: [undefined, undefined],
+            content: id + 1,
             properties: {
-                borderRadius: (radius * 2) + 'px'
+                backgroundColor: "hsl(" + (id * 70 / 64) + ", 60%, 70%)",
+                lineHeight: '50px',
+                textAlign: 'center',
+                cursor: 'pointer'
             }
         });
-        ball.particle = new Circle({
-            radius: radius,
-            position: [x, y, 0]
-        });
-        ball.particle.uniqueID = 'particle' + uniqueID;
-        ball.particle.surface = ball;
-        uniqueID += 1;
-        physicsEngine.addBody(ball.particle);
-        physicsEngine.attach(collision, balls, ball.particle);
-        ball.state = new Modifier();
-        ball.state.transformFrom(setGravity.bind(ball.particle));
-        node.add(ball.state).add(ball);
-        ball.sleeping = false;
-        ball.on("click", function () {
-            console.log('clicked ball');
-            physicsEngine.removeBody(this.particle);
-        });
 
-        balls.push(ball.particle);
-        ball.particle.setVelocity([(Math.random() * 4) - 2, (Math.random() * 4) - 2, 0]);
+        surface._smod = new StateModifier({
+            size: [420,420],
+            origin: [0.5, 0.5],
+            align: [0.5, 0.5]
+        });
+        surface._rnode = new RenderNode();
+        surface._rnode.add(surface._smod).add(surface);
+
+        surfaces.push(surface);
+
+        surface.on('click', function(context, e) {
+            if (this === showing) {
+                controller.hide({ curve:Easing.inElastic, duration: 1000 }, function(){
+                    gridModifier.setTransform(Transform.scale(1,1,1),
+                        { curve:Easing.outElastic, duration: 1000 });
+                });
+                showing = null;
+            } else {
+                showing = this;
+                gridModifier.setTransform(Transform.scale(0.001, 0.001, 0.001),
+                    { curve:Easing.outCurve, duration: 300 });
+                cmod.setTransform(Transform.translate(0, 0, 0.0001));
+                controller.show(this._rnode, { curve:Easing.outElastic, duration: 2400 });
+            }
+
+        }.bind(surface, mainContext));
     }
+
+    for(var i = 0; i < 64; i++) {
+        newSurface(i);
+    }
+
+    var gridModifier = new StateModifier({
+        size: [400, 400],
+        align: [0.5, 0.5],
+        origin: [0.5, 0.5]
+    });
+
+    mainContext.add(gridModifier).add(grid);
+    mainContext.add(cmod).add(controller);
+    mainContext.setPerspective(1000);
+
 });

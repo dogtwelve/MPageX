@@ -578,179 +578,6 @@ define(function(require, exports, module) {
     //}
 
 
-
-    ///////////////////implement google paper button effects
-    /////////http://stackoverflow.com/questions/24946191/how-to-implement-google-paper-button-effects
-    //var Surface = require('famous/core/Surface');
-    //var Timer = require('famous/utilities/Timer');
-    //var Transitionable = require('famous/transitions/Transitionable');
-    //
-    //// Extend the button surface to tap into .render()
-    //function RippleSurface(options) {
-    //    Surface.apply(this, arguments);
-    //
-    //    this.gradientOpacity = new Transitionable(0);
-    //    this.gradientRadius = new Transitionable(0);
-    //
-    //    // Use light or dark gradient?
-    //    if (options.tint === 'light') {
-    //        // radiate light to dark
-    //        this.firstStop = '255,255,255';
-    //    } else {
-    //        // radiate dark to light by default
-    //        this.firstStop = '0,0,0';
-    //    }
-    //
-    //    // Hold on to offsetX/Y throughout render loop during transition
-    //    this.offsetX = 0;
-    //    this.offsetY = 0;
-    //
-    //    this.on('mousedown', this.ripple);
-    //    this.on('mouseup', this.smooth);
-    //    this.on('mouseleave', this.smooth);
-    //
-    //    this.on('deploy', this.postDeploy);
-    //}
-    //
-    //RippleSurface.prototype = Object.create(Surface.prototype);
-    //RippleSurface.prototype.constructor = RippleSurface;
-    //
-    //RippleSurface.prototype.postDeploy = function () {
-    //    // Have to do this here in order to account for undefined or boolean sizes
-    //    var width = (typeof this.size[0] === 'number') ? this.size[0] : this._currTarget.clientWidth;
-    //    var height = (typeof this.size[1] === 'number') ? this.size[1] : this._currTarget.clientHeight;
-    //
-    //    // Maximum radius large enough to cover the surface from corner to corner
-    //    this.gradientMaxRadius = Math.round(Math.sqrt(width * width + height * height));
-    //
-    //    // Based on "feels good" numbers of growing 100px in 300 milliseconds
-    //    this.gradientDuration = (this.gradientMaxRadius / 100) * 300;
-    //};
-    //
-    //RippleSurface.prototype.render = function () {
-    //    var gradientOpacity = this.gradientOpacity.get();
-    //    var gradientRadius = this.gradientRadius.get();
-    //
-    //    // My apologies for this. Interpolation is coming in ECMAScript 6!
-    //    this.setProperties({
-    //        backgroundImage: 'radial-gradient(circle at ' + this.offsetX + ' ' + this.offsetY + ', rgba(' + this.firstStop + ',' + gradientOpacity + '), rgba(' + this.firstStop + ',' + gradientOpacity + ') ' + gradientRadius + 'px, rgba(0,0,0,0) ' + gradientRadius + 'px)'
-    //    });
-    //
-    //    // return what Surface expects
-    //    return this.id;
-    //};
-    //
-    //RippleSurface.prototype.ripple = function (data) {
-    //    this.offsetX = (data.offsetX || data.layerX) + 'px';
-    //    this.offsetY = (data.offsetY || data.layerY) + 'px';
-    //
-    //    this.gradientOpacity.set(0.1);
-    //    this.gradientRadius.set(0);
-    //    this.gradientRadius.set(this.gradientMaxRadius, {
-    //        duration: this.gradientDuration,
-    //        curve: 'easeOut'
-    //    });
-    //};
-    //
-    //RippleSurface.prototype.smooth = function (data) {
-    //    this.gradientOpacity.set(0, {
-    //        duration: 300,
-    //        curve: 'easeOut'
-    //    });
-    //};
-    //
-    ////module.exports = RippleSurface;
-    //
-    //
-    //var Engine = require('famous/core/Engine');
-    //var StateModifier = require('famous/modifiers/StateModifier');
-    //var Transform = require('famous/core/Transform');
-    //
-    ////var RippleSurface = require('RippleSurface');
-    //
-    //var mainContext = Engine.createContext();
-    //
-    //// Test light tint
-    //var surface = new RippleSurface({
-    //    content: 'Primary',
-    //    size: [150, 44],
-    //    tint: 'light',
-    //    properties: {
-    //        fontFamily: 'Helvetica Neue',
-    //        fontSize: '18px',
-    //        fontWeight: '300',
-    //        textAlign: 'center',
-    //        lineHeight: '44px',
-    //        background: '#3799dc'
-    //    }
-    //});
-    //
-    //var modifier = new StateModifier({
-    //    transform: Transform.translate(50, 50, 0)
-    //});
-    //
-    //// Test dark tint
-    //var surface2 = new RippleSurface({
-    //    content: 'Secondary',
-    //    size: [150, 44],
-    //    properties: {
-    //        fontFamily: 'Helvetica Neue',
-    //        fontSize: '18px',
-    //        fontWeight: '300',
-    //        textAlign: 'center',
-    //        lineHeight: '44px',
-    //        background: '#ecf0f1'
-    //    }
-    //});
-    //
-    //var modifier2 = new StateModifier({
-    //    transform: Transform.translate(250, 50, 0)
-    //});
-    //
-    //// Test undefined and boolean sizes
-    //var surface3 = new RippleSurface({
-    //    content: 'Big Button',
-    //    size: [undefined, true],
-    //    properties: {
-    //        fontFamily: 'Helvetica Neue',
-    //        fontSize: '18px',
-    //        fontWeight: '300',
-    //        textAlign: 'center',
-    //        lineHeight: '150px',
-    //        background: '#1abc9c'
-    //    }
-    //});
-    //
-    //var modifier3 = new StateModifier({
-    //    size: [150, 150],
-    //    transform: Transform.translate(450, 50, 0)
-    //});
-    //
-    //// Test timing
-    //var surface4 = new RippleSurface({
-    //    content: 'Long Button',
-    //    size: [400, 44],
-    //    properties: {
-    //        fontFamily: 'Helvetica Neue',
-    //        fontSize: '18px',
-    //        fontWeight: '300',
-    //        textAlign: 'center',
-    //        lineHeight: '44px',
-    //        background: '#e74c3c'
-    //    }
-    //});
-    //
-    //var modifier4 = new StateModifier({
-    //    transform: Transform.translate(50, 250, 0)
-    //});
-    //
-    //
-    //mainContext.add(modifier).add(surface);
-    //mainContext.add(modifier2).add(surface2);
-    //mainContext.add(modifier3).add(surface3);
-    //mainContext.add(modifier4).add(surface4);
-
-
     ///light box/////////////
     //var Engine = require('famous/core/Engine');
     //var Surface = require('famous/core/Surface');
@@ -1447,111 +1274,280 @@ define(function(require, exports, module) {
     //mainContext.add(mod).add(draggable).add(surface);
 
 
-    ////How to get Famo.us draggable modifier's render node
-    //http://stackoverflow.com/questions/28866020/how-to-get-famo-us-draggable-modifiers-render-node
-    var Engine = require('famous/core/Engine');
+    //////How to get Famo.us draggable modifier's render node
+    ////http://stackoverflow.com/questions/28866020/how-to-get-famo-us-draggable-modifiers-render-node
+    //var Engine = require('famous/core/Engine');
+    //var Surface = require('famous/core/Surface');
+    //var Transform = require('famous/core/Transform');
+    //var Modifier = require('famous/core/Modifier');
+    //var StateModifier = require('famous/modifiers/StateModifier');
+    //var Draggable = require('famous/modifiers/Draggable');
+    //var TransitionableTransform = require('famous/transitions/TransitionableTransform');
+    //var View = require('famous/core/View');
+    //var RenderNode = require('famous/core/RenderNode');
+    //var RenderController = require('famous/views/RenderController');
+    //
+    ///*
+    // * @name DragTest
+    // * @constructor
+    // * @description
+    // */
+    //
+    //function DragTest() {
+    //    View.apply(this, arguments);
+    //    _createDragSurface.call(this);
+    //}
+    //
+    //DragTest.prototype = Object.create(View.prototype);
+    //DragTest.prototype.constructor = DragTest;
+    //
+    //DragTest.DEFAULT_OPTIONS = {};
+    //
+    //function _endingDrag(e) {
+    //    console.log('end position', e.position, this);
+    //    if (e.position[0] < -180) {
+    //        this.renderController.hide(this.nodePlayer, function() {
+    //            this.surface.emit('removed', {
+    //                removedNode: this.nodePlayer
+    //            });
+    //        }.bind(this));
+    //    } else {
+    //        this.draggable.setPosition([0, 0, 0], {
+    //            duration: 300
+    //        });
+    //    }
+    //}
+    //
+    //function _updatingDrag(e) {
+    //    console.log('update position', e.position);
+    //    this.surface.setContent('Position ' + e.position);
+    //}
+    //
+    //
+    //function _createDragSurface() {
+    //    var yOffset = 0;
+    //    for (var i = 0; i < 2; i++) {
+    //
+    //
+    //        var dragSurface = new Surface({
+    //            content: 'this is a drag surface',
+    //            size: [150, 150],
+    //            properties: {
+    //                marginLeft: '10px',
+    //                backgroundColor: 'grey'
+    //            }
+    //
+    //        });
+    //        var dragSurfaceModifier = new StateModifier({
+    //            origin: [0, 0],
+    //            align: [0.5, yOffset]
+    //        });
+    //        yOffset += 0.3;
+    //
+    //        var draggable = new Draggable({
+    //            xRange: [-220, 0],
+    //            yRange: [0, 0]
+    //        });
+    //
+    //        var renderController = new RenderController();
+    //        this.add(renderController);
+    //
+    //        var nodePlayer = new RenderNode();
+    //        nodePlayer.add(dragSurfaceModifier).add(draggable).add(dragSurface);
+    //        renderController.show(nodePlayer)
+    //
+    //        draggable.on('end', _endingDrag.bind({
+    //            draggable: draggable,
+    //            renderController: renderController,
+    //            nodePlayer: nodePlayer,
+    //            surface: dragSurface
+    //        }));
+    //        draggable.on('update', _updatingDrag.bind({
+    //            surface: dragSurface
+    //        }));
+    //
+    //        draggable.subscribe(dragSurface);
+    //        dragSurface.pipe(this._eventOutput); // so we can emit a custom removed event to this widget
+    //
+    //    }
+    //
+    //}
+    //
+    //var mainContext = Engine.createContext();
+    //
+    //var dragTest = new DragTest();
+    //mainContext.add(dragTest);
+    //
+    //dragTest.on('removed', function(e) {
+    //    console.log('removed ', e.removedNode);
+    //});
+
+
+    ///////////////////implement google paper button effects
+    /////////http://stackoverflow.com/questions/24946191/how-to-implement-google-paper-button-effects
     var Surface = require('famous/core/Surface');
-    var Transform = require('famous/core/Transform');
-    var Modifier = require('famous/core/Modifier');
-    var StateModifier = require('famous/modifiers/StateModifier');
-    var Draggable = require('famous/modifiers/Draggable');
-    var TransitionableTransform = require('famous/transitions/TransitionableTransform');
-    var View = require('famous/core/View');
-    var RenderNode = require('famous/core/RenderNode');
-    var RenderController = require('famous/views/RenderController');
+    var Timer = require('famous/utilities/Timer');
+    var Transitionable = require('famous/transitions/Transitionable');
 
-    /*
-     * @name DragTest
-     * @constructor
-     * @description
-     */
+    // Extend the button surface to tap into .render()
+    function RippleSurface(options) {
+        Surface.apply(this, arguments);
 
-    function DragTest() {
-        View.apply(this, arguments);
-        _createDragSurface.call(this);
-    }
+        this.gradientOpacity = new Transitionable(0);
+        this.gradientRadius = new Transitionable(0);
 
-    DragTest.prototype = Object.create(View.prototype);
-    DragTest.prototype.constructor = DragTest;
-
-    DragTest.DEFAULT_OPTIONS = {};
-
-    function _endingDrag(e) {
-        console.log('end position', e.position, this);
-        if (e.position[0] < -180) {
-            this.renderController.hide(this.nodePlayer, function() {
-                this.surface.emit('removed', {
-                    removedNode: this.nodePlayer
-                });
-            }.bind(this));
+        // Use light or dark gradient?
+        if (options.tint === 'light') {
+            // radiate light to dark
+            this.firstStop = '255,255,255';
         } else {
-            this.draggable.setPosition([0, 0, 0], {
-                duration: 300
-            });
-        }
-    }
-
-    function _updatingDrag(e) {
-        console.log('update position', e.position);
-        this.surface.setContent('Position ' + e.position);
-    }
-
-
-    function _createDragSurface() {
-        var yOffset = 0;
-        for (var i = 0; i < 2; i++) {
-
-
-            var dragSurface = new Surface({
-                content: 'this is a drag surface',
-                size: [150, 150],
-                properties: {
-                    marginLeft: '10px',
-                    backgroundColor: 'grey'
-                }
-
-            });
-            var dragSurfaceModifier = new StateModifier({
-                origin: [0, 0],
-                align: [0.5, yOffset]
-            });
-            yOffset += 0.3;
-
-            var draggable = new Draggable({
-                xRange: [-220, 0],
-                yRange: [0, 0]
-            });
-
-            var renderController = new RenderController();
-            this.add(renderController);
-
-            var nodePlayer = new RenderNode();
-            nodePlayer.add(dragSurfaceModifier).add(draggable).add(dragSurface);
-            renderController.show(nodePlayer)
-
-            draggable.on('end', _endingDrag.bind({
-                draggable: draggable,
-                renderController: renderController,
-                nodePlayer: nodePlayer,
-                surface: dragSurface
-            }));
-            draggable.on('update', _updatingDrag.bind({
-                surface: dragSurface
-            }));
-
-            draggable.subscribe(dragSurface);
-            dragSurface.pipe(this._eventOutput); // so we can emit a custom removed event to this widget
-
+            // radiate dark to light by default
+            this.firstStop = '0,0,0';
         }
 
+        // Hold on to offsetX/Y throughout render loop during transition
+        this.offsetX = 0;
+        this.offsetY = 0;
+
+        this.on('mousedown', this.ripple);
+        this.on('mouseup', this.smooth);
+        this.on('mouseleave', this.smooth);
+
+        this.on('deploy', this.postDeploy);
     }
+
+    RippleSurface.prototype = Object.create(Surface.prototype);
+    RippleSurface.prototype.constructor = RippleSurface;
+
+    RippleSurface.prototype.postDeploy = function () {
+        // Have to do this here in order to account for undefined or boolean sizes
+        var width = (typeof this.size[0] === 'number') ? this.size[0] : this._currentTarget.clientWidth;
+        var height = (typeof this.size[1] === 'number') ? this.size[1] : this._currentTarget.clientHeight;
+
+        // Maximum radius large enough to cover the surface from corner to corner
+        this.gradientMaxRadius = Math.round(Math.sqrt(width * width + height * height));
+
+        // Based on "feels good" numbers of growing 100px in 300 milliseconds
+        this.gradientDuration = (this.gradientMaxRadius / 100) * 300;
+    };
+
+    RippleSurface.prototype.render = function () {
+        var gradientOpacity = this.gradientOpacity.get();
+        var gradientRadius = this.gradientRadius.get();
+
+        // My apologies for this. Interpolation is coming in ECMAScript 6!
+        this.setProperties({
+            backgroundImage: 'radial-gradient(circle at ' + this.offsetX + ' ' + this.offsetY + ', rgba(' + this.firstStop + ',' + gradientOpacity + '), rgba(' + this.firstStop + ',' + gradientOpacity + ') ' + gradientRadius + 'px, rgba(0,0,0,0) ' + gradientRadius + 'px)'
+        });
+
+        // return what Surface expects
+        return this.id;
+    };
+
+    RippleSurface.prototype.ripple = function (data) {
+        this.offsetX = (data.offsetX || data.layerX) + 'px';
+        this.offsetY = (data.offsetY || data.layerY) + 'px';
+
+        this.gradientOpacity.set(0.1);
+        this.gradientRadius.set(0);
+        this.gradientRadius.set(this.gradientMaxRadius, {
+            duration: this.gradientDuration,
+            curve: 'easeOut'
+        });
+    };
+
+    RippleSurface.prototype.smooth = function (data) {
+        this.gradientOpacity.set(0, {
+            duration: 300,
+            curve: 'easeOut'
+        });
+    };
+
+
+    var Engine = require('famous/core/Engine');
+    var StateModifier = require('famous/modifiers/StateModifier');
+    var Transform = require('famous/core/Transform');
+
 
     var mainContext = Engine.createContext();
 
-    var dragTest = new DragTest();
-    mainContext.add(dragTest);
-
-    dragTest.on('removed', function(e) {
-        console.log('removed ', e.removedNode);
+    // Test light tint
+    var surface = new RippleSurface({
+        content: 'Primary',
+        size: [150, 44],
+        tint: 'light',
+        properties: {
+            fontFamily: 'Helvetica Neue',
+            fontSize: '18px',
+            fontWeight: '300',
+            textAlign: 'center',
+            lineHeight: '44px',
+            background: '#3799dc'
+        }
     });
+
+    var modifier = new StateModifier({
+        transform: Transform.translate(50, 50, 0)
+    });
+
+    // Test dark tint
+    var surface2 = new RippleSurface({
+        content: 'Secondary',
+        size: [150, 44],
+        properties: {
+            fontFamily: 'Helvetica Neue',
+            fontSize: '18px',
+            fontWeight: '300',
+            textAlign: 'center',
+            lineHeight: '44px',
+            background: '#ecf0f1'
+        }
+    });
+
+    var modifier2 = new StateModifier({
+        transform: Transform.translate(250, 50, 0)
+    });
+
+    // Test undefined and boolean sizes
+    var surface3 = new RippleSurface({
+        content: 'Big Button',
+        size: [undefined, true],
+        properties: {
+            fontFamily: 'Helvetica Neue',
+            fontSize: '18px',
+            fontWeight: '300',
+            textAlign: 'center',
+            lineHeight: '150px',
+            background: '#1abc9c'
+        }
+    });
+
+    var modifier3 = new StateModifier({
+        size: [150, 150],
+        transform: Transform.translate(450, 50, 0)
+    });
+
+    // Test timing
+    var surface4 = new RippleSurface({
+        content: 'Long Button',
+        size: [400, 44],
+        properties: {
+            fontFamily: 'Helvetica Neue',
+            fontSize: '18px',
+            fontWeight: '300',
+            textAlign: 'center',
+            lineHeight: '44px',
+            background: '#e74c3c'
+        }
+    });
+
+    var modifier4 = new StateModifier({
+        transform: Transform.translate(50, 250, 0)
+    });
+
+
+    mainContext.add(modifier).add(surface);
+    mainContext.add(modifier2).add(surface2);
+    mainContext.add(modifier3).add(surface3);
+    mainContext.add(modifier4).add(surface4);
 });

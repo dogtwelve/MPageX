@@ -6,9 +6,11 @@ define(function(require, exports, module) {
     var Modifier            = require('famous/core/Modifier');
     var StateModifier       = require('famous/modifiers/StateModifier');
     var Draggable           = require('famous/modifiers/Draggable');
+    var ContainerSurface    = require("famous/surfaces/ContainerSurface");
     var Transform           = require('famous/core/Transform');
     var ModifierChain       = require('famous/modifiers/ModifierChain');
     var RenderController    = require("famous/views/RenderController");
+    var Scrollview          = require('famous/views/Scrollview');
     var TweenTransition     = require('famous/transitions/TweenTransition');
     var Timer               = require("famous/utilities/Timer");
     var Lightbox            = require('famous/views/Lightbox');
@@ -117,32 +119,33 @@ define(function(require, exports, module) {
                 size: this.size,
                 origin: [0.5, 0.5]
             });
-            if(this.nodeDescription.transition === 3) {
+            if(this.nodeDescription.transition < 3) {
                 this.stateViewPlayer = new EdgeSwapper();
-                root.add(this.stateViewPlayer);
-            } else if(this.nodeDescription.transition === 4) {
+                this.add(this.stateViewPlayer);
+            } else if(this.nodeDescription.transition === 10) {
                 this.stateViewPlayer = new Flipper({direction: Flipper.DIRECTION_X});
-                root.add(this.stateViewPlayer);
-            } else if(this.nodeDescription.transition === 5) {
+                this.add(this.stateViewPlayer);
+            } else if(this.nodeDescription.transition === 11) {
                 this.stateViewPlayer = new Flipper({direction: Flipper.DIRECTION_Y});
-                root.add(this.stateViewPlayer);
+                this.add(this.stateViewPlayer);
             } else {
 
                 this.stateViewPlayer = new Lightbox();
                 //set lightbox origin equal this view
 
-                root.add(mod).add(this.stateViewPlayer);
+                this.add(mod).add(this.stateViewPlayer);
             }
 
             this.stateGroup = [];
         }
 
 
-
         if (this.mainSurface) {
             for(var holder in holdersSync) {
                 this.mainSurface.pipe(holdersSync[holder]);
             }
+
+            this.mainSurface.pipe(rootParent);
             this.add(this.mainSurface);
         }
 
@@ -151,6 +154,23 @@ define(function(require, exports, module) {
         var subMetNodes = this.metNodes;
         var subRoot = this;
 
+        if(this.type == "MetScrollNode") {
+
+            var container = new ContainerSurface({
+                size: this.size,
+                properties: {
+                    overflow: 'hidden'
+                }
+            });
+            var scrollview = new Scrollview();
+            container.add(scrollview);
+            subRoot = new View();
+            subRoot.pipe(scrollview);
+            scrollview.sequenceFrom([subRoot]);
+            this.add(container);
+        }
+
+
         for(var metNode in subMetNodes) {
             if(this.type == "MetStateNode") {
                 subRoot = new RenderNode();
@@ -158,6 +178,11 @@ define(function(require, exports, module) {
             }
             subMetNodes[metNode].initMetNode(holdersSync, subRoot);
         }
+
+        //if(this.type == "MetScrollNode") {
+        //    scrollview.sequenceFrom([subRoot]);
+        //}
+
 
         this.showMetNode();
 
@@ -174,8 +199,8 @@ define(function(require, exports, module) {
 
     MetNodeView.prototype.showState = function() {
         if(
-            this.nodeDescription.transition === 4 ||
-            this.nodeDescription.transition === 5
+            this.nodeDescription.transition === 10 ||
+            this.nodeDescription.transition === 11
         ) {
             this.stateViewPlayer.setFront(this.stateGroup[this.curStateIdx]);
             this.stateViewPlayer.setBack(this.stateGroup[this.curStateIdx + 1]);

@@ -157,7 +157,7 @@ define(function(require, exports, module) {
                 content: name,
                 properties: {
                     backfaceVisibility: 'visible',
-                    border: '1px solid rgb(210, 208, 203)'
+                    border: '1px dashed rgb(210, 208, 203)'
                 }
             });
 

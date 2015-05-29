@@ -74,14 +74,14 @@ define(function(require, exports, module) {
 
 
         if(type === "ShapeNode") {
-            newSurface = new Surface({
-                size: size,
-                content: name,
-                properties: {
-                    backgroundColor: fillColor
-                },
-                classes: classes
-            });
+            //newSurface = new Surface({
+            //    size: size,
+            //    content: name,
+            //    properties: {
+            //        backgroundColor: fillColor
+            //    },
+            //    classes: classes
+            //});
 
             if (filltype === METIMAGEFILLTYPE) {
                 newSurface = new ImageSurface({
@@ -93,53 +93,53 @@ define(function(require, exports, module) {
                     classes: classes
                 });
             } else {
-                //newSurface = new CanvasSurface({
-                //    size: size,
-                //    classes: classes,
-                //    properties: {
-                //    }
-                //});
-                //
-                //newSurface.render = function render() {
-                //
-                //    var ctx = this.getContext('2d');
-                //
-                //    //ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-                //
-                //    //ctx.fillStyle = fillColor;
-                //    //ctx.fill();
-                //
-                //
-                //    switch (filltype) {
-                //        //case METIMAGEFILLTYPE:
-                //        //{
-                //        //    var imageObj = new Image();
-                //        //    imageObj.src = nodeDescription.imageFill.rawImageURL;
-                //        //    imageObj.onload = function() {
-                //        //       ctx.save();
-                //        //        setJPath(ctx, jpath);
-                //        //        ctx.clip();
-                //        //        ctx.drawImage(imageObj, 0, 0, ctx.canvas.width, ctx.canvas.height);
-                //        //        ctx.restore();
-                //        //    };
-                //        //}
-                //        //    break;
-                //        case METCOLORFILLTYPE:
-                //        case METGRADIENTFILLTYPE:
-                //        {
-                //            ctx.save();
-                //            setJPath(ctx, jpath);
-                //            ctx.clip();
-                //            ctx.fillStyle = fillColor;
-                //            ctx.fill();
-                //            ctx.restore();
-                //
-                //        }
-                //            break;
-                //
-                //    }
-                //    return this.id;
-                //};
+                newSurface = new CanvasSurface({
+                    size: size,
+                    classes: classes,
+                    properties: {
+                    }
+                });
+
+                newSurface.render = function render() {
+
+                    var ctx = this.getContext('2d');
+
+                    //ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+
+                    //ctx.fillStyle = fillColor;
+                    //ctx.fill();
+
+
+                    switch (filltype) {
+                        //case METIMAGEFILLTYPE:
+                        //{
+                        //    var imageObj = new Image();
+                        //    imageObj.src = nodeDescription.imageFill.rawImageURL;
+                        //    imageObj.onload = function() {
+                        //       ctx.save();
+                        //        setJPath(ctx, jpath);
+                        //        ctx.clip();
+                        //        ctx.drawImage(imageObj, 0, 0, ctx.canvas.width, ctx.canvas.height);
+                        //        ctx.restore();
+                        //    };
+                        //}
+                        //    break;
+                        case METCOLORFILLTYPE:
+                        case METGRADIENTFILLTYPE:
+                        {
+                            ctx.save();
+                            setJPath(ctx, jpath);
+                            ctx.clip();
+                            ctx.fillStyle = fillColor;
+                            ctx.fill();
+                            ctx.restore();
+
+                        }
+                            break;
+
+                    }
+                    return this.id;
+                };
             }
 
 

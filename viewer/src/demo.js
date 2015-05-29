@@ -1586,58 +1586,110 @@ define(function(require, exports, module) {
     //mainContext.add(scrollview);
 
 
-    ////add walls to a famo.us physics simulation
-    //http://stackoverflow.com/questions/23399011/how-to-add-walls-to-a-famo-us-physics-simulation
-    var Engine          = require('famous/core/Engine');
-    var Surface         = require('famous/core/Surface');
-    var EventHandler    = require('famous/core/EventHandler');
-    var View            = require('famous/core/View');
-    var Transform       = require('famous/core/Transform');
+    //////add walls to a famo.us physics simulation
+    ////http://stackoverflow.com/questions/23399011/how-to-add-walls-to-a-famo-us-physics-simulation
+    //var Engine          = require('famous/core/Engine');
+    //var Surface         = require('famous/core/Surface');
+    //var EventHandler    = require('famous/core/EventHandler');
+    //var View            = require('famous/core/View');
+    //var Transform       = require('famous/core/Transform');
+    //
+    //var StateModifier   = require('famous/modifiers/StateModifier');
+    //
+    //var PhysicsEngine   = require('famous/physics/PhysicsEngine');
+    //var Body            = require('famous/physics/bodies/Body');
+    //var Circle          = require('famous/physics/bodies/Circle');
+    //var Wall            = require('famous/physics/constraints/Wall');
+    //
+    //var context = Engine.createContext();
+    //
+    //var handler = new EventHandler();
+    //
+    //var physicsEngine = new PhysicsEngine();
+    //
+    //var ball = new Surface ({
+    //    size: [200,200],
+    //    properties: {
+    //        backgroundColor: 'red',
+    //        borderRadius: '100px'
+    //    }
+    //})
+    //
+    //ball.state = new StateModifier({origin:[0.5,0.5], align: [0.5, 0.5]});
+    //
+    //ball.particle = new Circle({radius:100});
+    //
+    //physicsEngine.addBody(ball.particle);
+    //
+    //ball.on("click",function(){
+    //    ball.particle.setVelocity([1,1,0]);
+    //});
+    //
+    //context.add(ball.state).add(ball)
+    //
+    //var leftWall    = new Wall({normal : [1,0,0],  distance : window.innerWidth/2.0, restitution : 0.5});
+    //var rightWall   = new Wall({normal : [-1,0,0], distance : window.innerWidth/2.0, restitution : 0.5});
+    //var topWall     = new Wall({normal : [0,1,0],  distance : window.innerHeight/2.0, restitution : 0.5});
+    //var bottomWall  = new Wall({normal : [0,-1,0], distance : window.innerHeight/2.0, restitution : 0.5});
+    //
+    //physicsEngine.attach( leftWall,  [ball.particle]);
+    //physicsEngine.attach( rightWall, [ball.particle]);
+    //physicsEngine.attach( topWall,   [ball.particle]);
+    //physicsEngine.attach( bottomWall,[ball.particle]);
+    //
+    //Engine.on('prerender', function(){
+    //    ball.state.setTransform(ball.particle.getTransform())
+    //});
 
-    var StateModifier   = require('famous/modifiers/StateModifier');
 
-    var PhysicsEngine   = require('famous/physics/PhysicsEngine');
-    var Body            = require('famous/physics/bodies/Body');
-    var Circle          = require('famous/physics/bodies/Circle');
-    var Wall            = require('famous/physics/constraints/Wall');
+    ////how best to create a single scrollable view in famo.us
+    //http://stackoverflow.com/questions/24447159/how-best-to-create-a-single-scrollable-view-in-famo-us
+
+    var Engine = require('famous/core/Engine');
+    var Surface = require('famous/core/Surface');
+    var RenderNode = require('famous/core/RenderNode');
+    var Modifier = require('famous/core/Modifier');
+    var Scrollview  = require('famous/views/Scrollview');
 
     var context = Engine.createContext();
 
-    var handler = new EventHandler();
+    var content = "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod \
+                tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, \
+                quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo \
+                consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse \
+                cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non \
+                proident, sunt in culpa qui officia deserunt mollit anim id est laborum.";
 
-    var physicsEngine = new PhysicsEngine();
+    var scrollview = new Scrollview();
 
-    var ball = new Surface ({
-        size: [200,200],
-        properties: {
-            backgroundColor: 'red',
-            borderRadius: '100px'
+    var surfaces = [];
+    scrollview.sequenceFrom(surfaces);
+
+    var surface = new Surface({
+        size:[undefined,true],
+        content: content,
+        properties:{
+            fontSize:'100px'
         }
     })
 
-    ball.state = new StateModifier({origin:[0.5,0.5], align: [0.5, 0.5]});
+    surface.pipe(scrollview);
 
-    ball.particle = new Circle({radius:100});
+    surface.node = new RenderNode();
+    surface.mod = new Modifier();
 
-    physicsEngine.addBody(ball.particle);
+    surface.mod.sizeFrom(function(){
+        target = surface._currentTarget;
+        if (target){
+            return [undefined,target.offsetHeight];
+        } else {
+            return [undefined,true];
+        }
+    })
 
-    ball.on("click",function(){
-        ball.particle.setVelocity([1,1,0]);
-    });
+    surface.node.add(surface.mod).add(surface);
 
-    context.add(ball.state).add(ball)
+    surfaces.push(surface.node);
 
-    var leftWall    = new Wall({normal : [1,0,0],  distance : window.innerWidth/2.0, restitution : 0.5});
-    var rightWall   = new Wall({normal : [-1,0,0], distance : window.innerWidth/2.0, restitution : 0.5});
-    var topWall     = new Wall({normal : [0,1,0],  distance : window.innerHeight/2.0, restitution : 0.5});
-    var bottomWall  = new Wall({normal : [0,-1,0], distance : window.innerHeight/2.0, restitution : 0.5});
-
-    physicsEngine.attach( leftWall,  [ball.particle]);
-    physicsEngine.attach( rightWall, [ball.particle]);
-    physicsEngine.attach( topWall,   [ball.particle]);
-    physicsEngine.attach( bottomWall,[ball.particle]);
-
-    Engine.on('prerender', function(){
-        ball.state.setTransform(ball.particle.getTransform())
-    });
+    context.add(scrollview);
 });

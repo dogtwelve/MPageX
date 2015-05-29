@@ -157,20 +157,20 @@ define(function(require, exports, module) {
 
         pageViews.push(pageView);
 
-        for(var subpageIdx = 0 ; subpageIdx < subpage_counts; subpageIdx ++ ) {
-            var subpage = pages[page.pageIDs[subpageIdx]];
-            var subpageView = new StageView({
-                pageId:  page.id_,
-                pageDesc: subpage,
-                contextSize: [page.width, page.height],
-                bgSize: viewPortSize
-            });
-
-            director.populateStage(subpageView, subpage.nodes);
-            pageViews.push(subpageView);
-
-            max_page_height +=  subpage.height;
-        }
+        //for(var subpageIdx = 0 ; subpageIdx < subpage_counts; subpageIdx ++ ) {
+        //    var subpage = pages[page.pageIDs[subpageIdx]];
+        //    var subpageView = new StageView({
+        //        pageId:  page.id_,
+        //        pageDesc: subpage,
+        //        contextSize: [page.width, page.height],
+        //        bgSize: viewPortSize
+        //    });
+        //
+        //    director.populateStage(subpageView, subpage.nodes);
+        //    pageViews.push(subpageView);
+        //
+        //    max_page_height +=  subpage.height;
+        //}
 
         var scrollview = new Scrollview();
         scrollview.sequenceFrom(pageViews);

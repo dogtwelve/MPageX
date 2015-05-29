@@ -13,6 +13,7 @@ define(function(require, exports, module) {
     var Scrollview          = require('famous/views/Scrollview');
     var TweenTransition     = require('famous/transitions/TweenTransition');
     var Timer               = require("famous/utilities/Timer");
+    var Utility               = require("famous/utilities/Utility");
     var Lightbox            = require('famous/views/Lightbox');
     var EdgeSwapper            = require('famous/views/EdgeSwapper');
     var Flipper            = require('famous/views/Flipper');
@@ -145,8 +146,16 @@ define(function(require, exports, module) {
                 this.mainSurface.pipe(holdersSync[holder]);
             }
 
-            this.mainSurface.pipe(rootParent);
+            rootParent.subscribe(this.mainSurface);
+
+            rootParent.on("click", function(data){
+                DebugUtils.log(this.metNodeId + " event:" + data);
+            }.bind(this));
+
             this.add(this.mainSurface);
+            this.mainSurface.on("click", function(data){
+                DebugUtils.log(this.metNodeId + " event:" + data);
+            }.bind(this));
         }
 
 
@@ -162,12 +171,21 @@ define(function(require, exports, module) {
                     overflow: 'hidden'
                 }
             });
-            var scrollview = new Scrollview();
+            var direction = this.nodeDescription.scrollDirection == 0 ? Utility.Direction.Y : Utility.Direction.X;
+            var scrollview = new Scrollview({ direction: direction});
             container.add(scrollview);
             subRoot = new View();
-            subRoot.pipe(scrollview);
+            scrollview.subscribe(subRoot);
             scrollview.sequenceFrom([subRoot]);
             this.add(container);
+
+            subRoot.on("click", function(data){
+                DebugUtils.log(this.metNodeId + " event:" + data);
+            }.bind(this));
+
+            scrollview.on("click", function(data){
+                DebugUtils.log(this.metNodeId + " event:" + data);
+            }.bind(this));
         }
 
 

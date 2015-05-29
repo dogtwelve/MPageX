@@ -22,7 +22,8 @@ define(function(require, exports, module) {
     var GenericSync = require('../inputs/GenericSync');
     var ScrollSync = require('../inputs/ScrollSync');
     var TouchSync = require('../inputs/TouchSync');
-    GenericSync.register({scroll : ScrollSync, touch : TouchSync});
+    var MouseSync = require('../inputs/MouseSync');
+    GenericSync.register({mouse: MouseSync, scroll : ScrollSync, touch : TouchSync});
 
     /** @const */
     var TOLERANCE = 0.5;
@@ -83,7 +84,7 @@ define(function(require, exports, module) {
         this._scroller = new Scroller(this.options);
 
         this.sync = new GenericSync(
-            ['scroll', 'touch'],
+            ['scroll', 'touch', 'mouse'],
             {
                 direction : this.options.direction,
                 scale : this.options.syncScale,

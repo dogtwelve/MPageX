@@ -1642,54 +1642,142 @@ define(function(require, exports, module) {
     //});
 
 
-    ////how best to create a single scrollable view in famo.us
-    //http://stackoverflow.com/questions/24447159/how-best-to-create-a-single-scrollable-view-in-famo-us
+    //////how best to create a single scrollable view in famo.us
+    ////http://stackoverflow.com/questions/24447159/how-best-to-create-a-single-scrollable-view-in-famo-us
+    //
+    //var Engine = require('famous/core/Engine');
+    //var Surface = require('famous/core/Surface');
+    //var RenderNode = require('famous/core/RenderNode');
+    //var Modifier = require('famous/core/Modifier');
+    //var Scrollview  = require('famous/views/Scrollview');
+    //
+    //var context = Engine.createContext();
+    //
+    //var content = "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod \
+    //            tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, \
+    //            quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo \
+    //            consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse \
+    //            cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non \
+    //            proident, sunt in culpa qui officia deserunt mollit anim id est laborum.";
+    //
+    //var scrollview = new Scrollview();
+    //
+    //var surfaces = [];
+    //scrollview.sequenceFrom(surfaces);
+    //
+    //var surface = new Surface({
+    //    size:[undefined,true],
+    //    content: content,
+    //    properties:{
+    //        fontSize:'100px'
+    //    }
+    //})
+    //
+    //surface.pipe(scrollview);
+    //
+    //surface.node = new RenderNode();
+    //surface.mod = new Modifier();
+    //
+    //surface.mod.sizeFrom(function(){
+    //    target = surface._currentTarget;
+    //    if (target){
+    //        return [undefined,target.offsetHeight];
+    //    } else {
+    //        return [undefined,true];
+    //    }
+    //})
+    //
+    //surface.node.add(surface.mod).add(surface);
+    //
+    //surfaces.push(surface.node);
+    //
+    //context.add(scrollview);
 
-    var Engine = require('famous/core/Engine');
-    var Surface = require('famous/core/Surface');
-    var RenderNode = require('famous/core/RenderNode');
-    var Modifier = require('famous/core/Modifier');
-    var Scrollview  = require('famous/views/Scrollview');
+
+    ////scrollview within scrollview
+    //http://stackoverflow.com/questions/23144982/famous-scrollview-within-scrollview
+    var Engine              = require("famous/core/Engine");
+    var Surface             = require("famous/core/Surface");
+    var View                = require("famous/core/View");
+    var Scrollview          = require("famous/views/Scrollview");
+    var ContainerSurface    = require("famous/surfaces/ContainerSurface");
 
     var context = Engine.createContext();
 
-    var content = "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod \
-                tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, \
-                quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo \
-                consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse \
-                cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non \
-                proident, sunt in culpa qui officia deserunt mollit anim id est laborum.";
+    var surfaces1 = [];
+    var surfaces2 = [];
 
-    var scrollview = new Scrollview();
+    var scrollers = [];
 
-    var surfaces = [];
-    scrollview.sequenceFrom(surfaces);
+    scroll_v_cont = new ContainerSurface({
+        size:[300,300],
+        properties: { overflow: 'hidden' }
+    });
 
-    var surface = new Surface({
-        size:[undefined,true],
-        content: content,
-        properties:{
-            fontSize:'100px'
-        }
+    var scroll_v = new Scrollview({ direction: 1, paginated: true });
+
+    scroll_v.sequenceFrom(scrollers);
+
+    scroll_v_cont.add(scroll_v);
+
+    var scroll_h1_cont = new ContainerSurface({
+        size:[300,300],
+        properties: {overflow: 'hidden'}
+    });
+
+
+    var scroll_h1 = new Scrollview({ direction: 0, paginated: true});
+
+    scroll_h1.sequenceFrom(surfaces1);
+
+    scroll_h1_cont.add(scroll_h1);
+
+
+    var scroll_h2_cont = new ContainerSurface({
+        size:[300,300],
+        properties: { overflow: 'hidden'}
     })
 
-    surface.pipe(scrollview);
 
-    surface.node = new RenderNode();
-    surface.mod = new Modifier();
+    var scroll_h2 = new Scrollview({ direction: 0})
 
-    surface.mod.sizeFrom(function(){
-        target = surface._currentTarget;
-        if (target){
-            return [undefined,target.offsetHeight];
-        } else {
-            return [undefined,true];
-        }
-    })
+    scroll_h2.sequenceFrom(surfaces2);
 
-    surface.node.add(surface.mod).add(surface);
+    scroll_h2_cont.add(scroll_h2);
 
-    surfaces.push(surface.node);
+    scrollers.push(scroll_h1_cont);
+    scrollers.push(scroll_h2_cont);
 
-    context.add(scrollview);
+    for (var i = 0; i < 4; i++) {
+        var surface1 = new Surface({
+            content: "Surface: " + (i + 1),
+            size: [300, 300],
+            properties: {
+                backgroundColor: "hsl(" + (i * 360 / 8) + ", 100%, 50%)",
+                lineHeight: "200px",
+                textAlign: "center"
+            }
+        });
+
+        surface1.pipe(scroll_v);
+        surface1.pipe(scroll_h1);
+        surfaces1.push(surface1);
+
+        var surface2 = new Surface({
+            content: "Surface: " + (i + 1),
+            size: [300, 300],
+            properties: {
+                backgroundColor: "hsl(" + (i * 360 / 8 + (360 / 8)*4) + ", 100%, 50%)",
+                lineHeight: "200px",
+                textAlign: "center"
+            }
+        });
+
+        surface2.pipe(scroll_v);
+        surface2.pipe(scroll_h2);
+        surfaces2.push(surface2);
+
+    };
+
+    context.add(scroll_v_cont);
 });

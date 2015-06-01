@@ -21,6 +21,7 @@ define(function(require, exports, module) {
     var MotionPath          = require('utils/MotionPath');
     var KeyFrameAnim        = require('animations/KeyFrameAnim');
     var DebugUtils          = require('utils/DebugUtils');
+    var StageView          = require('views/StageView');
 
     function MetNodeView() {
         View.apply(this, arguments);
@@ -141,20 +142,28 @@ define(function(require, exports, module) {
         }
 
 
+
+        this._eventInput.on('metview-click',function(data){
+            if(this instanceof MetNodeView) {
+                DebugUtils.log(this.metNodeId + " on metview-click event from " + data.metNodeId);
+            } else if(this instanceof StageView) {
+                DebugUtils.log("StageView on metview-click event from " + data.metNodeId);
+            } else {
+                DebugUtils.log("other on metview-click event from " + data.metNodeId);
+            }
+
+        }.bind(this));
+
         if (this.mainSurface) {
             for(var holder in holdersSync) {
                 this.mainSurface.pipe(holdersSync[holder]);
             }
 
-            rootParent.subscribe(this.mainSurface);
-
-            rootParent.on("click", function(data){
-                DebugUtils.log(this.metNodeId + " event:" + data);
-            }.bind(this));
-
+            this.subscribe(this.mainSurface);
             this.add(this.mainSurface);
             this.mainSurface.on("click", function(data){
                 DebugUtils.log(this.metNodeId + " event:" + data);
+                this._eventOutput.trigger('metview-click', {metNodeId:this.metNodeId} );
             }.bind(this));
         }
 
@@ -190,10 +199,14 @@ define(function(require, exports, module) {
 
 
         for(var metNode in subMetNodes) {
-            if(this.type == "MetStateNode") {
+            if(this.type === "MetStateNode") {
                 subRoot = new RenderNode();
                 this.stateGroup.push(subRoot);
+            } else if(this.type === "MetScrollNode") {
+                subRoot.subscribe(subMetNodes[metNode]);
             }
+
+            this.subscribe(subMetNodes[metNode]);
             subMetNodes[metNode].initMetNode(holdersSync, subRoot);
         }
 

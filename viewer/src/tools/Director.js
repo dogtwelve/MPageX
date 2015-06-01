@@ -3,6 +3,9 @@ define(function(require, exports, module) {
     var MetNodeFactory       = require('tools/MetNodeFactory');
     var ActionFactory      = require('tools/ActionFactory');
     var UnitConverter      = require('tools/UnitConverter');
+    var StageView          = require('views/StageView');
+    var MetNodeView          = require('views/MetNodeView');
+    var DebugUtils          = require('utils/DebugUtils');
 
     function Director() {
         this.metnodes = {}; // Collection of nodes by name.
@@ -17,8 +20,20 @@ define(function(require, exports, module) {
             zPos = newNode.zPos;
         }
 
+        stage._eventInput.on('metview-click',function(data){
+            if(this instanceof MetNodeView) {
+                DebugUtils.log(this.metNodeId + " on metview-click event from " + data.metNodeId);
+            } else if(this instanceof StageView) {
+                DebugUtils.log("StageView on metview-click event from " + data.metNodeId);
+            } else {
+                DebugUtils.log("other on metview-click event from " + data.metNodeId);
+            }
+
+        }.bind(stage));
+
         for (var nodeToStage in this.metnodes) {
             var curNode = this.metnodes[nodeToStage];
+            stage.subscribe(curNode);
             stage.addMetNode(curNode);
         }
 

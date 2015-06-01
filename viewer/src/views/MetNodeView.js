@@ -184,11 +184,11 @@ define(function(require, exports, module) {
             var scrollview = new Scrollview({ direction: direction});
             container.add(scrollview);
             subRoot = new View();
-            var recieverSurface = new Surface({
+            var receiverSurface = new Surface({
                 size: [undefined, undefined] // Take up the entire view
             });
-            subRoot.add(recieverSurface);
-            scrollview.subscribe(recieverSurface);
+            subRoot.add(receiverSurface);
+            scrollview.subscribe(receiverSurface);
             scrollview.subscribe(subRoot);
             scrollview.sequenceFrom([subRoot]);
             this.add(container);

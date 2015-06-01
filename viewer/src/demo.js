@@ -1694,90 +1694,267 @@ define(function(require, exports, module) {
     //context.add(scrollview);
 
 
-    ////scrollview within scrollview
-    //http://stackoverflow.com/questions/23144982/famous-scrollview-within-scrollview
-    var Engine              = require("famous/core/Engine");
-    var Surface             = require("famous/core/Surface");
-    var View                = require("famous/core/View");
-    var Scrollview          = require("famous/views/Scrollview");
-    var ContainerSurface    = require("famous/surfaces/ContainerSurface");
+    //////scrollview within scrollview
+    ////http://stackoverflow.com/questions/23144982/famous-scrollview-within-scrollview
+    //var Engine              = require("famous/core/Engine");
+    //var Surface             = require("famous/core/Surface");
+    //var View                = require("famous/core/View");
+    //var Scrollview          = require("famous/views/Scrollview");
+    //var ContainerSurface    = require("famous/surfaces/ContainerSurface");
+    //
+    //var context = Engine.createContext();
+    //
+    //var surfaces1 = [];
+    //var surfaces2 = [];
+    //
+    //var scrollers = [];
+    //
+    //scroll_v_cont = new ContainerSurface({
+    //    size:[300,300],
+    //    properties: { overflow: 'hidden' }
+    //});
+    //
+    //var scroll_v = new Scrollview({ direction: 1, paginated: true });
+    //
+    //scroll_v.sequenceFrom(scrollers);
+    //
+    //scroll_v_cont.add(scroll_v);
+    //
+    //var scroll_h1_cont = new ContainerSurface({
+    //    size:[300,300],
+    //    properties: {overflow: 'hidden'}
+    //});
+    //
+    //
+    //var scroll_h1 = new Scrollview({ direction: 0, paginated: true});
+    //
+    //scroll_h1.sequenceFrom(surfaces1);
+    //
+    //scroll_h1_cont.add(scroll_h1);
+    //
+    //
+    //var scroll_h2_cont = new ContainerSurface({
+    //    size:[300,300],
+    //    properties: { overflow: 'hidden'}
+    //})
+    //
+    //
+    //var scroll_h2 = new Scrollview({ direction: 0})
+    //
+    //scroll_h2.sequenceFrom(surfaces2);
+    //
+    //scroll_h2_cont.add(scroll_h2);
+    //
+    //scrollers.push(scroll_h1_cont);
+    //scrollers.push(scroll_h2_cont);
+    //
+    //for (var i = 0; i < 4; i++) {
+    //    var surface1 = new Surface({
+    //        content: "Surface: " + (i + 1),
+    //        size: [300, 300],
+    //        properties: {
+    //            backgroundColor: "hsl(" + (i * 360 / 8) + ", 100%, 50%)",
+    //            lineHeight: "200px",
+    //            textAlign: "center"
+    //        }
+    //    });
+    //
+    //    surface1.pipe(scroll_v);
+    //    surface1.pipe(scroll_h1);
+    //    surfaces1.push(surface1);
+    //
+    //    var surface2 = new Surface({
+    //        content: "Surface: " + (i + 1),
+    //        size: [300, 300],
+    //        properties: {
+    //            backgroundColor: "hsl(" + (i * 360 / 8 + (360 / 8)*4) + ", 100%, 50%)",
+    //            lineHeight: "200px",
+    //            textAlign: "center"
+    //        }
+    //    });
+    //
+    //    surface2.pipe(scroll_v);
+    //    surface2.pipe(scroll_h2);
+    //    surfaces2.push(surface2);
+    //
+    //};
+    //
+    //context.add(scroll_v_cont);
 
-    var context = Engine.createContext();
 
-    var surfaces1 = [];
-    var surfaces2 = [];
+    ////Drawing a lot lines between surfaces in Famo.us
+    //http://stackoverflow.com/questions/24805335/drawing-a-lot-lines-between-surfaces-in-famo-us
+    var Engine = require("famous/core/Engine");
+    var Surface =  require("famous/core/Surface");
+    var Modifier =  require("famous/core/Modifier");
+    var Transform =  require("famous/core/Transform");
+    var Draggable = require("famous/modifiers/Draggable");
+    var mainContext = Engine.createContext();
 
-    var scrollers = [];
 
-    scroll_v_cont = new ContainerSurface({
-        size:[300,300],
-        properties: { overflow: 'hidden' }
+    var lineOptions = {thickness:2,
+        lineColor:'#FA5C4F'};
+
+    //line surface
+    var ls = new Surface({
+        origin:[0,.5],
+        properties:{
+            backgroundColor:lineOptions.lineColor
+        }
     });
-
-    var scroll_v = new Scrollview({ direction: 1, paginated: true });
-
-    scroll_v.sequenceFrom(scrollers);
-
-    scroll_v_cont.add(scroll_v);
-
-    var scroll_h1_cont = new ContainerSurface({
-        size:[300,300],
-        properties: {overflow: 'hidden'}
-    });
+    initLine();
+    //Add the 2 blocks that will be joined by the line
+    ls.s1 = createBlock("s1",[100,100]);
+    ls.s2 = createBlock("s2",[300,100]);
 
 
-    var scroll_h1 = new Scrollview({ direction: 0, paginated: true});
-
-    scroll_h1.sequenceFrom(surfaces1);
-
-    scroll_h1_cont.add(scroll_h1);
-
-
-    var scroll_h2_cont = new ContainerSurface({
-        size:[300,300],
-        properties: { overflow: 'hidden'}
-    })
-
-
-    var scroll_h2 = new Scrollview({ direction: 0})
-
-    scroll_h2.sequenceFrom(surfaces2);
-
-    scroll_h2_cont.add(scroll_h2);
-
-    scrollers.push(scroll_h1_cont);
-    scrollers.push(scroll_h2_cont);
-
-    for (var i = 0; i < 4; i++) {
-        var surface1 = new Surface({
-            content: "Surface: " + (i + 1),
-            size: [300, 300],
-            properties: {
-                backgroundColor: "hsl(" + (i * 360 / 8) + ", 100%, 50%)",
-                lineHeight: "200px",
-                textAlign: "center"
+    //----------------------
+    //  HELPER FUNCTIONS
+    //----------------------
+    function initLine(){
+        var canvasModifier = new Modifier({
+            size:function(){
+                var len = _getLineLength()+5;
+                return [len,lineOptions.thickness];
+            },
+            transform: function() {
+                var p = _getPosition();
+                return Transform.translate(p[0], p[1], 0);
             }
         });
 
-        surface1.pipe(scroll_v);
-        surface1.pipe(scroll_h1);
-        surfaces1.push(surface1);
-
-        var surface2 = new Surface({
-            content: "Surface: " + (i + 1),
-            size: [300, 300],
-            properties: {
-                backgroundColor: "hsl(" + (i * 360 / 8 + (360 / 8)*4) + ", 100%, 50%)",
-                lineHeight: "200px",
-                textAlign: "center"
+        var rotateModifier = new Modifier({
+            transform: function (){
+                var _s = _getRect();
+                var angle  = Math.atan2(_s[1],_s[0]);
+                return Transform.rotateZ(angle);
             }
         });
 
-        surface2.pipe(scroll_v);
-        surface2.pipe(scroll_h2);
-        surfaces2.push(surface2);
+        mainContext.add(canvasModifier).add(rotateModifier).add(ls);
+    }
 
-    };
+    function createBlock(cnt,initialPosition){
+        var s = new Surface(
+            { size:[100,100],
+                content:cnt,
+                properties:{
+                    color: 'white',
+                    textAlign: 'center',
+                    backgroundColor: '#FA5C4F'
+                }
+            });
+        //Save the current position of the new surface
+        s.currentPosition = initialPosition;
+        var draggable = new Draggable();
+        draggable.obj = s;
+        s.pipe(draggable);
+        mainContext.add(draggable).add(s);
+        draggable.setPosition(initialPosition);
+        draggable.on('update',function(e){
+            this.obj.currentPosition = e.position;
+        });
+        return s;
+    }
 
-    context.add(scroll_v_cont);
+    //gets the position of where the line should start
+    function _getPosition(){
+        var dta = _getObjects();
+        var pnts = _getEndPoints(dta);
+        return pnts[0];
+    }
+
+    //Gets the Dx and Dy of line to calculate hypotenous
+    function _getRect(){
+        var res = [0,0];
+        var dta = _getObjects();
+        var pnts = _getEndPoints(dta);
+        var p1 = pnts[0];
+        var p2 = pnts[1];
+        res[0] = p2[0]-p1[0];
+        res[1] = p2[1]-p1[1];
+        return res;
+    }
+    function _getLineLength(){
+        var res = _getRect();
+        return Math.sqrt( ((res[0] * res[0]) + (res[1] * res[1])) );
+    }
+
+
+    function _getEndPoints(dta){
+        var dx = dta.rm.currentPosition[0]-dta.lmredge;
+        var dy = dta.bm.currentPosition[1]-dta.tmbedge;
+        if ( (dx <= 0) && (dy <= 0) ) {
+            //objects are overlapping. Draw no line
+            return [[0,0],[0,0]];
+        }
+        else if (dx > dy){
+            //draw line from R and L edges
+            var lmYMidPoint = dta.lm.currentPosition[1]+(dta.lm.size[1]/2);
+            var rmYMidPoint = dta.rm.currentPosition[1]+(dta.rm.size[1]/2);
+            var p1 = [dta.lmredge,lmYMidPoint];
+            var p2 = [dta.rm.currentPosition[0],rmYMidPoint];
+            return [p1,p2];
+        }
+        else {
+            //draw line from B and Top edges
+            var tmXMidPoint = dta.tm.currentPosition[0]+(dta.tm.size[0]/2);
+            var bmXMidPoint = dta.bm.currentPosition[0]+(dta.bm.size[0]/2);
+            var p1 = [tmXMidPoint,dta.tmbedge];
+            var p2 = [bmXMidPoint,dta.bm.currentPosition[1]];
+            return [p1,p2];
+        }
+    }
+
+    //Mark the objects as
+    //top most, left most, bottom most, right most
+    function _getObjects(){
+        var lm = _getLeftMost(ls);
+        var rm = ls.s1;
+        if (lm == rm){
+            rm = ls.s2;
+        }
+        var tm = _getTopMost(ls);
+        var bm = ls.s1;
+        if (tm == bm){
+            bm = ls.s2;
+        }
+
+        var lm_redge = (lm.currentPosition[0]+lm.size[0]);
+        var lm_bedge = (lm.currentPosition[1]+lm.size[1]);
+        var rm_redge = (rm.currentPosition[0]+rm.size[0]);
+        var rm_bedge = (rm.currentPosition[1]+rm.size[1]);
+
+        var tm_redge = (tm.currentPosition[0]+tm.size[0]);
+        var tm_bedge = (tm.currentPosition[1]+tm.size[1]);
+        var bm_redge = (bm.currentPosition[0]+bm.size[0]);
+        var bm_bedge = (bm.currentPosition[1]+bm.size[1]);
+
+
+        return {lm:lm,rm:rm,tm:tm,bm:bm,
+            lmredge:lm_redge,
+            lmbedge:lm_bedge,
+            rmredge:rm_redge,
+            rmbedge:rm_bedge,
+            tmredge:tm_redge,
+            tmbedge:tm_bedge,
+            bmredge:bm_redge,
+            bmbedge:bm_bedge};
+    }
+
+    function _getLeftMost(obj){
+        if (obj.s1.currentPosition[0] <= obj.s2.currentPosition[0]){
+            return obj.s1;
+        } else {
+            return obj.s2;
+        }
+    }
+
+    function _getTopMost(obj){
+        if (obj.s1.currentPosition[1] <= obj.s2.currentPosition[1]){
+            return obj.s1;
+        } else {
+            return obj.s2;
+        }
+    }
 });

@@ -146,6 +146,10 @@ define(function(require, exports, module) {
 
         }
 
+        if(type === "MetLineNode") {
+
+        }
+
         //below is for debug info
         if(
             type === "MetNode"
@@ -209,6 +213,11 @@ define(function(require, exports, module) {
                 }
             });
             newSurface.setContent("<iframe src=\"" + webUrl + "\"" + " width=" + size[0]+ "px" + " height=" + size[1]+ "px </iframe>");
+
+            newSurface.on("click", function() {
+                var video = document.getElementById(video_dom_id);
+                DebugUtils.log("webnode click");
+            })
         }
 
         if(newSurface) {

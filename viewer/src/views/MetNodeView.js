@@ -159,11 +159,12 @@ define(function(require, exports, module) {
                 this.mainSurface.pipe(holdersSync[holder]);
             }
 
-            this.subscribe(this.mainSurface);
+            //this.subscribe(this.mainSurface);
+            this.mainSurface.pipe(rootParent._eventOutput);
             this.add(this.mainSurface);
             this.mainSurface.on("click", function(data){
                 DebugUtils.log(this.metNodeId + " event:" + data);
-                this._eventOutput.trigger('metview-click', {metNodeId:this.metNodeId} );
+                rootParent._eventOutput.trigger('metview-click', {metNodeId:this.metNodeId} );
             }.bind(this));
         }
 
@@ -185,33 +186,41 @@ define(function(require, exports, module) {
             container.add(scrollview);
             subRoot = new View();
             var receiverSurface = new Surface({
-                size: [undefined, undefined] // Take up the entire view
+                size: this.size // Take up the entire view
             });
             subRoot.add(receiverSurface);
-            scrollview.subscribe(receiverSurface);
-            scrollview.subscribe(subRoot);
+
+            receiverSurface.pipe(scrollview);
+            subRoot.pipe(scrollview);
+            //scrollview.subscribe(receiverSurface);
+            //scrollview.subscribe(subRoot);
             scrollview.sequenceFrom([subRoot]);
             this.add(container);
 
+            //for(var metNode in subMetNodes) {
+            //    scrollview.subscribe(subMetNodes[metNode].mainSurface);
+            //}
+
             subRoot.on("click", function(data){
-                DebugUtils.log(this.metNodeId + " event:" + data);
+                DebugUtils.log("subRoot event:" + data);
             }.bind(this));
 
             scrollview.on("click", function(data){
-                DebugUtils.log(this.metNodeId + " event:" + data);
+                DebugUtils.log("scrollview event:" + data);
             }.bind(this));
         }
 
 
         for(var metNode in subMetNodes) {
             if(this.type === "MetStateNode") {
-                subRoot = new RenderNode();
+                subRoot = new View();
                 this.stateGroup.push(subRoot);
             } else if(this.type === "MetScrollNode") {
                 subRoot.subscribe(subMetNodes[metNode]);
             }
 
-            this.subscribe(subMetNodes[metNode]);
+            //this.subscribe(subMetNodes[metNode]);
+            //subMetNodes[metNode].pipe(subRoot);
             subMetNodes[metNode].initMetNode(holdersSync, subRoot);
         }
 
@@ -485,6 +494,7 @@ define(function(require, exports, module) {
         this.baseModifier = new Modifier({
             size: this.size,
             origin: [this.originX, this.originY],
+            align: [0, 0],
             opacity: function() {
                     return this.opacity;
                 }.bind(this),

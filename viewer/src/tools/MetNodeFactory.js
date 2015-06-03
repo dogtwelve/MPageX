@@ -21,6 +21,8 @@ define(function(require, exports, module) {
             nodeDescription.properties.zPosition = nodeDescription.zPosition;
         }
 
+        var posX = nodeDescription.positionX;
+        var posY = nodeDescription.positionY;
         var type = nodeDescription.class;
         var name = nodeDescription.name;
         var metNodeId = nodeDescription.id_;
@@ -43,25 +45,6 @@ define(function(require, exports, module) {
 
 
         var newSurface;
-
-
-        var newNode = new MetNodeView({
-            size: size,
-            metNodeId: id,
-            name: name,
-            zPosition: zPosition,
-            opacity: opacity !== undefined ? opacity : 1,
-            scaleX: scaleX,
-            scaleY: scaleY,
-            skewX: skewX,
-            skewY: skewY,
-            anchorX: anchorX,
-            anchorY: anchorY,
-            rotation: rotation,
-            containerSize: containerSize,
-            type: type,
-            nodeDescription: nodeDescription
-        });
 
         ////单色填充
         var METCOLORFILLTYPE = 0;
@@ -147,7 +130,46 @@ define(function(require, exports, module) {
         }
 
         if(type === "MetLineNode") {
+            anchorX = 0;
+            anchorY = 0.5;
 
+            var startX = nodeDescription.lineStartPointX;
+            var startY = nodeDescription.lineStartPointY;
+            var endX = nodeDescription.lineEndPointX;
+            var endY = nodeDescription.lineEndPointY;
+
+            var leftMost = startX;
+
+            if(leftMost < endX) {
+                leftMost = endX;
+            }
+
+            if(leftMost === startX) {
+                posX = startX;
+                posY = startY;
+            } else {
+                posX = endX;
+                posY = endY;
+            }
+
+            var dx = (posX === startX) ? (endX - startX) : (startX - endX);
+            var dy = (posY === startY) ? (endY - startY) : (startY - endY);
+            var len = Math.sqrt( ((dx * dx) + (dy * dy)) );
+
+            size = [len, nodeDescription.lineWidth];
+
+            var angle  = Math.atan2(dy, dx);
+
+            rotation = angle;
+            newSurface =  new Surface({
+                size: size,
+                properties: {
+                    backgroundColor: fillColor
+                },
+                classes: classes
+            });
+
+            DebugUtils.log(metNodeId + " fullcolor= " + fillColor);
         }
 
         //below is for debug info
@@ -208,6 +230,7 @@ define(function(require, exports, module) {
             var webUrl = nodeDescription.URL;
             newSurface = new Surface({
                 size: size,
+                classes: classes,
                 properties: {
                     backgroundColor: 'white'
                 }
@@ -215,10 +238,29 @@ define(function(require, exports, module) {
             newSurface.setContent("<iframe src=\"" + webUrl + "\"" + " width=" + size[0]+ "px" + " height=" + size[1]+ "px </iframe>");
 
             newSurface.on("click", function() {
-                var video = document.getElementById(video_dom_id);
+                //var video = document.getElementById(video_dom_id);
                 DebugUtils.log("webnode click");
             })
         }
+
+
+        var newNode = new MetNodeView({
+            size: size,
+            metNodeId: id,
+            name: name,
+            zPosition: zPosition,
+            opacity: opacity !== undefined ? opacity : 1,
+            scaleX: scaleX,
+            scaleY: scaleY,
+            skewX: skewX,
+            skewY: skewY,
+            anchorX: anchorX,
+            anchorY: anchorY,
+            rotation: rotation,
+            containerSize: containerSize,
+            type: type,
+            nodeDescription: nodeDescription
+        });
 
         if(newSurface) {
             newNode.addSurface(newSurface);
@@ -241,7 +283,7 @@ define(function(require, exports, module) {
 
         this.metNodesFromFactory[metNodeId] = newNode;
 
-        newNode.setPositionPixels(nodeDescription.positionX, nodeDescription.positionY);
+        newNode.setPositionPixels(posX, posY);
 
         DebugUtils.log(name +
             //" Pos(" + UnitConverter.ratioXtoPixels(newNode.xPosition, containerSize[0]) + "," + UnitConverter.ratioXtoPixels(newNode.yPosition + containerSize[1]) + ") " +

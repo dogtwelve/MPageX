@@ -169,7 +169,7 @@ define(function(require, exports, module) {
                 classes: classes
             });
 
-            DebugUtils.log(metNodeId + " fullcolor= " + fillColor);
+            //DebugUtils.log(metNodeId + " fullcolor= " + fillColor);
         }
 
         //below is for debug info
@@ -285,11 +285,11 @@ define(function(require, exports, module) {
 
         newNode.setPositionPixels(posX, posY);
 
-        DebugUtils.log(name +
-            //" Pos(" + UnitConverter.ratioXtoPixels(newNode.xPosition, containerSize[0]) + "," + UnitConverter.ratioXtoPixels(newNode.yPosition + containerSize[1]) + ") " +
-            " Size(" + size[0] + "," + size[1] + ") " +
-            " zPosition=" + zPosition +
-            " fillColor=" + fillColor + " id_=" + metNodeId);
+        //DebugUtils.log(name +
+        //    //" Pos(" + UnitConverter.ratioXtoPixels(newNode.xPosition, containerSize[0]) + "," + UnitConverter.ratioXtoPixels(newNode.yPosition + containerSize[1]) + ") " +
+        //    " Size(" + size[0] + "," + size[1] + ") " +
+        //    " zPosition=" + zPosition +
+        //    " fillColor=" + fillColor + " id_=" + metNodeId);
 
         return {metNode:newNode, zPos:curMetPosZ};
 

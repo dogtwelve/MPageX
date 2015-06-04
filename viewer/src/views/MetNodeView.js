@@ -523,7 +523,7 @@ define(function(require, exports, module) {
                 //    z_adjust = z_adjust < this.size[0] ? this.size[0] : z_adjust;
                 //}
 
-                var trans = Transform.translate(posX, posY, this.zPosition + this.z_adjust);
+                var trans = Transform.translate(posX, posY, this.z_adjust);
                 var rotate = Transform.rotate(this.rotationX, this.rotationY, this.rotationZ);
 
                 var part_first = Transform.multiply(trans, rotate);

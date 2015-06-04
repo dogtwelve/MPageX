@@ -163,6 +163,7 @@ define(function(require, exports, module) {
             this.mainSurface.pipe(rootParent._eventOutput);
             this.add(this.mainSurface);
             this.mainSurface.on("click", function(data){
+                this.hideMetNode();
                 DebugUtils.log(this.metNodeId + " event:" + data);
                 rootParent._eventOutput.trigger('metview-click', {metNodeId:this.metNodeId} );
             }.bind(this));
@@ -211,6 +212,8 @@ define(function(require, exports, module) {
         }
 
 
+        this.showMetNode();
+
         for(var metNode in subMetNodes) {
             if(this.type === "MetStateNode") {
                 subRoot = new View();
@@ -229,7 +232,7 @@ define(function(require, exports, module) {
         //}
 
 
-        this.showMetNode();
+
 
         if(this.type == "MetStateNode") {
             this.curStateIdx = 0;
@@ -313,19 +316,25 @@ define(function(require, exports, module) {
             }
         );
 
+        DebugUtils.log(this.name +
+            //" Pos(" + UnitConverter.ratioXtoPixels(newNode.xPosition, containerSize[0]) + "," + UnitConverter.ratioXtoPixels(newNode.yPosition + containerSize[1]) + ") " +
+        " Size(" + this.size[0] + "," + this.size[1] + ") " +
+        " zPosition=" + this.zPosition +
+        " id_=" + this.metNodeId);
+
     };
 
     MetNodeView.prototype.hideMetNode = function() {
         this.renderController.hide(
             {
                 //curve:TweenTransition.Curves.linear,
-                duration: 0
+                duration: 3000
             }
-            //,
-            //function() {
-            //    //this.showMetNode();
-            //    //now hide complete
-            //}.bind(this)
+            ,
+            function() {
+                this.showMetNode();
+                //now hide complete
+            }.bind(this)
         );
     };
 

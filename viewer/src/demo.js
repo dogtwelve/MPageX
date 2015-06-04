@@ -1782,179 +1782,265 @@ define(function(require, exports, module) {
     //context.add(scroll_v_cont);
 
 
-    ////Drawing a lot lines between surfaces in Famo.us
-    //http://stackoverflow.com/questions/24805335/drawing-a-lot-lines-between-surfaces-in-famo-us
-    var Engine = require("famous/core/Engine");
-    var Surface =  require("famous/core/Surface");
-    var Modifier =  require("famous/core/Modifier");
-    var Transform =  require("famous/core/Transform");
-    var Draggable = require("famous/modifiers/Draggable");
+    //////Drawing a lot lines between surfaces in Famo.us
+    ////http://stackoverflow.com/questions/24805335/drawing-a-lot-lines-between-surfaces-in-famo-us
+    //var Engine = require("famous/core/Engine");
+    //var Surface =  require("famous/core/Surface");
+    //var Modifier =  require("famous/core/Modifier");
+    //var Transform =  require("famous/core/Transform");
+    //var Draggable = require("famous/modifiers/Draggable");
+    //var mainContext = Engine.createContext();
+    //
+    //
+    //var lineOptions = {thickness:2,
+    //    lineColor:'#FA5C4F'};
+    //
+    ////line surface
+    //var ls = new Surface({
+    //    origin:[0,.5],
+    //    properties:{
+    //        backgroundColor:lineOptions.lineColor
+    //    }
+    //});
+    //initLine();
+    ////Add the 2 blocks that will be joined by the line
+    //ls.s1 = createBlock("s1",[100,100]);
+    //ls.s2 = createBlock("s2",[300,100]);
+    //
+    //
+    ////----------------------
+    ////  HELPER FUNCTIONS
+    ////----------------------
+    //function initLine(){
+    //    var canvasModifier = new Modifier({
+    //        size:function(){
+    //            var len = _getLineLength()+5;
+    //            return [len,lineOptions.thickness];
+    //        },
+    //        transform: function() {
+    //            var p = _getPosition();
+    //            return Transform.translate(p[0], p[1], 0);
+    //        }
+    //    });
+    //
+    //    var rotateModifier = new Modifier({
+    //        transform: function (){
+    //            var _s = _getRect();
+    //            var angle  = Math.atan2(_s[1],_s[0]);
+    //            return Transform.rotateZ(angle);
+    //        }
+    //    });
+    //
+    //    mainContext.add(canvasModifier).add(rotateModifier).add(ls);
+    //}
+    //
+    //function createBlock(cnt,initialPosition){
+    //    var s = new Surface(
+    //        { size:[100,100],
+    //            content:cnt,
+    //            properties:{
+    //                color: 'white',
+    //                textAlign: 'center',
+    //                backgroundColor: '#FA5C4F'
+    //            }
+    //        });
+    //    //Save the current position of the new surface
+    //    s.currentPosition = initialPosition;
+    //    var draggable = new Draggable();
+    //    draggable.obj = s;
+    //    s.pipe(draggable);
+    //    mainContext.add(draggable).add(s);
+    //    draggable.setPosition(initialPosition);
+    //    draggable.on('update',function(e){
+    //        this.obj.currentPosition = e.position;
+    //    });
+    //    return s;
+    //}
+    //
+    ////gets the position of where the line should start
+    //function _getPosition(){
+    //    var dta = _getObjects();
+    //    var pnts = _getEndPoints(dta);
+    //    return pnts[0];
+    //}
+    //
+    ////Gets the Dx and Dy of line to calculate hypotenous
+    //function _getRect(){
+    //    var res = [0,0];
+    //    var dta = _getObjects();
+    //    var pnts = _getEndPoints(dta);
+    //    var p1 = pnts[0];
+    //    var p2 = pnts[1];
+    //    res[0] = p2[0]-p1[0];
+    //    res[1] = p2[1]-p1[1];
+    //    return res;
+    //}
+    //function _getLineLength(){
+    //    var res = _getRect();
+    //    return Math.sqrt( ((res[0] * res[0]) + (res[1] * res[1])) );
+    //}
+    //
+    //
+    //function _getEndPoints(dta){
+    //    var dx = dta.rm.currentPosition[0]-dta.lmredge;
+    //    var dy = dta.bm.currentPosition[1]-dta.tmbedge;
+    //    if ( (dx <= 0) && (dy <= 0) ) {
+    //        //objects are overlapping. Draw no line
+    //        return [[0,0],[0,0]];
+    //    }
+    //    else if (dx > dy){
+    //        //draw line from R and L edges
+    //        var lmYMidPoint = dta.lm.currentPosition[1]+(dta.lm.size[1]/2);
+    //        var rmYMidPoint = dta.rm.currentPosition[1]+(dta.rm.size[1]/2);
+    //        var p1 = [dta.lmredge,lmYMidPoint];
+    //        var p2 = [dta.rm.currentPosition[0],rmYMidPoint];
+    //        return [p1,p2];
+    //    }
+    //    else {
+    //        //draw line from B and Top edges
+    //        var tmXMidPoint = dta.tm.currentPosition[0]+(dta.tm.size[0]/2);
+    //        var bmXMidPoint = dta.bm.currentPosition[0]+(dta.bm.size[0]/2);
+    //        var p1 = [tmXMidPoint,dta.tmbedge];
+    //        var p2 = [bmXMidPoint,dta.bm.currentPosition[1]];
+    //        return [p1,p2];
+    //    }
+    //}
+    //
+    ////Mark the objects as
+    ////top most, left most, bottom most, right most
+    //function _getObjects(){
+    //    var lm = _getLeftMost(ls);
+    //    var rm = ls.s1;
+    //    if (lm == rm){
+    //        rm = ls.s2;
+    //    }
+    //    var tm = _getTopMost(ls);
+    //    var bm = ls.s1;
+    //    if (tm == bm){
+    //        bm = ls.s2;
+    //    }
+    //
+    //    var lm_redge = (lm.currentPosition[0]+lm.size[0]);
+    //    var lm_bedge = (lm.currentPosition[1]+lm.size[1]);
+    //    var rm_redge = (rm.currentPosition[0]+rm.size[0]);
+    //    var rm_bedge = (rm.currentPosition[1]+rm.size[1]);
+    //
+    //    var tm_redge = (tm.currentPosition[0]+tm.size[0]);
+    //    var tm_bedge = (tm.currentPosition[1]+tm.size[1]);
+    //    var bm_redge = (bm.currentPosition[0]+bm.size[0]);
+    //    var bm_bedge = (bm.currentPosition[1]+bm.size[1]);
+    //
+    //
+    //    return {lm:lm,rm:rm,tm:tm,bm:bm,
+    //        lmredge:lm_redge,
+    //        lmbedge:lm_bedge,
+    //        rmredge:rm_redge,
+    //        rmbedge:rm_bedge,
+    //        tmredge:tm_redge,
+    //        tmbedge:tm_bedge,
+    //        bmredge:bm_redge,
+    //        bmbedge:bm_bedge};
+    //}
+    //
+    //function _getLeftMost(obj){
+    //    if (obj.s1.currentPosition[0] <= obj.s2.currentPosition[0]){
+    //        return obj.s1;
+    //    } else {
+    //        return obj.s2;
+    //    }
+    //}
+    //
+    //function _getTopMost(obj){
+    //    if (obj.s1.currentPosition[1] <= obj.s2.currentPosition[1]){
+    //        return obj.s1;
+    //    } else {
+    //        return obj.s2;
+    //    }
+    //}
+
+    var Engine = require('famous/core/Engine');
+    var Surface = require('famous/core/Surface');
+    var Transform = require('famous/core/Transform');
+    var Modifier = require('famous/core/Modifier');
+    var Transitionable = require('famous/transitions/Transitionable');
+    var Easing = require('famous/transitions/Easing');
+
     var mainContext = Engine.createContext();
+    mainContext.setPerspective(1000);
 
+// state variables
+    var defaultAngle = -Math.PI / 3;
+    var size = [300, 400];
+    var angle = new Transitionable(defaultAngle);
+    var isToggled = false;
 
-    var lineOptions = {thickness:2,
-        lineColor:'#FA5C4F'};
-
-    //line surface
-    var ls = new Surface({
-        origin:[0,.5],
-        properties:{
-            backgroundColor:lineOptions.lineColor
+// create red card surface
+    var surface = new Surface({
+        size: size,
+        content: 'Click Me',
+        properties: {
+            fontSize: '26px',
+            paddingTop: '40px',
+            color: 'white',
+            textAlign: 'center',
+            backgroundColor: '#FA5C4F',
+            cursor: 'pointer'
         }
     });
-    initLine();
-    //Add the 2 blocks that will be joined by the line
-    ls.s1 = createBlock("s1",[100,100]);
-    ls.s2 = createBlock("s2",[300,100]);
 
-
-    //----------------------
-    //  HELPER FUNCTIONS
-    //----------------------
-    function initLine(){
-        var canvasModifier = new Modifier({
-            size:function(){
-                var len = _getLineLength()+5;
-                return [len,lineOptions.thickness];
-            },
-            transform: function() {
-                var p = _getPosition();
-                return Transform.translate(p[0], p[1], 0);
-            }
-        });
-
-        var rotateModifier = new Modifier({
-            transform: function (){
-                var _s = _getRect();
-                var angle  = Math.atan2(_s[1],_s[0]);
-                return Transform.rotateZ(angle);
-            }
-        });
-
-        mainContext.add(canvasModifier).add(rotateModifier).add(ls);
-    }
-
-    function createBlock(cnt,initialPosition){
-        var s = new Surface(
-            { size:[100,100],
-                content:cnt,
-                properties:{
-                    color: 'white',
-                    textAlign: 'center',
-                    backgroundColor: '#FA5C4F'
-                }
-            });
-        //Save the current position of the new surface
-        s.currentPosition = initialPosition;
-        var draggable = new Draggable();
-        draggable.obj = s;
-        s.pipe(draggable);
-        mainContext.add(draggable).add(s);
-        draggable.setPosition(initialPosition);
-        draggable.on('update',function(e){
-            this.obj.currentPosition = e.position;
-        });
-        return s;
-    }
-
-    //gets the position of where the line should start
-    function _getPosition(){
-        var dta = _getObjects();
-        var pnts = _getEndPoints(dta);
-        return pnts[0];
-    }
-
-    //Gets the Dx and Dy of line to calculate hypotenous
-    function _getRect(){
-        var res = [0,0];
-        var dta = _getObjects();
-        var pnts = _getEndPoints(dta);
-        var p1 = pnts[0];
-        var p2 = pnts[1];
-        res[0] = p2[0]-p1[0];
-        res[1] = p2[1]-p1[1];
-        return res;
-    }
-    function _getLineLength(){
-        var res = _getRect();
-        return Math.sqrt( ((res[0] * res[0]) + (res[1] * res[1])) );
-    }
-
-
-    function _getEndPoints(dta){
-        var dx = dta.rm.currentPosition[0]-dta.lmredge;
-        var dy = dta.bm.currentPosition[1]-dta.tmbedge;
-        if ( (dx <= 0) && (dy <= 0) ) {
-            //objects are overlapping. Draw no line
-            return [[0,0],[0,0]];
+// rotates red card surface and circle
+    var rotationModifier = new Modifier({
+        size: size,
+        origin: [0.5, 0.5],
+        align: [0.5, 0.5],
+        transform: function () {
+            return Transform.rotateY(angle.get());
         }
-        else if (dx > dy){
-            //draw line from R and L edges
-            var lmYMidPoint = dta.lm.currentPosition[1]+(dta.lm.size[1]/2);
-            var rmYMidPoint = dta.rm.currentPosition[1]+(dta.rm.size[1]/2);
-            var p1 = [dta.lmredge,lmYMidPoint];
-            var p2 = [dta.rm.currentPosition[0],rmYMidPoint];
-            return [p1,p2];
+    });
+
+    var mainNode = mainContext.add(rotationModifier);
+
+    mainNode.add(surface);
+
+    var circle = new Surface({
+        size: [200, 200],
+        properties: {
+            backgroundColor: 'white',
+            borderRadius: '100px',
+            pointerEvents: 'none',
+            zIndex: 1
         }
-        else {
-            //draw line from B and Top edges
-            var tmXMidPoint = dta.tm.currentPosition[0]+(dta.tm.size[0]/2);
-            var bmXMidPoint = dta.bm.currentPosition[0]+(dta.bm.size[0]/2);
-            var p1 = [tmXMidPoint,dta.tmbedge];
-            var p2 = [bmXMidPoint,dta.bm.currentPosition[1]];
-            return [p1,p2];
+    });
+
+// scales circle based on angle of rotation
+    var circleScaleModifier = new Modifier({
+        origin: [0.5, 0.5],
+        align: [0.5, 0.5],
+        transform: function () {
+            var scale = Math.cos(angle.get());
+            return Transform.scale(scale, scale, 1);
         }
+    });
+
+// positions circle above red card surface
+    var circleLayerModifier = new Modifier({
+        transform: Transform.translate(0, 0, 1)
+    });
+
+    mainNode.add(circleScaleModifier).add(circleLayerModifier).add(circle);
+
+    surface.on('click', toggle);
+
+// toggles angle
+    function toggle() {
+        var targetAngle = isToggled ? defaultAngle : -defaultAngle;
+
+        // halts the transitionable transition if animation
+        // is in progress
+        if (angle.isActive()) angle.halt();
+
+        angle.set(targetAngle, {duration: 2000, curve: 'easeInOut'});
+        isToggled = !isToggled;
     }
 
-    //Mark the objects as
-    //top most, left most, bottom most, right most
-    function _getObjects(){
-        var lm = _getLeftMost(ls);
-        var rm = ls.s1;
-        if (lm == rm){
-            rm = ls.s2;
-        }
-        var tm = _getTopMost(ls);
-        var bm = ls.s1;
-        if (tm == bm){
-            bm = ls.s2;
-        }
-
-        var lm_redge = (lm.currentPosition[0]+lm.size[0]);
-        var lm_bedge = (lm.currentPosition[1]+lm.size[1]);
-        var rm_redge = (rm.currentPosition[0]+rm.size[0]);
-        var rm_bedge = (rm.currentPosition[1]+rm.size[1]);
-
-        var tm_redge = (tm.currentPosition[0]+tm.size[0]);
-        var tm_bedge = (tm.currentPosition[1]+tm.size[1]);
-        var bm_redge = (bm.currentPosition[0]+bm.size[0]);
-        var bm_bedge = (bm.currentPosition[1]+bm.size[1]);
-
-
-        return {lm:lm,rm:rm,tm:tm,bm:bm,
-            lmredge:lm_redge,
-            lmbedge:lm_bedge,
-            rmredge:rm_redge,
-            rmbedge:rm_bedge,
-            tmredge:tm_redge,
-            tmbedge:tm_bedge,
-            bmredge:bm_redge,
-            bmbedge:bm_bedge};
-    }
-
-    function _getLeftMost(obj){
-        if (obj.s1.currentPosition[0] <= obj.s2.currentPosition[0]){
-            return obj.s1;
-        } else {
-            return obj.s2;
-        }
-    }
-
-    function _getTopMost(obj){
-        if (obj.s1.currentPosition[1] <= obj.s2.currentPosition[1]){
-            return obj.s1;
-        } else {
-            return obj.s2;
-        }
-    }
 });

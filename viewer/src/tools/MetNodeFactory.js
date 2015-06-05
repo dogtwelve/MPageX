@@ -8,6 +8,7 @@ define(function(require, exports, module) {
     var VideoSurface = require("famous/surfaces/VideoSurface");
     var CanvasSurface  = require('famous/surfaces/CanvasSurface');
     var UnitConverter      = require('tools/UnitConverter');
+    var ContainerSurface    = require("famous/surfaces/ContainerSurface");
     var DebugUtils = require('utils/DebugUtils');
 
     function MetNodeFactory() {
@@ -176,17 +177,36 @@ define(function(require, exports, module) {
         if(
             type === "MetNode"
             || type === "MetStateNode"
-            || type === "MetScrollNode"
+            || false
         ) {
             newSurface = new Surface({
                 size: size,
                 content: name,
+                classes: classes,
                 properties: {
-                    backfaceVisibility: 'visible',
                     border: '1px dashed rgb(210, 208, 203)'
                 }
             });
 
+        } else if(type === "MetScrollNode") {
+            var imageUrl = "image\/386705-winter-solstice.jpg";
+            // url encode '(' and ')'
+            if ((imageUrl.indexOf('(') >= 0) || (imageUrl.indexOf(')') >= 0)) {
+                imageUrl = imageUrl.split('(').join('%28');
+                imageUrl = imageUrl.split(')').join('%29');
+            }
+
+            newSurface = new ContainerSurface({
+                size: size,
+                classes: classes,
+                properties: {
+                    overflow:"hidden",
+                    border: "2px solid rgba(255,255,255, .8)",
+                    //borderRadius: "10px 0px 0px 10px",
+                    //backgroundImage: 'url(' + imageUrl + ')'
+                    backgroundColor: 'gray'
+                }
+            });
         }
 
         if(type === "VideoNode") {

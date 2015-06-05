@@ -154,18 +154,20 @@ define(function(require, exports, module) {
 
         }.bind(this));
 
+        var classes = ['z2', 'backfaceVisibility'];
+
         if (this.mainSurface) {
             for(var holder in holdersSync) {
                 this.mainSurface.pipe(holdersSync[holder]);
             }
 
             //this.subscribe(this.mainSurface);
-            this.mainSurface.pipe(rootParent._eventOutput);
+            //this.mainSurface.pipe(rootParent._eventOutput);
             this.add(this.mainSurface);
             this.mainSurface.on("click", function(data){
-                this.hideMetNode();
+                //this.hideMetNode();
                 DebugUtils.log(this.metNodeId + " event:" + data);
-                rootParent._eventOutput.trigger('metview-click', {metNodeId:this.metNodeId} );
+                //rootParent._eventOutput.trigger('metview-click', {metNodeId:this.metNodeId} );
             }.bind(this));
         }
 
@@ -174,17 +176,25 @@ define(function(require, exports, module) {
         var subMetNodes = this.metNodes;
         var subRoot = this;
 
+
         if(this.type == "MetScrollNode") {
 
             var container = new ContainerSurface({
                 size: this.size,
                 properties: {
-                    overflow: 'hidden'
+                    overflow: 'hidden',
+                    border: '1px solid rgb(0, 222, 0)'
                 }
             });
+
+            for(var cssclass in classes) {
+                container.addClass(classes[cssclass]);
+            }
+
+
             var direction = this.nodeDescription.scrollDirection == 0 ? Utility.Direction.Y : Utility.Direction.X;
             var scrollview = new Scrollview({ direction: direction});
-            container.add(scrollview);
+            this.mainSurface.add(scrollview);
             subRoot = new View();
             var receiverSurface = new Surface({
                 size: this.size // Take up the entire view
@@ -196,7 +206,7 @@ define(function(require, exports, module) {
             //scrollview.subscribe(receiverSurface);
             //scrollview.subscribe(subRoot);
             scrollview.sequenceFrom([subRoot]);
-            this.add(container);
+            //this.add(container);
 
             //for(var metNode in subMetNodes) {
             //    scrollview.subscribe(subMetNodes[metNode].mainSurface);

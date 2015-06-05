@@ -116,33 +116,6 @@ define(function(require, exports, module) {
 
         root.add(this.renderController);
 
-        if(this.type == "MetStateNode") {
-            var mod = new Modifier({
-                size: this.size,
-                origin: [0.5, 0.5]
-            });
-            if(this.nodeDescription.transition < 3) {
-                this.stateViewPlayer = new EdgeSwapper();
-                this.add(this.stateViewPlayer);
-            } else if(this.nodeDescription.transition === 10) {
-                this.stateViewPlayer = new Flipper({direction: Flipper.DIRECTION_X});
-                this.add(this.stateViewPlayer);
-            } else if(this.nodeDescription.transition === 11) {
-                this.stateViewPlayer = new Flipper({direction: Flipper.DIRECTION_Y});
-                this.add(this.stateViewPlayer);
-            } else {
-
-                this.stateViewPlayer = new Lightbox();
-                //set lightbox origin equal this view
-
-                this.add(mod).add(this.stateViewPlayer);
-            }
-
-            this.stateGroup = [];
-        }
-
-
-
         this._eventInput.on('metview-click',function(data){
             if(this instanceof MetNodeView) {
                 DebugUtils.log(this.metNodeId + " on metview-click event from " + data.metNodeId);
@@ -176,6 +149,30 @@ define(function(require, exports, module) {
         var subMetNodes = this.metNodes;
         var subRoot = this;
 
+        if(this.type == "MetStateNode") {
+            var mod = new Modifier({
+                size: this.size,
+                origin: [0.5, 0.5]
+            });
+            if(this.nodeDescription.transition < 3) {
+                this.stateViewPlayer = new EdgeSwapper();
+                this.mainSurface.add(this.stateViewPlayer);
+            } else if(this.nodeDescription.transition === 10) {
+                this.stateViewPlayer = new Flipper({direction: Flipper.DIRECTION_X});
+                this.mainSurface.add(this.stateViewPlayer);
+            } else if(this.nodeDescription.transition === 11) {
+                this.stateViewPlayer = new Flipper({direction: Flipper.DIRECTION_Y});
+                this.mainSurface.add(this.stateViewPlayer);
+            } else {
+
+                this.stateViewPlayer = new Lightbox();
+                //set lightbox origin equal this view
+
+                this.add(this.stateViewPlayer);
+            }
+
+            this.stateGroup = [];
+        }
 
         if(this.type == "MetScrollNode") {
 

@@ -176,8 +176,8 @@ define(function(require, exports, module) {
         //below is for debug info
         if(
             type === "MetNode"
-            || type === "MetStateNode"
-            || false
+            //|| type === "MetStateNode"
+            //|| type === "MetScrollNode"
         ) {
             newSurface = new Surface({
                 size: size,
@@ -188,7 +188,10 @@ define(function(require, exports, module) {
                 }
             });
 
-        } else if(type === "MetScrollNode") {
+        } else if(
+            type === "MetScrollNode"
+            || type === "MetStateNode"
+        ) {
             var imageUrl = "image\/386705-winter-solstice.jpg";
             // url encode '(' and ')'
             if ((imageUrl.indexOf('(') >= 0) || (imageUrl.indexOf(')') >= 0)) {

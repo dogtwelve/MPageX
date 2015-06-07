@@ -1958,89 +1958,376 @@ define(function(require, exports, module) {
     //    }
     //}
 
-    var Engine = require('famous/core/Engine');
-    var Surface = require('famous/core/Surface');
-    var Transform = require('famous/core/Transform');
+//    ////flip animation and z-pos from university
+//    var Engine = require('famous/core/Engine');
+//    var Surface = require('famous/core/Surface');
+//    var Transform = require('famous/core/Transform');
+//    var Modifier = require('famous/core/Modifier');
+//    var Transitionable = require('famous/transitions/Transitionable');
+//    var Easing = require('famous/transitions/Easing');
+//
+//    var mainContext = Engine.createContext();
+//    mainContext.setPerspective(1000);
+//
+//// state variables
+//    var defaultAngle = -Math.PI / 3;
+//    var size = [300, 400];
+//    var angle = new Transitionable(defaultAngle);
+//    var isToggled = false;
+//
+//// create red card surface
+//    var surface = new Surface({
+//        size: size,
+//        content: 'Click Me',
+//        properties: {
+//            fontSize: '26px',
+//            paddingTop: '40px',
+//            color: 'white',
+//            textAlign: 'center',
+//            backgroundColor: '#FA5C4F',
+//            cursor: 'pointer'
+//        }
+//    });
+//
+//// rotates red card surface and circle
+//    var rotationModifier = new Modifier({
+//        size: size,
+//        origin: [0.5, 0.5],
+//        align: [0.5, 0.5],
+//        transform: function () {
+//            return Transform.rotateY(angle.get());
+//        }
+//    });
+//
+//    var mainNode = mainContext.add(rotationModifier);
+//
+//    mainNode.add(surface);
+//
+//    var circle = new Surface({
+//        size: [200, 200],
+//        properties: {
+//            backgroundColor: 'white',
+//            borderRadius: '100px',
+//            pointerEvents: 'none',
+//            zIndex: 1
+//        }
+//    });
+//
+//// scales circle based on angle of rotation
+//    var circleScaleModifier = new Modifier({
+//        origin: [0.5, 0.5],
+//        align: [0.5, 0.5],
+//        transform: function () {
+//            var scale = Math.cos(angle.get());
+//            return Transform.scale(scale, scale, 1);
+//        }
+//    });
+//
+//// positions circle above red card surface
+//    var circleLayerModifier = new Modifier({
+//        transform: Transform.translate(0, 0, 1)
+//    });
+//
+//    mainNode.add(circleScaleModifier).add(circleLayerModifier).add(circle);
+//
+//    surface.on('click', toggle);
+//
+//// toggles angle
+//    function toggle() {
+//        var targetAngle = isToggled ? defaultAngle : -defaultAngle;
+//
+//        // halts the transitionable transition if animation
+//        // is in progress
+//        if (angle.isActive()) angle.halt();
+//
+//        angle.set(targetAngle, {duration: 2000, curve: 'easeInOut'});
+//        isToggled = !isToggled;
+//    }
+
+
+    ////lightbox and DeviceView
+    var Engine        = require('famous/core/Engine');
+    var Surface       = require('famous/core/Surface');
+    var Transform     = require('famous/core/Transform');
+    var StateModifier = require('famous/modifiers/StateModifier');
+    var Easing        = require('famous/transitions/Easing');
+    var Lightbox      = require('famous/views/Lightbox');
+
     var Modifier = require('famous/core/Modifier');
-    var Transitionable = require('famous/transitions/Transitionable');
-    var Easing = require('famous/transitions/Easing');
+    var ContainerSurface = require('famous/surfaces/ContainerSurface');
+    var View = require('famous/core/View');
+
+    /**
+     * Source code implementation from Famo.us offical website.
+     */
+
+    function DeviceView(options) {
+        this.options = Object.create(DeviceView.DEFAULT_OPTIONS);
+        this.options = options;
+
+        View.apply(this, arguments);
+
+        this.rotateMod = new Modifier({
+            origin: [0.5, 0.5],
+            align: [0.5, 0.5]
+        });
+        this.node = this._add(this.rotateMod);
+
+        _settings.call(this);
+        _container.call(this);
+        _content.call(this);
+        _device.call(this);
+
+        this.portrait = false;
+    }
+
+    function _content() {
+        this.container.getSize();
+        this.contentMod = new Modifier({
+            origin: [.5, .5],
+            align: [0.5, 0.5]
+        });
+        this.reset = new Modifier({
+            origin: [0, 0],
+            align: [0, 0]
+        });
+        this.contentNode = this.container.add(this.contentMod).add(this.reset);
+    }
+
+    function _container() {
+        this.container = new ContainerSurface({
+            size: [this.options.screenWidth + 2 * this.options[this.options.type].borderWidth, this.options.screenHeight + 2 * this.options[this.options.type].borderWidth],
+            properties: {
+                border: this.options[this.options.type].borderWidth + "px solid black",
+                borderRadius: this.options[this.options.type].borderRadius + "px",
+                backgroundColor: "white",
+                overflow: "hidden"
+            }
+        });
+
+        this.containerMod = new Modifier({
+            transform: Transform.translate(this.options.originX, this.options.originY, .01)
+        });
+
+        this.node.add(this.containerMod).add(this.container);
+    }
+
+    function _device() {
+        this.device = new Surface({
+            size: [this.options.width, this.options.height],
+            content: '<img src="' + this.options[this.options.type].image + '" width="' + this.options.width + '">'
+        });
+
+        this.device.pipe(this._eventOutput);
+        this.node.add(this.device);
+    }
+
+    function _settings() {
+        if (this.options.width > 0) {
+            this.options.height = this.options[this.options.type].deviceRatio * this.options.width;
+        } else if(this.options.height > 0) {
+            this.options.width = this.options.height / this.options[this.options.type].deviceRatio;
+        } else if(this.options.screenWidth && ('default' === this.options.screenWidth)) {
+            this.options.screenWidth = this.options[this.options.type].defaultScreenWidth;
+            this.options.width = this.options.screenWidth / this.options[this.options.type].screenWidth;
+            this.options.height = this.options[this.options.type].deviceRatio * this.options.width;
+        }
+
+        this.options.screenWidth = this.options[this.options.type].screenWidth * this.options.width;
+        this.options.screenHeight = this.options[this.options.type].screenHeight * this.options.height;
+
+        this.options.originX = this.options[this.options.type].originX * this.options.width;
+        this.options.originY = this.options[this.options.type].originY * this.options.height;
+    }
+
+    DeviceView.prototype = Object.create(View.prototype);
+    DeviceView.prototype.constructor = DeviceView;
+
+    DeviceView.DEFAULT_OPTIONS = {
+        type: "",
+        width: 0,
+        height: 0,
+        iphone: {
+            image: "./img/device-iphone.svg",
+            deviceRatio: 659 / 317,
+            screenWidth: .86,
+            screenHeight: .705,
+            originX: .0,
+            originY: .0,
+            defaultScreenWidth: 320,
+            borderWidth: 4,
+            borderRadius: 2
+        },
+        ipad: {
+            image: "./img/device-ipad.svg",
+            deviceRatio: 434 / 290,
+            screenWidth: .89,
+            screenHeight: .78,
+            originX: .0,
+            originY: .0,
+            defaultScreenWidth: 768,
+            borderWidth: 4,
+            borderRadius: 2
+        },
+        nexus: {
+            image: "./img/device-nexus.svg",
+            deviceRatio: 667 / 332,
+            screenWidth: .885,
+            screenHeight: .728,
+            originX: -.003,
+            originY: -.041,
+            defaultScreenWidth: 360,
+            borderWidth: 0,
+            borderRadius: 0
+        },
+        rotateTransition : {
+            duration: 400,
+            curve: Easing.inOutBack
+        },
+        transition: {
+            duration: 300,
+            curve: "easeInOut"
+        }
+    };
+
+    DeviceView.prototype.setiFrame = function setiFrame(appUrl) {
+        if (this.iFrame === undefined) {
+            this.iFrameEl = document.createElement("IFRAME");
+            this.iFrameEl.style.width = this.getScreenSize()[0] + "px";
+            this.iFrameEl.style.height = this.getScreenSize()[1] + "px";
+            this.iFrameEl.style.border = "none";
+            this.iFrame = new Surface({
+                content: this.iFrameEl
+            });
+
+            this.contentNode.add(this.iFrame);
+            this.iFrameEl.setAttribute("src", appUrl);
+        }
+    };
+
+    DeviceView.prototype.setLandscape = function setLandscape() {
+        this.rotateMod.setTransform(Transform.rotateZ(Math.PI / 2), this.options.transition, function() {
+            this.contentMod.setTransform(Transform.rotateZ( -1 * Math.PI / 2), this.options.rotateTransition);
+
+            this.contentMod.setSize(
+                [this.container.getSize()[1], this.container.getSize()[0]]
+            );
+            // Reset the iFrame size
+            this.iFrameEl.style.width = this.container.getSize()[1] + "px";
+            this.iFrameEl.style.height = this.container.getSize()[0] + "px";
+        }.bind(this));
+    };
+
+    DeviceView.prototype.setPortrait = function setPortrait() {
+        this.rotateMod.setTransform(Transform.rotateZ(0), this.options.transition, function() {
+            this.contentMod.setTransform(Transform.rotateZ(0), this.options.rotateTransition);
+            this.contentMod.setSize(this.container.getSize());
+            // Reset the iFrame size
+            this.iFrameEl.style.width = this.container.getSize()[0] + "px";
+            this.iFrameEl.style.height = this.container.getSize()[1] + "px";
+        }.bind(this));
+    };
+    DeviceView.prototype.toggleOrientation = function toggleOrientation() {
+        if (false === this.portrait) {
+            this.setLandscape();
+        } else {
+            this.setPortrait();
+        }
+        this.portrait = !this.portrait;
+    };
+    DeviceView.prototype.getSize = function getSize() {
+        return [this.options.width, this.options.height];
+    };
+    DeviceView.prototype.getScreenSize = function getScreenSize() {
+        return [this.options.screenWidth, this.options.screenHeight];
+    };
+    DeviceView.prototype.add = function add(node) {
+        return this.contentNode.add(node);
+    };
+    DeviceView.prototype.getDevice = function getDevice() {
+        return this.options.type;
+    };
+    //var DeviceView    = require('./DeviceView');
 
     var mainContext = Engine.createContext();
-    mainContext.setPerspective(1000);
 
-// state variables
-    var defaultAngle = -Math.PI / 3;
-    var size = [300, 400];
-    var angle = new Transitionable(defaultAngle);
-    var isToggled = false;
+    var device, lightbox;
+    var slides = [];
+    var index = 0;
 
-// create red card surface
-    var surface = new Surface({
-        size: size,
-        content: 'Click Me',
-        properties: {
-            fontSize: '26px',
-            paddingTop: '40px',
-            color: 'white',
-            textAlign: 'center',
-            backgroundColor: '#FA5C4F',
-            cursor: 'pointer'
-        }
-    });
+    var lightboxOptions = {
+        inOpacity: 1,
+        outOpacity: 1,
+        inTransform: Transform.translate(320,0, 0),
+        outTransform: Transform.translate(-320, 0, 1),
+        inTransition: { duration: 400, curve: Easing.outBack },
+        outTransition: { duration: 150, curve: Easing.easeOut }
+    };
 
-// rotates red card surface and circle
-    var rotationModifier = new Modifier({
-        size: size,
-        origin: [0.5, 0.5],
-        align: [0.5, 0.5],
-        transform: function () {
-            return Transform.rotateY(angle.get());
-        }
-    });
+    createDevice();
+    createSlides();
+    createLightbox();
 
-    var mainNode = mainContext.add(rotationModifier);
+    function createDevice() {
+        var deviceOptions = {
+            type: 'iphone',
+            height: window.innerHeight - 100
+        };
 
-    mainNode.add(surface);
+        device = new DeviceView(deviceOptions);
 
-    var circle = new Surface({
-        size: [200, 200],
-        properties: {
-            backgroundColor: 'white',
-            borderRadius: '100px',
-            pointerEvents: 'none',
-            zIndex: 1
-        }
-    });
+        var deviceModifier = new StateModifier({
+            size: device.getSize(),
+            origin: [0.5, 0.5],
+            align: [0.5, 0.5]
+        });
 
-// scales circle based on angle of rotation
-    var circleScaleModifier = new Modifier({
-        origin: [0.5, 0.5],
-        align: [0.5, 0.5],
-        transform: function () {
-            var scale = Math.cos(angle.get());
-            return Transform.scale(scale, scale, 1);
-        }
-    });
-
-// positions circle above red card surface
-    var circleLayerModifier = new Modifier({
-        transform: Transform.translate(0, 0, 1)
-    });
-
-    mainNode.add(circleScaleModifier).add(circleLayerModifier).add(circle);
-
-    surface.on('click', toggle);
-
-// toggles angle
-    function toggle() {
-        var targetAngle = isToggled ? defaultAngle : -defaultAngle;
-
-        // halts the transitionable transition if animation
-        // is in progress
-        if (angle.isActive()) angle.halt();
-
-        angle.set(targetAngle, {duration: 2000, curve: 'easeInOut'});
-        isToggled = !isToggled;
+        mainContext.add(deviceModifier).add(device);
     }
+
+    function createSlides() {
+        var slideContent = [
+            '<img src="http://launch.famo.us/fu-assets/hello/slide1.png" width="100%">',
+            '<img src="http://launch.famo.us/fu-assets/hello/slide2.png" width="100%">',
+            '<img src="http://launch.famo.us/fu-assets/hello/slide3.png" width="100%">'];
+
+        var background = new Surface({
+            properties: {
+                backgroundColor: '#FA5C4F'
+            }
+        });
+
+        device.add(background);
+
+        for (var i = 0; i < slideContent.length; i++) {
+            var slide = new Surface({
+                content: slideContent[i],
+                properties: {
+                    color: 'white',
+                    lineHeight: '200%',
+                    textAlign: 'center',
+                    fontSize: '36px',
+                    cursor: 'pointer'
+                }
+            });
+
+            slide.on('click', showNextSlide);
+
+            slides.push(slide);
+        }
+    }
+
+    function createLightbox() {
+        lightbox = new Lightbox(lightboxOptions);
+        device.add(lightbox);
+        lightbox.show(slides[0]);
+    }
+
+    function showNextSlide() {
+        index++;
+        if(index >= slides.length) index = 0;
+        lightbox.show(slides[index]);
+    }
+
 
 });

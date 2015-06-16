@@ -6061,7 +6061,7 @@
           "defaultState" : 0,
           "currentState" : 0,
           "sizeX" : 238,
-          "transition" : 0,
+          "transition" : 11,
           "endToEnd" : 0,
           "nodeStroke" : {
             "effectEnable" : 0,

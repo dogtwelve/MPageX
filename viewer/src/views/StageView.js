@@ -56,7 +56,7 @@ define(function(require, exports, module) {
     StageView.prototype.constructor = StageView;
 
     StageView.prototype.addMetNode = function(newNode) {
-        newNode.initMetNode([/*this.syncScroll, this.syncSwipe*/], this.rootNode);
+        newNode.initMetSubNode([/*this.syncScroll, this.syncSwipe*/], this.rootNode);
         //newNode.activate(this.syncSwipe);
         newNode.subscribe(this._eventOutput);
         //this.add(newNode);

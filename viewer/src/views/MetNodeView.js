@@ -108,7 +108,147 @@ define(function(require, exports, module) {
         this.yPosition += incrY;
     };
 
-    MetNodeView.prototype.initMetNode = function(holdersSync, rootParent) {
+    MetNodeView.prototype.initMetStateNode = function(holdersSync) {
+        _createBaseModifier.call(this);
+        var root = this.add(this.modifierChain);
+        //root.add(this.renderController);
+
+        var classes = ['z2', 'backfaceVisibility'];
+
+        if (this.mainSurface) {
+            for(var holder in holdersSync) {
+                this.mainSurface.pipe(holdersSync[holder]);
+            }
+
+            //this.subscribe(this.mainSurface);
+            //this.mainSurface.pipe(rootParent._eventOutput);
+            root.add(this.mainSurface);
+            this.mainSurface.on("click", function(data){
+                //this.hideMetNode();
+                DebugUtils.log(this.metNodeId + " event:" + data);
+                //rootParent._eventOutput.trigger('metview-click', {metNodeId:this.metNodeId} );
+            }.bind(this));
+        }
+
+
+        ////children metnodes processing
+        var subMetNodes = this.metNodes;
+        var subRoot = this;
+
+        if(this.type == "MetStateNode") {
+            var mod = new Modifier({
+                size: this.size,
+                align: [0.5, 0.5],
+                origin: [0.5, 0.5]
+            });
+
+            var centerModifier = new Modifier({
+                //size: this.size,
+                align : [0.5, 0.5],
+                origin : [0.5, 0.5]
+            });
+
+            if(this.nodeDescription.transition < 3) {
+                this.stateViewPlayer = new EdgeSwapper();
+                this.mainSurface.add(this.stateViewPlayer);
+            } else if(this.nodeDescription.transition === 10) {
+                this.stateViewPlayer = new Flipper();
+                this.mainSurface.add(centerModifier).add(this.stateViewPlayer);
+            } else if(this.nodeDescription.transition === 11) {
+                this.stateViewPlayer = new Flipper({direction: Flipper.DIRECTION_Y});
+                this.mainSurface.add(centerModifier).add(this.stateViewPlayer);
+            } else {
+
+                this.stateViewPlayer = new Lightbox();
+                //set lightbox origin equal this view
+
+                this.add(mod).add(this.stateViewPlayer);
+            }
+        }
+
+        if(this.type == "MetScrollNode") {
+
+            var container = new ContainerSurface({
+                size: this.size,
+                properties: {
+                    overflow: 'hidden',
+                    border: '1px solid rgb(0, 222, 0)'
+                }
+            });
+
+            for(var cssclass in classes) {
+                container.addClass(classes[cssclass]);
+            }
+
+
+            var direction = this.nodeDescription.scrollDirection == 0 ? Utility.Direction.Y : Utility.Direction.X;
+            var scrollview = new Scrollview({ direction: direction});
+            this.mainSurface.add(scrollview);
+            subRoot = new View();
+            var receiverSurface = new Surface({
+                size: this.size // Take up the entire view
+            });
+            subRoot.add(receiverSurface);
+
+            receiverSurface.pipe(scrollview);
+            subRoot.pipe(scrollview);
+            //scrollview.subscribe(receiverSurface);
+            //scrollview.subscribe(subRoot);
+            scrollview.sequenceFrom([subRoot]);
+            //this.add(container);
+
+            //for(var metNode in subMetNodes) {
+            //    scrollview.subscribe(subMetNodes[metNode].mainSurface);
+            //}
+
+            subRoot.on("click", function(data){
+                DebugUtils.log("subRoot event:" + data);
+            }.bind(this));
+
+            scrollview.on("click", function(data){
+                DebugUtils.log("scrollview event:" + data);
+            }.bind(this));
+        }
+
+
+        //this.showMetNode();
+
+        for(var metNode in subMetNodes) {
+            //if(this.type === "MetStateNode") {
+            //    this.stateGroup.push(subMetNodes[metNode]);
+            //} else if(this.type === "MetScrollNode") {
+            //    subRoot.subscribe(subMetNodes[metNode]);
+            //}
+
+            //this.subscribe(subMetNodes[metNode]);
+            //subMetNodes[metNode].pipe(subRoot);
+
+            if(this.type === "MetStateNode") {
+                subMetNodes[metNode].initMetStateNode(holdersSync);
+            } else {
+                subMetNodes[metNode].initMetSubNode(holdersSync, subRoot);
+            }
+        }
+
+        //if(this.type == "MetScrollNode") {
+        //    scrollview.sequenceFrom([subRoot]);
+        //}
+
+
+
+
+        if(this.type == "MetStateNode") {
+            this.curStateIdx = 0;
+            this.stateShowElapsed = 2000;
+            this.showState();
+        }
+
+        if(this.curAnim) {
+            this.curAnim.activeAnim();
+        }
+    }
+
+    MetNodeView.prototype.initMetSubNode = function(holdersSync, rootParent) {
         // Ensures metnode always has a position modifier
         _createBaseModifier.call(this);
 
@@ -152,23 +292,84 @@ define(function(require, exports, module) {
         if(this.type == "MetStateNode") {
             var mod = new Modifier({
                 size: this.size,
+                align: [0.5, 0.5],
                 origin: [0.5, 0.5]
             });
+
+            var centerModifier = new Modifier({
+                //size: this.size,
+                align : [0.5, 1],
+                origin : [0.5, 1]
+            });
+
+            var frontSurface = new Surface({
+                size : [200, 200],
+                content : 'front',
+                properties : {
+                    background : 'red',
+                    lineHeight : '200px',
+                    textAlign  : 'center'
+                }
+            });
+
+            var backSurface = new Surface({
+                size : [200, 200],
+                content : 'back',
+                properties : {
+                    background : 'blue',
+                    color : 'white',
+                    lineHeight : '200px',
+                    textAlign  : 'center'
+                }
+            });
+
+            var toggle = false;
+
             if(this.nodeDescription.transition < 3) {
                 this.stateViewPlayer = new EdgeSwapper();
                 this.mainSurface.add(this.stateViewPlayer);
             } else if(this.nodeDescription.transition === 10) {
                 this.stateViewPlayer = new Flipper({direction: Flipper.DIRECTION_X});
-                this.mainSurface.add(this.stateViewPlayer);
+                this.mainSurface.add(centerModifier).add(this.stateViewPlayer);
+                //this.stateViewPlayer.setFront(frontSurface);
+                //this.stateViewPlayer.setBack(backSurface);
+                //
+                //frontSurface.on('click', function(){
+                //    var angle = toggle ? 0 : Math.PI;
+                //    this.stateViewPlayer.setAngle(angle, {curve : 'easeOutBounce', duration : 500});
+                //    toggle = !toggle;
+                //}.bind(this));
+                //
+                //backSurface.on('click', function(){
+                //    var angle = toggle ? 0 : Math.PI;
+                //    this.stateViewPlayer.setAngle(angle, {curve : 'easeOutBounce', duration : 500});
+                //    toggle = !toggle;
+                //}.bind(this));
+
             } else if(this.nodeDescription.transition === 11) {
                 this.stateViewPlayer = new Flipper({direction: Flipper.DIRECTION_Y});
-                this.mainSurface.add(this.stateViewPlayer);
+                this.mainSurface.add(centerModifier).add(this.stateViewPlayer);
+                //this.stateViewPlayer.setFront(frontSurface);
+                //this.stateViewPlayer.setBack(backSurface);
+                //
+                //frontSurface.on('click', function(){
+                //    var angle = toggle ? 0 : Math.PI;
+                //    this.stateViewPlayer.setAngle(angle, {curve : 'easeOutBounce', duration : 500});
+                //    toggle = !toggle;
+                //}.bind(this));
+                //
+                //backSurface.on('click', function(){
+                //    var angle = toggle ? 0 : Math.PI;
+                //    this.stateViewPlayer.setAngle(angle, {curve : 'easeOutBounce', duration : 500});
+                //    toggle = !toggle;
+                //}.bind(this));
+
             } else {
 
                 this.stateViewPlayer = new Lightbox();
                 //set lightbox origin equal this view
 
-                this.add(this.stateViewPlayer);
+                this.add(mod).add(this.stateViewPlayer);
             }
 
             this.stateGroup = [];
@@ -222,16 +423,22 @@ define(function(require, exports, module) {
         this.showMetNode();
 
         for(var metNode in subMetNodes) {
-            if(this.type === "MetStateNode") {
-                subRoot = new View();
-                this.stateGroup.push(subRoot);
-            } else if(this.type === "MetScrollNode") {
-                subRoot.subscribe(subMetNodes[metNode]);
-            }
+            //if(this.type === "MetStateNode") {
+            //    subRoot = new View({size: this.size});
+            //    this.stateGroup.push(subRoot);
+            //} else if(this.type === "MetScrollNode") {
+            //    subRoot.subscribe(subMetNodes[metNode]);
+            //}
+            //
+            ////this.subscribe(subMetNodes[metNode]);
+            ////subMetNodes[metNode].pipe(subRoot);
+            //subMetNodes[metNode].initMetNode(holdersSync, subRoot);
 
-            //this.subscribe(subMetNodes[metNode]);
-            //subMetNodes[metNode].pipe(subRoot);
-            subMetNodes[metNode].initMetNode(holdersSync, subRoot);
+            if(this.type === "MetStateNode") {
+                subMetNodes[metNode].initMetStateNode(holdersSync);
+            } else {
+                subMetNodes[metNode].initMetSubNode(holdersSync, subRoot);
+            }
         }
 
         //if(this.type == "MetScrollNode") {
@@ -253,23 +460,25 @@ define(function(require, exports, module) {
     };
 
     MetNodeView.prototype.showState = function() {
+        var subMetNodes = this.metNodes;
+
         if(
             this.nodeDescription.transition === 10 ||
             this.nodeDescription.transition === 11
         ) {
-            this.stateViewPlayer.setFront(this.stateGroup[this.curStateIdx]);
-            this.stateViewPlayer.setBack(this.stateGroup[this.curStateIdx + 1]);
+            this.stateViewPlayer.setFront(subMetNodes[this.curStateIdx]);
+            this.stateViewPlayer.setBack(subMetNodes[this.curStateIdx + 1]);
             this.toggle = false;
             if(!this.stateTimer) {
                 this.stateTimer = Timer.setInterval(
                     function () {
                         var angle = this.toggle ? 0 : Math.PI;
-                        this.curStateIdx = (this.curStateIdx + 1) % this.stateGroup.length;
+                        this.curStateIdx = (this.curStateIdx + 1) % subMetNodes.length;
                         this.stateViewPlayer.setAngle(angle, {duration: 500}, function () {
                                 if (this.toggle) {
-                                    this.stateViewPlayer.setFront(this.stateGroup[this.curStateIdx]);
+                                    this.stateViewPlayer.setFront(subMetNodes[this.curStateIdx]);
                                 } else {
-                                    this.stateViewPlayer.setBack(this.stateGroup[this.curStateIdx]);
+                                    this.stateViewPlayer.setBack(subMetNodes[this.curStateIdx]);
                                 }
                                 this.resetMetNodePosAdjustZ();
                             }.bind(this));
@@ -278,7 +487,7 @@ define(function(require, exports, module) {
                     }.bind(this), this.stateShowElapsed);
             }
         } else {
-            this.stateViewPlayer.show(this.stateGroup[this.curStateIdx], function() {
+            this.stateViewPlayer.show(subMetNodes[this.curStateIdx], function() {
                 if(!this.stateTimer) {
                     this.stateTimer = Timer.setInterval(
                         function(){
@@ -289,7 +498,7 @@ define(function(require, exports, module) {
 
             }.bind(this));
         }
-        this.curStateIdx = (this.curStateIdx + 1) % this.stateGroup.length;
+        this.curStateIdx = (this.curStateIdx + 1) % subMetNodes.length;
     };
 
     MetNodeView.prototype.setActivated = function() {

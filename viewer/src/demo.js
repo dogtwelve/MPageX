@@ -1958,89 +1958,204 @@ define(function(require, exports, module) {
     //    }
     //}
 
-    var Engine = require('famous/core/Engine');
-    var Surface = require('famous/core/Surface');
-    var Transform = require('famous/core/Transform');
-    var Modifier = require('famous/core/Modifier');
-    var Transitionable = require('famous/transitions/Transitionable');
-    var Easing = require('famous/transitions/Easing');
+//    //flip demo
+//    var Engine = require('famous/core/Engine');
+//    var Surface = require('famous/core/Surface');
+//    var Transform = require('famous/core/Transform');
+//    var Modifier = require('famous/core/Modifier');
+//    var Transitionable = require('famous/transitions/Transitionable');
+//    var Easing = require('famous/transitions/Easing');
+//
+//    var mainContext = Engine.createContext();
+//    mainContext.setPerspective(1000);
+//
+//// state variables
+//    var defaultAngle = -Math.PI / 3;
+//    var size = [300, 400];
+//    var angle = new Transitionable(defaultAngle);
+//    var isToggled = false;
+//
+//// create red card surface
+//    var surface = new Surface({
+//        size: size,
+//        content: 'Click Me',
+//        properties: {
+//            fontSize: '26px',
+//            paddingTop: '40px',
+//            color: 'white',
+//            textAlign: 'center',
+//            backgroundColor: '#FA5C4F',
+//            cursor: 'pointer'
+//        }
+//    });
+//
+//// rotates red card surface and circle
+//    var rotationModifier = new Modifier({
+//        size: size,
+//        origin: [0.5, 0.5],
+//        align: [0.5, 0.5],
+//        transform: function () {
+//            return Transform.rotateY(angle.get());
+//        }
+//    });
+//
+//    var mainNode = mainContext.add(rotationModifier);
+//
+//    mainNode.add(surface);
+//
+//    var circle = new Surface({
+//        size: [200, 200],
+//        properties: {
+//            backgroundColor: 'white',
+//            borderRadius: '100px',
+//            pointerEvents: 'none',
+//            zIndex: 1
+//        }
+//    });
+//
+//// scales circle based on angle of rotation
+//    var circleScaleModifier = new Modifier({
+//        origin: [0.5, 0.5],
+//        align: [0.5, 0.5],
+//        transform: function () {
+//            var scale = Math.cos(angle.get());
+//            return Transform.scale(scale, scale, 1);
+//        }
+//    });
+//
+//// positions circle above red card surface
+//    var circleLayerModifier = new Modifier({
+//        transform: Transform.translate(0, 0, 1)
+//    });
+//
+//    mainNode.add(circleScaleModifier).add(circleLayerModifier).add(circle);
+//
+//    surface.on('click', toggle);
+//
+//// toggles angle
+//    function toggle() {
+//        var targetAngle = isToggled ? defaultAngle : -defaultAngle;
+//
+//        // halts the transitionable transition if animation
+//        // is in progress
+//        if (angle.isActive()) angle.halt();
+//
+//        angle.set(targetAngle, {duration: 2000, curve: 'easeInOut'});
+//        isToggled = !isToggled;
+//    }
+
+    //flipper demo
+    var Engine = require("famous/core/Engine");
+    var Surface = require("famous/core/Surface");
+    var Flipper = require("famous/views/Flipper");
+    var Modifier = require("famous/core/Modifier");
+    var View = require('famous/core/View');
+    var ContainerSurface = require("famous/surfaces/ContainerSurface");
 
     var mainContext = Engine.createContext();
-    mainContext.setPerspective(1000);
+    mainContext.setPerspective(500);
 
-// state variables
-    var defaultAngle = -Math.PI / 3;
-    var size = [300, 400];
-    var angle = new Transitionable(defaultAngle);
-    var isToggled = false;
+    var flipper = new Flipper();
 
-// create red card surface
-    var surface = new Surface({
-        size: size,
-        content: 'Click Me',
-        properties: {
-            fontSize: '26px',
-            paddingTop: '40px',
-            color: 'white',
-            textAlign: 'center',
-            backgroundColor: '#FA5C4F',
-            cursor: 'pointer'
-        }
-    });
-
-// rotates red card surface and circle
-    var rotationModifier = new Modifier({
-        size: size,
-        origin: [0.5, 0.5],
-        align: [0.5, 0.5],
-        transform: function () {
-            return Transform.rotateY(angle.get());
-        }
-    });
-
-    var mainNode = mainContext.add(rotationModifier);
-
-    mainNode.add(surface);
-
-    var circle = new Surface({
+    var frontSurface = new Surface({
         size: [200, 200],
+        content: 'front',
         properties: {
-            backgroundColor: 'white',
-            borderRadius: '100px',
-            pointerEvents: 'none',
-            zIndex: 1
+            background: 'red',
+            lineHeight: '200px',
+            textAlign: 'center'
         }
     });
 
-// scales circle based on angle of rotation
-    var circleScaleModifier = new Modifier({
-        origin: [0.5, 0.5],
-        align: [0.5, 0.5],
-        transform: function () {
-            var scale = Math.cos(angle.get());
-            return Transform.scale(scale, scale, 1);
+    var frontSurfaceTial = new Surface({
+        size: [200, 200],
+        content: 'frontTial',
+        properties: {
+            background: 'green',
+            lineHeight: '200px',
+            textAlign: 'center'
         }
     });
 
-// positions circle above red card surface
-    var circleLayerModifier = new Modifier({
-        transform: Transform.translate(0, 0, 1)
+    var backSurface = new Surface({
+        size: [200, 200],
+        content: 'back',
+        properties: {
+            background: 'blue',
+            color: 'white',
+            lineHeight: '200px',
+            textAlign: 'center'
+        }
     });
 
-    mainNode.add(circleScaleModifier).add(circleLayerModifier).add(circle);
+    var backSurfaceTial = new Surface({
+        size: [200, 200],
+        content: 'backTial',
+        properties: {
+            background: 'gray',
+            color: 'white',
+            lineHeight: '200px',
+            textAlign: 'center'
+        }
+    });
 
-    surface.on('click', toggle);
+    var frontView = new View();
+    var backView = new View();
 
-// toggles angle
-    function toggle() {
-        var targetAngle = isToggled ? defaultAngle : -defaultAngle;
+    var frontRoot = frontView.add(new Modifier({size: [210, 210]}));
+    frontRoot.add(new Modifier({
+        align: [0, 0],
+        origin: [0, 0]
+    })).add(frontSurface);
+    frontRoot.add(new Modifier({
+        align: [1, 1],
+        origin: [1, 1]
+    })).add(frontSurfaceTial);
 
-        // halts the transitionable transition if animation
-        // is in progress
-        if (angle.isActive()) angle.halt();
 
-        angle.set(targetAngle, {duration: 2000, curve: 'easeInOut'});
-        isToggled = !isToggled;
-    }
+    var backRoot = backView.add(new Modifier({size: [210, 210]}));
+
+    backRoot.add(new Modifier({
+        align: [0, 0],
+        origin: [0, 0]
+    })).add(backSurface);
+
+    backRoot.add(new Modifier({
+        align: [1, 1],
+        origin: [1, 1]
+    })).add(backSurfaceTial);
+
+    flipper.setFront(frontView);
+    flipper.setBack(backView);
+
+    var centerModifier = new Modifier({
+        align: [.5,.5],
+        origin: [.5, .5]
+    });
+
+    var rootModifier = new Modifier({
+        align: [.5, .5],
+        origin: [.5, .5]
+    });
+
+    var container = new ContainerSurface({
+        size: [210, 210],
+        properties: {
+            //overflow: 'hidden',
+            border: '1px solid rgb(0, 222, 0)'
+        }
+    });
+
+
+    container.add(centerModifier).add(flipper);
+
+    mainContext.add(rootModifier).add(container);
+
+    var toggle = false;
+    Engine.on('click', function () {
+        var angle = toggle ? 0 : Math.PI;
+        flipper.setAngle(angle, {curve: 'easeOutBounce', duration: 500});
+        toggle = !toggle;
+    });
 
 });

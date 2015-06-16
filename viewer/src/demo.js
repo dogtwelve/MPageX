@@ -2102,7 +2102,7 @@ define(function(require, exports, module) {
     var frontView = new View();
     var backView = new View();
 
-    var frontRoot = frontView.add(new Modifier({size: [210, 210]}));
+    var frontRoot = frontView.add(new Modifier({size: [250, 250]}));
     frontRoot.add(new Modifier({
         align: [0, 0],
         origin: [0, 0]
@@ -2113,7 +2113,7 @@ define(function(require, exports, module) {
     })).add(frontSurfaceTial);
 
 
-    var backRoot = backView.add(new Modifier({size: [210, 210]}));
+    var backRoot = backView.add(new Modifier({size: [250, 250]}));
 
     backRoot.add(new Modifier({
         align: [0, 0],

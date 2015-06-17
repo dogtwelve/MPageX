@@ -110,7 +110,8 @@ define(function(require, exports, module) {
 
     MetNodeView.prototype.initMetStateNode = function(holdersSync) {
         _createBaseModifier.call(this);
-        var root = this.add(this.modifierChain);
+
+        var root = this.add(new Modifier({size: this.size})).add(this.modifierChain);
         //root.add(this.renderController);
 
         var classes = ['z2', 'backfaceVisibility'];
@@ -133,82 +134,82 @@ define(function(require, exports, module) {
 
         ////children metnodes processing
         var subMetNodes = this.metNodes;
-        var subRoot = this;
+        var subRoot = root;
 
-        if(this.type == "MetStateNode") {
-            var mod = new Modifier({
-                size: this.size,
-                align: [0.5, 0.5],
-                origin: [0.5, 0.5]
-            });
-
-            var centerModifier = new Modifier({
-                //size: this.size,
-                align : [0.5, 0.5],
-                origin : [0.5, 0.5]
-            });
-
-            if(this.nodeDescription.transition < 3) {
-                this.stateViewPlayer = new EdgeSwapper();
-                this.mainSurface.add(this.stateViewPlayer);
-            } else if(this.nodeDescription.transition === 10) {
-                this.stateViewPlayer = new Flipper();
-                this.mainSurface.add(centerModifier).add(this.stateViewPlayer);
-            } else if(this.nodeDescription.transition === 11) {
-                this.stateViewPlayer = new Flipper({direction: Flipper.DIRECTION_Y});
-                this.mainSurface.add(centerModifier).add(this.stateViewPlayer);
-            } else {
-
-                this.stateViewPlayer = new Lightbox();
-                //set lightbox origin equal this view
-
-                this.add(mod).add(this.stateViewPlayer);
-            }
-        }
-
-        if(this.type == "MetScrollNode") {
-
-            var container = new ContainerSurface({
-                size: this.size,
-                properties: {
-                    overflow: 'hidden',
-                    border: '1px solid rgb(0, 222, 0)'
-                }
-            });
-
-            for(var cssclass in classes) {
-                container.addClass(classes[cssclass]);
-            }
-
-
-            var direction = this.nodeDescription.scrollDirection == 0 ? Utility.Direction.Y : Utility.Direction.X;
-            var scrollview = new Scrollview({ direction: direction});
-            this.mainSurface.add(scrollview);
-            subRoot = new View();
-            var receiverSurface = new Surface({
-                size: this.size // Take up the entire view
-            });
-            subRoot.add(receiverSurface);
-
-            receiverSurface.pipe(scrollview);
-            subRoot.pipe(scrollview);
-            //scrollview.subscribe(receiverSurface);
-            //scrollview.subscribe(subRoot);
-            scrollview.sequenceFrom([subRoot]);
-            //this.add(container);
-
-            //for(var metNode in subMetNodes) {
-            //    scrollview.subscribe(subMetNodes[metNode].mainSurface);
-            //}
-
-            subRoot.on("click", function(data){
-                DebugUtils.log("subRoot event:" + data);
-            }.bind(this));
-
-            scrollview.on("click", function(data){
-                DebugUtils.log("scrollview event:" + data);
-            }.bind(this));
-        }
+        //if(this.type == "MetStateNode") {
+        //    var mod = new Modifier({
+        //        size: this.size,
+        //        align: [0.5, 0.5],
+        //        origin: [0.5, 0.5]
+        //    });
+        //
+        //    var centerModifier = new Modifier({
+        //        //size: this.size,
+        //        align : [0.5, 0.5],
+        //        origin : [0.5, 0.5]
+        //    });
+        //
+        //    if(this.nodeDescription.transition < 3) {
+        //        this.stateViewPlayer = new EdgeSwapper();
+        //        this.mainSurface.add(this.stateViewPlayer);
+        //    } else if(this.nodeDescription.transition === 10) {
+        //        this.stateViewPlayer = new Flipper();
+        //        this.mainSurface.add(centerModifier).add(this.stateViewPlayer);
+        //    } else if(this.nodeDescription.transition === 11) {
+        //        this.stateViewPlayer = new Flipper({direction: Flipper.DIRECTION_Y});
+        //        this.mainSurface.add(centerModifier).add(this.stateViewPlayer);
+        //    } else {
+        //
+        //        this.stateViewPlayer = new Lightbox();
+        //        //set lightbox origin equal this view
+        //
+        //        this.add(mod).add(this.stateViewPlayer);
+        //    }
+        //}
+        //
+        //if(this.type == "MetScrollNode") {
+        //
+        //    var container = new ContainerSurface({
+        //        size: this.size,
+        //        properties: {
+        //            overflow: 'hidden',
+        //            border: '1px solid rgb(0, 222, 0)'
+        //        }
+        //    });
+        //
+        //    for(var cssclass in classes) {
+        //        container.addClass(classes[cssclass]);
+        //    }
+        //
+        //
+        //    var direction = this.nodeDescription.scrollDirection == 0 ? Utility.Direction.Y : Utility.Direction.X;
+        //    var scrollview = new Scrollview({ direction: direction});
+        //    this.mainSurface.add(scrollview);
+        //    subRoot = new View();
+        //    var receiverSurface = new Surface({
+        //        size: this.size // Take up the entire view
+        //    });
+        //    subRoot.add(receiverSurface);
+        //
+        //    receiverSurface.pipe(scrollview);
+        //    subRoot.pipe(scrollview);
+        //    //scrollview.subscribe(receiverSurface);
+        //    //scrollview.subscribe(subRoot);
+        //    scrollview.sequenceFrom([subRoot]);
+        //    //this.add(container);
+        //
+        //    //for(var metNode in subMetNodes) {
+        //    //    scrollview.subscribe(subMetNodes[metNode].mainSurface);
+        //    //}
+        //
+        //    subRoot.on("click", function(data){
+        //        DebugUtils.log("subRoot event:" + data);
+        //    }.bind(this));
+        //
+        //    scrollview.on("click", function(data){
+        //        DebugUtils.log("scrollview event:" + data);
+        //    }.bind(this));
+        //}
 
 
         //this.showMetNode();
@@ -252,7 +253,7 @@ define(function(require, exports, module) {
         // Ensures metnode always has a position modifier
         _createBaseModifier.call(this);
 
-        var root = rootParent.add(this.modifierChain);
+        var root = rootParent.add(new Modifier({size: this.size})).add(this.modifierChain);
 
         root.add(this.renderController);
 
@@ -291,15 +292,15 @@ define(function(require, exports, module) {
 
         if(this.type == "MetStateNode") {
             var mod = new Modifier({
-                size: this.size,
+                //size: this.size,
                 align: [0.5, 0.5],
                 origin: [0.5, 0.5]
             });
 
             var centerModifier = new Modifier({
                 //size: this.size,
-                align : [0.5, 1],
-                origin : [0.5, 1]
+                align : [0.5, 0.5],
+                origin : [0.5, 0.5]
             });
 
             var frontSurface = new Surface({
@@ -331,39 +332,9 @@ define(function(require, exports, module) {
             } else if(this.nodeDescription.transition === 10) {
                 this.stateViewPlayer = new Flipper({direction: Flipper.DIRECTION_X});
                 this.mainSurface.add(centerModifier).add(this.stateViewPlayer);
-                //this.stateViewPlayer.setFront(frontSurface);
-                //this.stateViewPlayer.setBack(backSurface);
-                //
-                //frontSurface.on('click', function(){
-                //    var angle = toggle ? 0 : Math.PI;
-                //    this.stateViewPlayer.setAngle(angle, {curve : 'easeOutBounce', duration : 500});
-                //    toggle = !toggle;
-                //}.bind(this));
-                //
-                //backSurface.on('click', function(){
-                //    var angle = toggle ? 0 : Math.PI;
-                //    this.stateViewPlayer.setAngle(angle, {curve : 'easeOutBounce', duration : 500});
-                //    toggle = !toggle;
-                //}.bind(this));
-
             } else if(this.nodeDescription.transition === 11) {
                 this.stateViewPlayer = new Flipper({direction: Flipper.DIRECTION_Y});
                 this.mainSurface.add(centerModifier).add(this.stateViewPlayer);
-                //this.stateViewPlayer.setFront(frontSurface);
-                //this.stateViewPlayer.setBack(backSurface);
-                //
-                //frontSurface.on('click', function(){
-                //    var angle = toggle ? 0 : Math.PI;
-                //    this.stateViewPlayer.setAngle(angle, {curve : 'easeOutBounce', duration : 500});
-                //    toggle = !toggle;
-                //}.bind(this));
-                //
-                //backSurface.on('click', function(){
-                //    var angle = toggle ? 0 : Math.PI;
-                //    this.stateViewPlayer.setAngle(angle, {curve : 'easeOutBounce', duration : 500});
-                //    toggle = !toggle;
-                //}.bind(this));
-
             } else {
 
                 this.stateViewPlayer = new Lightbox();

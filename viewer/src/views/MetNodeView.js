@@ -112,9 +112,68 @@ define(function(require, exports, module) {
         _createBaseModifier.call(this);
 
         var root = this.add(new Modifier({size: this.size})).add(this.modifierChain);
-        //root.add(this.renderController);
+
+        if (this.mainSurface === undefined) {
+            this.mainSurface = new Surface({
+                size: this.size
+            });
+        }
+
+        if (this.mainSurface) {
+            for(var holder in holdersSync) {
+                this.mainSurface.pipe(holdersSync[holder]);
+            }
+
+            //this.subscribe(this.mainSurface);
+            this.mainSurface.pipe(this._eventOutput);
+            root.add(this.mainSurface);
+            this.mainSurface.on("click", function(data){
+                //this.hideMetNode();
+                //DebugUtils.log(this.metNodeId + " event:" + data);
+                //rootParent._eventOutput.trigger('metview-click', {metNodeId:this.metNodeId} );
+            }.bind(this));
+        }
+
+
+        ////children metnodes processing
+        var subMetNodes = this.metNodes;
+        var subRoot = root;
+
+        for(var metNode in subMetNodes) {
+            subMetNodes[metNode].initMetSubNode(holdersSync, subRoot);
+        }
+
+        if(this.curAnim) {
+            this.curAnim.activeAnim();
+        }
+    }
+
+    MetNodeView.prototype.initMetSubNode = function(holdersSync, rootParent) {
+        // Ensures metnode always has a position modifier
+        _createBaseModifier.call(this);
+
+        var root = this.add(new Modifier({size: this.size})).add(this.modifierChain);
+
+        rootParent.add(this.renderController);
+
+        this._eventInput.on('metview-click',function(data) {
+            if(this instanceof MetNodeView) {
+                DebugUtils.log(this.metNodeId + " on metview-click event from " + data.metNodeId);
+            } else if(this instanceof StageView) {
+                DebugUtils.log("StageView on metview-click event from " + data.metNodeId);
+            } else {
+                DebugUtils.log("other on metview-click event from " + data.metNodeId);
+            }
+
+        }.bind(this));
 
         var classes = ['z2', 'backfaceVisibility'];
+
+        if (this.mainSurface === undefined) {
+            this.mainSurface = new Surface({
+                size: this.size
+            });
+        }
 
         if (this.mainSurface) {
             for(var holder in holdersSync) {
@@ -135,160 +194,6 @@ define(function(require, exports, module) {
         ////children metnodes processing
         var subMetNodes = this.metNodes;
         var subRoot = root;
-
-        //if(this.type == "MetStateNode") {
-        //    var mod = new Modifier({
-        //        size: this.size,
-        //        align: [0.5, 0.5],
-        //        origin: [0.5, 0.5]
-        //    });
-        //
-        //    var centerModifier = new Modifier({
-        //        //size: this.size,
-        //        align : [0.5, 0.5],
-        //        origin : [0.5, 0.5]
-        //    });
-        //
-        //    if(this.nodeDescription.transition < 3) {
-        //        this.stateViewPlayer = new EdgeSwapper();
-        //        this.mainSurface.add(this.stateViewPlayer);
-        //    } else if(this.nodeDescription.transition === 10) {
-        //        this.stateViewPlayer = new Flipper();
-        //        this.mainSurface.add(centerModifier).add(this.stateViewPlayer);
-        //    } else if(this.nodeDescription.transition === 11) {
-        //        this.stateViewPlayer = new Flipper({direction: Flipper.DIRECTION_Y});
-        //        this.mainSurface.add(centerModifier).add(this.stateViewPlayer);
-        //    } else {
-        //
-        //        this.stateViewPlayer = new Lightbox();
-        //        //set lightbox origin equal this view
-        //
-        //        this.add(mod).add(this.stateViewPlayer);
-        //    }
-        //}
-        //
-        //if(this.type == "MetScrollNode") {
-        //
-        //    var container = new ContainerSurface({
-        //        size: this.size,
-        //        properties: {
-        //            overflow: 'hidden',
-        //            border: '1px solid rgb(0, 222, 0)'
-        //        }
-        //    });
-        //
-        //    for(var cssclass in classes) {
-        //        container.addClass(classes[cssclass]);
-        //    }
-        //
-        //
-        //    var direction = this.nodeDescription.scrollDirection == 0 ? Utility.Direction.Y : Utility.Direction.X;
-        //    var scrollview = new Scrollview({ direction: direction});
-        //    this.mainSurface.add(scrollview);
-        //    subRoot = new View();
-        //    var receiverSurface = new Surface({
-        //        size: this.size // Take up the entire view
-        //    });
-        //    subRoot.add(receiverSurface);
-        //
-        //    receiverSurface.pipe(scrollview);
-        //    subRoot.pipe(scrollview);
-        //    //scrollview.subscribe(receiverSurface);
-        //    //scrollview.subscribe(subRoot);
-        //    scrollview.sequenceFrom([subRoot]);
-        //    //this.add(container);
-        //
-        //    //for(var metNode in subMetNodes) {
-        //    //    scrollview.subscribe(subMetNodes[metNode].mainSurface);
-        //    //}
-        //
-        //    subRoot.on("click", function(data){
-        //        DebugUtils.log("subRoot event:" + data);
-        //    }.bind(this));
-        //
-        //    scrollview.on("click", function(data){
-        //        DebugUtils.log("scrollview event:" + data);
-        //    }.bind(this));
-        //}
-
-
-        //this.showMetNode();
-
-        for(var metNode in subMetNodes) {
-            //if(this.type === "MetStateNode") {
-            //    this.stateGroup.push(subMetNodes[metNode]);
-            //} else if(this.type === "MetScrollNode") {
-            //    subRoot.subscribe(subMetNodes[metNode]);
-            //}
-
-            //this.subscribe(subMetNodes[metNode]);
-            //subMetNodes[metNode].pipe(subRoot);
-
-            if(this.type === "MetStateNode") {
-                subMetNodes[metNode].initMetStateNode(holdersSync);
-            } else {
-                subMetNodes[metNode].initMetSubNode(holdersSync, subRoot);
-            }
-        }
-
-        //if(this.type == "MetScrollNode") {
-        //    scrollview.sequenceFrom([subRoot]);
-        //}
-
-
-
-
-        if(this.type == "MetStateNode") {
-            this.curStateIdx = 0;
-            this.stateShowElapsed = 2000;
-            this.showState();
-        }
-
-        if(this.curAnim) {
-            this.curAnim.activeAnim();
-        }
-    }
-
-    MetNodeView.prototype.initMetSubNode = function(holdersSync, rootParent) {
-        // Ensures metnode always has a position modifier
-        _createBaseModifier.call(this);
-
-        var root = rootParent.add(new Modifier({size: this.size})).add(this.modifierChain);
-
-        root.add(this.renderController);
-
-        this._eventInput.on('metview-click',function(data){
-            if(this instanceof MetNodeView) {
-                DebugUtils.log(this.metNodeId + " on metview-click event from " + data.metNodeId);
-            } else if(this instanceof StageView) {
-                DebugUtils.log("StageView on metview-click event from " + data.metNodeId);
-            } else {
-                DebugUtils.log("other on metview-click event from " + data.metNodeId);
-            }
-
-        }.bind(this));
-
-        var classes = ['z2', 'backfaceVisibility'];
-
-        if (this.mainSurface) {
-            for(var holder in holdersSync) {
-                this.mainSurface.pipe(holdersSync[holder]);
-            }
-
-            //this.subscribe(this.mainSurface);
-            //this.mainSurface.pipe(rootParent._eventOutput);
-            this.add(this.mainSurface);
-            this.mainSurface.on("click", function(data){
-                //this.hideMetNode();
-                DebugUtils.log(this.metNodeId + " event:" + data);
-                //rootParent._eventOutput.trigger('metview-click', {metNodeId:this.metNodeId} );
-            }.bind(this));
-        }
-
-
-        ////children metnodes processing
-        var subMetNodes = this.metNodes;
-        var subRoot = this;
 
         if(this.type == "MetStateNode") {
             var mod = new Modifier({
@@ -340,7 +245,7 @@ define(function(require, exports, module) {
                 this.stateViewPlayer = new Lightbox();
                 //set lightbox origin equal this view
 
-                this.add(mod).add(this.stateViewPlayer);
+                this.mainSurface.add(centerModifier).add(this.stateViewPlayer);
             }
 
             this.stateGroup = [];
@@ -348,17 +253,17 @@ define(function(require, exports, module) {
 
         if(this.type == "MetScrollNode") {
 
-            var container = new ContainerSurface({
-                size: this.size,
-                properties: {
-                    overflow: 'hidden',
-                    border: '1px solid rgb(0, 222, 0)'
-                }
-            });
-
-            for(var cssclass in classes) {
-                container.addClass(classes[cssclass]);
-            }
+            //var container = new ContainerSurface({
+            //    size: this.size,
+            //    properties: {
+            //        overflow: 'hidden',
+            //        border: '1px solid rgb(0, 222, 0)'
+            //    }
+            //});
+            //
+            //for(var cssclass in classes) {
+            //    container.addClass(classes[cssclass]);
+            //}
 
 
             var direction = this.nodeDescription.scrollDirection == 0 ? Utility.Direction.Y : Utility.Direction.X;
@@ -515,7 +420,7 @@ define(function(require, exports, module) {
         this.renderController.hide(
             {
                 //curve:TweenTransition.Curves.linear,
-                duration: 3000
+                duration: 0
             }
             ,
             function() {

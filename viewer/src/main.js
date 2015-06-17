@@ -18,10 +18,10 @@ define(function(require, exports, module) {
     var DebugUtils = require('utils/DebugUtils');
 
     var context = null;
-    var appDims;
+    //var appDims;
 
     var renderController = new RenderController();
-    var draggable = new Draggable();
+    //var draggable = new Draggable();
 
     //function getPageDims(context, origW, origH){
     //    var size = context.getSize();
@@ -115,9 +115,11 @@ define(function(require, exports, module) {
             pages[page.id_] = page;
         } else if(content instanceof Array) {
             for(var contentPage in content) {
-                page = content[contentPage];
-                pages[page.id_] = page;
+                var pageItem = content[contentPage];
+                pages[pageItem.id_] = pageItem;
             }
+
+            page = content[0];
         } else {
             DebugUtils.log("current json data format is not supported!");
         }
@@ -134,6 +136,7 @@ define(function(require, exports, module) {
         var viewPortSize = context.getSize();
 
         var pageView = new StageView({
+            size: viewPortSize,
             pageId:  page.id_,
             pageDesc: page,
             contextSize: [page.width, page.height],
@@ -149,7 +152,7 @@ define(function(require, exports, module) {
 
 
 
-        ////var draggable = new Draggable();
+        var draggable = new Draggable();
         ////draggable.subscribe(pageView.scrollRecieverSurface);
         ////mainContext.add(originModifier).add(draggable).add(pageView);
         //
@@ -157,22 +160,23 @@ define(function(require, exports, module) {
 
         pageViews.push(pageView);
 
-        //for(var subpageIdx = 0 ; subpageIdx < subpage_counts; subpageIdx ++ ) {
-        //    var subpage = pages[page.pageIDs[subpageIdx]];
-        //    var subpageView = new StageView({
-        //        pageId:  page.id_,
-        //        pageDesc: subpage,
-        //        contextSize: [page.width, page.height],
-        //        bgSize: viewPortSize
-        //    });
-        //
-        //    director.populateStage(subpageView, subpage.nodes);
-        //    pageViews.push(subpageView);
-        //
-        //    max_page_height +=  subpage.height;
-        //}
+        for(var subpageIdx = 0 ; subpageIdx < subpage_counts; subpageIdx ++ ) {
+            var subpage = pages[page.pageIDs[subpageIdx]];
+            var subpageView = new StageView({
+                size: viewPortSize,
+                pageId:  page.id_,
+                pageDesc: subpage,
+                contextSize: [page.width, page.height],
+                bgSize: viewPortSize
+            });
 
-        var scrollview = new Scrollview();
+            director.populateStage(subpageView, subpage.nodes);
+            pageViews.push(subpageView);
+
+            max_page_height +=  subpage.height;
+        }
+
+        var scrollview = new Scrollview({paginated: false});
         scrollview.sequenceFrom(pageViews);
 
 
@@ -181,10 +185,10 @@ define(function(require, exports, module) {
         //        yRange: [- (max_page_height - viewPortSize[1]), 0]
         //    }
         //);
-        //
-        //for(var pageView in pageViews) {
-        //    draggable.subscribe(pageViews[pageView].stageBgSurface);
-        //}
+
+        for(var pageView in pageViews) {
+            scrollview.subscribe(pageViews[pageView].stageBgSurface);
+        }
 
         //var originScrollviewModifier = new Modifier({
         //    size:[max_page_width, max_page_height],

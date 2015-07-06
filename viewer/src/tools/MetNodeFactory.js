@@ -77,6 +77,7 @@ define(function(require, exports, module) {
                     classes: classes
                 });
             } else {
+                //TODO:using svg for compatibility
                 newSurface = new CanvasSurface({
                     size: size,
                     classes: classes,

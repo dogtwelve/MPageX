@@ -152,9 +152,9 @@ define(function(require, exports, module) {
         // Ensures metnode always has a position modifier
         _createBaseModifier.call(this);
 
-        var root = this.add(new Modifier({size: this.size})).add(this.modifierChain);
+        var root = rootParent.add(new Modifier({size: this.size})).add(this.modifierChain);
 
-        rootParent.add(this.renderController);
+        root.add(this.renderController);
 
         this._eventInput.on('metview-click',function(data) {
             if(this instanceof MetNodeView) {
@@ -193,7 +193,7 @@ define(function(require, exports, module) {
 
         ////children metnodes processing
         var subMetNodes = this.metNodes;
-        var subRoot = root;
+        var subRoot = this;
 
         if(this.type == "MetStateNode") {
             var mod = new Modifier({
@@ -269,17 +269,17 @@ define(function(require, exports, module) {
             var direction = this.nodeDescription.scrollDirection == 0 ? Utility.Direction.Y : Utility.Direction.X;
             var scrollview = new Scrollview({ direction: direction});
             this.mainSurface.add(scrollview);
-            subRoot = new View();
-            var receiverSurface = new Surface({
-                size: this.size // Take up the entire view
-            });
-            subRoot.add(receiverSurface);
+            //subRoot = new View();
+            //var receiverSurface = new Surface({
+            //    size: this.size // Take up the entire view
+            //});
+            //subRoot.add(receiverSurface);
 
-            receiverSurface.pipe(scrollview);
-            subRoot.pipe(scrollview);
+            //receiverSurface.pipe(scrollview);
+            //subRoot.pipe(scrollview);
             //scrollview.subscribe(receiverSurface);
             //scrollview.subscribe(subRoot);
-            scrollview.sequenceFrom([subRoot]);
+            scrollview.sequenceFrom(subMetNodes);
             //this.add(container);
 
             //for(var metNode in subMetNodes) {

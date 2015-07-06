@@ -12,11 +12,13 @@ define(function(require, exports, module) {
     }
 
     Director.prototype.populateStage = function(stage, nodeDescriptions) {
-        var nodeFactory = new MetNodeFactory();
-        var zPos = 1;
+        var nodeFactory = new MetNodeFactory()
+        this.metnodes[stage.pageId] = {};
+        var stageMetnodes = this.metnodes[stage.pageId];
+        var zPos = 0;
         for (var nodeName in nodeDescriptions) {
             var newNode = nodeFactory.makeMetNode(nodeDescriptions[nodeName], stage.containerSize, zPos);
-            this.metnodes[nodeName] = newNode.metNode;
+            stageMetnodes[nodeName] = newNode.metNode;
             zPos = newNode.zPos;
         }
 
@@ -31,8 +33,8 @@ define(function(require, exports, module) {
 
         }.bind(stage));
 
-        for (var nodeToStage in this.metnodes) {
-            var curNode = this.metnodes[nodeToStage];
+        for (var nodeToStage in stageMetnodes) {
+            var curNode = stageMetnodes[nodeToStage];
             stage.subscribe(curNode);
             stage.addMetNode(curNode);
         }

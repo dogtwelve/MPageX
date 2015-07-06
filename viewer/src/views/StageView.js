@@ -28,6 +28,7 @@ define(function(require, exports, module) {
     function StageView() {
         View.apply(this, arguments);
         this.worldScrollValue = 0;
+        this.pageId = this.options.pageId;
         this._arrowData = this.options.arrowData;
         this.pageDesc = this.options.pageDesc;
         this.containerSize = this.options.contextSize;

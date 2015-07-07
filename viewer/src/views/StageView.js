@@ -34,10 +34,11 @@ define(function(require, exports, module) {
         this.containerSize = this.options.contextSize;
         this.bgSize = this.options.bgSize;
 
+        var appDims = getPageDims(this.bgSize[0], this.bgSize[1], this.containerSize[0], this.containerSize[1]);
         //_setupContainer.call(this);
-        _setupStageBgSurface.call(this);
+        _setupStageBgSurface.call(this, appDims);
         //_setupContextContainer.call(this);
-        _initRootNode.call(this);
+        _initRootNode.call(this, appDims);
         //_handleScroll.call(this);
         //_handleSwipe.call(this);
         //_setupArrowKeyBreakpoints.call(this, 16, 60);
@@ -114,7 +115,7 @@ define(function(require, exports, module) {
 
     }
 
-    function _setupStageBgSurface() {
+    function _setupStageBgSurface(appDims) {
         ////单色填充
         var METCOLORFILLTYPE = 0;
         ////渐变填充
@@ -126,11 +127,14 @@ define(function(require, exports, module) {
 
         var classes = ['z1'];
 
+        var bgSize = this.bgSize;
+
         if(this.pageDesc.fillType == METCOLORFILLTYPE) {
+            bgSize = [appDims[0], appDims[1]];
             var fillColor = UnitConverter.decimalToHexColorString(this.pageDesc.colorFill.fillColor);
             this.stageBgSurface = new Surface({
                 //size: [undefined, undefined] // Take up the entire view
-                size: this.bgSize,
+                size: bgSize, //this.bgSize,
                 classes: classes,
                 properties: {
                     backgroundColor: fillColor
@@ -140,7 +144,7 @@ define(function(require, exports, module) {
             var fillImage = this.pageDesc.imageFill.rawImageURL;
             var contentMode = this.pageDesc.imageFill.contentMode;
             this.stageBgSurface = new BgImageSurface({
-                size: this.bgSize,
+                size: bgSize,
                 content: fillImage,
                 classes: classes,
                 sizeMode: BgImageSurface.SizeMode.ASPECTFILL,
@@ -150,7 +154,7 @@ define(function(require, exports, module) {
             });
         } else {
             this.stageBgSurface = new Surface({
-                size: this.bgSize,
+                size: bgSize,
                 classes: classes,
                 properties: {
                     backgroundColor: 'gray'
@@ -159,7 +163,7 @@ define(function(require, exports, module) {
         }
 
         var modifier = new Modifier({
-            size: this.bgSize,
+            size: bgSize,
             origin: [0.5, 0.5],
             align: [0.5, 0.5]
         });
@@ -167,8 +171,8 @@ define(function(require, exports, module) {
         this.add(modifier).add(this.stageBgSurface);
     }
 
-    function _initRootNode() {
-        var appDims = getPageDims(this.bgSize[0], this.bgSize[1], this.containerSize[0], this.containerSize[1]);
+    function _initRootNode(appDims) {
+        //var appDims = getPageDims(this.bgSize[0], this.bgSize[1], this.containerSize[0], this.containerSize[1]);
 
         var rootModifier = new Modifier({
             size: this.containerSize,

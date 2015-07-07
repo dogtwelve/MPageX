@@ -164,9 +164,9 @@ define(function(require, exports, module) {
             var subpage = pages[page.pageIDs[subpageIdx]];
             var subpageView = new StageView({
                 size: viewPortSize,
-                pageId:  page.id_,
+                pageId:  subpage.id_,
                 pageDesc: subpage,
-                contextSize: [page.width, page.height],
+                contextSize: [subpage.width, subpage.height],
                 bgSize: viewPortSize
             });
 

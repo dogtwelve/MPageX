@@ -180,7 +180,7 @@ define(function(require, exports, module) {
                 this.mainSurface.pipe(holdersSync[holder]);
             }
 
-            //this.subscribe(this.mainSurface);
+            this._eventOutput.subscribe(this.mainSurface);
             //this.mainSurface.pipe(rootParent._eventOutput);
             root.add(this.mainSurface);
             this.mainSurface.on("click", function(data){
@@ -282,9 +282,9 @@ define(function(require, exports, module) {
             scrollview.sequenceFrom(subMetNodes);
             //this.add(container);
 
-            //for(var metNode in subMetNodes) {
-            //    scrollview.subscribe(subMetNodes[metNode].mainSurface);
-            //}
+            for(var metNode in subMetNodes) {
+                scrollview.subscribe(subMetNodes[metNode].mainSurface);
+            }
 
             subRoot.on("click", function(data){
                 DebugUtils.log("subRoot event:" + data);
@@ -306,7 +306,7 @@ define(function(require, exports, module) {
             //    subRoot.subscribe(subMetNodes[metNode]);
             //}
             //
-            ////this.subscribe(subMetNodes[metNode]);
+            this._eventOutput.subscribe(subMetNodes[metNode]);
             ////subMetNodes[metNode].pipe(subRoot);
             //subMetNodes[metNode].initMetNode(holdersSync, subRoot);
 

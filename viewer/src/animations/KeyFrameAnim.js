@@ -143,7 +143,8 @@ define(function (require, exports, module) {
         //var time = (this.curAnimTime - this.curFrameTime) / (this.nextFrameTime - this.curFrameTime);
 
         //this.curveFn((scrollPosition - this.scrollStart) / this.scrollRange);
-        var process = this.curveFn(this.curAnimTime - this.curFrameTime) / (this.nextFrameTime - this.curFrameTime);
+        //process in (0.0 - 1.0)
+        var process = this.curveFn((this.curAnimTime - this.curFrameTime) / (this.nextFrameTime - this.curFrameTime));
 
         //calculate position on entire path (0.0 - 1.0)
         var pos_x = this.x_path.interpolate(process);

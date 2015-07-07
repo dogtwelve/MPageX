@@ -169,6 +169,7 @@ define(function(require, exports, module) {
         });
 
         this.add(modifier).add(this.stageBgSurface);
+        this._eventOutput.subscribe(this.stageBgSurface);
     }
 
     function _initRootNode(appDims) {

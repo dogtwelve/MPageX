@@ -36,7 +36,7 @@ define(function(require, exports, module) {
 
         for (var nodeToStage in stageMetnodes) {
             var curNode = stageMetnodes[nodeToStage];
-            stage.subscribe(curNode);
+            stage._eventOutput.subscribe(curNode);
             stage.addMetNode(curNode);
         }
 

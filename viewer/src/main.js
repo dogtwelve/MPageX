@@ -187,7 +187,7 @@ define(function(require, exports, module) {
         //);
 
         for(var pageView in pageViews) {
-            scrollview.subscribe(pageViews[pageView].stageBgSurface);
+            scrollview.subscribe(pageViews[pageView]);
         }
 
         //var originScrollviewModifier = new Modifier({

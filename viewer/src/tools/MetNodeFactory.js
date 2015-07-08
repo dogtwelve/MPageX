@@ -193,22 +193,22 @@ define(function(require, exports, module) {
             type === "MetScrollNode"
             || type === "MetStateNode"
         ) {
-            var imageUrl = "image\/386705-winter-solstice.jpg";
-            // url encode '(' and ')'
-            if ((imageUrl.indexOf('(') >= 0) || (imageUrl.indexOf(')') >= 0)) {
-                imageUrl = imageUrl.split('(').join('%28');
-                imageUrl = imageUrl.split(')').join('%29');
-            }
+            //var imageUrl = "image\/386705-winter-solstice.jpg";
+            //// url encode '(' and ')'
+            //if ((imageUrl.indexOf('(') >= 0) || (imageUrl.indexOf(')') >= 0)) {
+            //    imageUrl = imageUrl.split('(').join('%28');
+            //    imageUrl = imageUrl.split(')').join('%29');
+            //}
 
             newSurface = new ContainerSurface({
                 size: size,
                 classes: classes,
                 properties: {
                     overflow:"hidden",
-                    border: "2px dashed rgba(0,255,0, .8)",
+                    border: "1px dashed rgba(0,255,0, .8)",
                     //borderRadius: "10px 0px 0px 10px",
                     //backgroundImage: 'url(' + imageUrl + ')'
-                    backgroundColor: 'gray'
+                    //backgroundColor: 'gray'
                 }
             });
         }

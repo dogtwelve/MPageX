@@ -205,7 +205,7 @@ define(function(require, exports, module) {
                 classes: classes,
                 properties: {
                     overflow:"hidden",
-                    border: "2px solid rgba(255,255,255, .8)",
+                    border: "2px dashed rgba(0,255,0, .8)",
                     //borderRadius: "10px 0px 0px 10px",
                     //backgroundImage: 'url(' + imageUrl + ')'
                     backgroundColor: 'gray'

@@ -283,7 +283,7 @@ define(function(require, exports, module) {
             //this.add(container);
 
             for(var metNode in subMetNodes) {
-                scrollview.subscribe(subMetNodes[metNode].mainSurface);
+                scrollview.subscribe(subMetNodes[metNode]);
             }
 
             subRoot.on("click", function(data){

@@ -10,6 +10,7 @@ define(function(require, exports, module) {
     var UnitConverter      = require('tools/UnitConverter');
     var ContainerSurface    = require("famous/surfaces/ContainerSurface");
     var DebugUtils = require('utils/DebugUtils');
+    var TextUtils = require('utils/TextUtils');
 
     function MetNodeFactory() {
           // Container to store created actors by name.
@@ -44,6 +45,9 @@ define(function(require, exports, module) {
         var fillColor = UnitConverter.decimalToHexColorString(nodeDescription.colorFill.fillColor);
         var filltype = nodeDescription.fillType;
 
+        // only for text node
+        var textBgColor = UnitConverter.decimalToHexColorString(nodeDescription.color);
+        var textBlocks = nodeDescription.blocks;
 
         var newSurface;
 
@@ -267,6 +271,20 @@ define(function(require, exports, module) {
             })
         }
 
+        if(type == "TextNode") {
+            newSurface = new Surface({
+                size: size,
+                classes: classes,
+                properties: {
+                    backgroundColor: textBgColor
+                }
+            });
+
+            newSurface.setContent(TextUtils.parseBlocks2Html(textBlocks));
+            newSurface.on("click", function() {
+                DebugUtils.log("text node click");
+            })
+        }
 
         var newNode = new MetNodeView({
             size: size,
@@ -287,7 +305,17 @@ define(function(require, exports, module) {
         });
 
         if(newSurface) {
-            newNode.addSurface(newSurface);
+            if(
+                type === "MetScrollNode"
+                || type === "MetStateNode"
+            ) {
+                newNode.setContainerSurface(newSurface);
+            } else {
+                newNode.addSurface(newSurface);
+            }
+
+
+
         }
 
         if(type === "MetAnimNode") {

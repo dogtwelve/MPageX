@@ -218,121 +218,11 @@ define(function(require, exports, module) {
         var subRoot = root;
 
         if(this.type == "MetStateNode") {
-            var centerModifier = new Modifier({
-                size: this.size,
-                align : [0.5, 0.5],
-                origin : [0.5, 0.5]
-            });
-
-
-            if(this.nodeDescription.transition === 0) {
-                //instant
-                this.stateViewPlayer = new RenderController({
-                    inTransition: false,
-                    outTransition: false,
-                    overlap: false
-                });
-                this.containerSurface.add(this.stateViewPlayer);
-            } else if(this.nodeDescription.transition === 1) {
-                this.stateViewPlayer = new Lightbox({
-                    inOpacity: 1,
-                    outOpacity: 0,
-                    inOrigin: [0.5, 0.5],
-                    outOrigin: [0.5, 0.5],
-                    showOrigin: [0.5, 0.5],
-                    inTransform: Transform.thenMove(Transform.rotateX(0.0), [0, 0, 0]),
-                    outTransform: Transform.thenMove(Transform.rotateZ(0.0), [0, 0, 0]),
-                    inTransition: { duration: 500, curve: 'easeOut' },
-                    outTransition: { duration: 500, curve: 'easeOut' }
-                });
-                this.containerSurface.add(this.stateViewPlayer);
-            } else if(this.nodeDescription.transition === 2) {
-                this.stateViewPlayer = new Lightbox({
-                    inOpacity: 1,
-                    outOpacity: 1,
-                    inOrigin: [0.5, 0.5],
-                    outOrigin: [0.5, 0.5],
-                    showOrigin: [0.5, 0.5],
-                    inTransform: Transform.thenMove(Transform.rotateX(0.0), [this.size[0], 0, 0]),
-                    outTransform: Transform.thenMove(Transform.rotateZ(0.0), [-this.size[0], 0, 0]),
-                    inTransition: {duration: 500, curve: 'easeOut'},
-                    outTransition: {duration: 500, curve: 'easeOut'}
-                });
-                this.containerSurface.add(this.stateViewPlayer);
-            } else if(this.nodeDescription.transition === 3) {
-                this.stateViewPlayer = new Lightbox({
-                    inOpacity: 1,
-                    outOpacity: 1,
-                    inOrigin: [0.5, 0.5],
-                    outOrigin: [0.5, 0.5],
-                    showOrigin: [0.5, 0.5],
-                    inTransform: Transform.thenMove(Transform.rotateX(0.0), [0, -this.size[1], 0]),
-                    outTransform: Transform.thenMove(Transform.rotateZ(0.0), [0, this.size[1], 0]),
-                    inTransition: {duration: 500, curve: 'easeOut'},
-                    outTransition: {duration: 500, curve: 'easeOut'}
-                });
-                this.containerSurface.add(this.stateViewPlayer);
-            } else if(this.nodeDescription.transition === 4) {
-                this.stateViewPlayer = new Flipper({direction: Flipper.DIRECTION_X});
-                this.containerSurface.add(this.stateViewPlayer);
-            } else if(this.nodeDescription.transition === 5) {
-                this.stateViewPlayer = new Flipper({direction: Flipper.DIRECTION_Y});
-                this.containerSurface.add(this.stateViewPlayer);
-            } else if(this.nodeDescription.transition === 6) {
-                this.stateViewPlayer = new Lightbox();
-                this.containerSurface.add(this.stateViewPlayer);
-            } else {
-                this.stateViewPlayer = new EdgeSwapper();
-                this.containerSurface.add(this.stateViewPlayer);
-            }
-
-            this.stateGroup = [];
+            subRoot = _setStatePlayer.call(this, subRoot);
         }
 
         if(this.type == "MetScrollNode") {
-
-            //var container = new ContainerSurface({
-            //    size: this.size,
-            //    properties: {
-            //        overflow: 'hidden',
-            //        border: '1px solid rgb(0, 222, 0)'
-            //    }
-            //});
-            //
-            //for(var cssclass in classes) {
-            //    container.addClass(classes[cssclass]);
-            //}
-
-
-            var direction = this.nodeDescription.scrollDirection == 0 ? Utility.Direction.Y : Utility.Direction.X;
-            var scrollview = new Scrollview({ direction: direction});
-            this.containerSurface.add(scrollview);
-            subRoot = new View();
-            //var receiverSurface = new Surface({
-            //    size: this.size // Take up the entire view
-            //});
-            //subRoot.add(receiverSurface);
-
-            //receiverSurface.pipe(scrollview);
-            //subRoot.pipe(scrollview);
-            //scrollview.subscribe(receiverSurface);
-            //scrollview.subscribe(subRoot);
-            scrollview.sequenceFrom([subRoot]);
-            //this.add(container);
-
-            for(var metNode in subMetNodes) {
-                scrollview.subscribe(subMetNodes[metNode]);
-            }
-
-            scrollview.subscribe(this.mainSurface);
-
-            subRoot.on("click", function(data){
-                DebugUtils.log("subRoot event:" + data);
-            }.bind(this));
-
-            scrollview.on("click", function(data){
-                DebugUtils.log("scrollview event:" + data);
-            }.bind(this));
+            subRoot = _setScrollHolder.call(this, subRoot);
         }
 
 
@@ -495,6 +385,112 @@ define(function(require, exports, module) {
             }.bind(this)
         );
     };
+
+    function _setStatePlayer(subRoot) {
+        var centerModifier = new Modifier({
+            size: this.size,
+            align : [0.5, 0.5],
+            origin : [0.5, 0.5]
+        });
+
+
+        if(this.nodeDescription.transition === 0) {
+            //instant
+            this.stateViewPlayer = new RenderController({
+                inTransition: false,
+                outTransition: false,
+                overlap: false
+            });
+            this.containerSurface.add(this.stateViewPlayer);
+        } else if(this.nodeDescription.transition === 1) {
+            this.stateViewPlayer = new Lightbox({
+                inOpacity: 1,
+                outOpacity: 0,
+                inOrigin: [0.5, 0.5],
+                outOrigin: [0.5, 0.5],
+                showOrigin: [0.5, 0.5],
+                inTransform: Transform.thenMove(Transform.rotateX(0.0), [0, 0, 0]),
+                outTransform: Transform.thenMove(Transform.rotateZ(0.0), [0, 0, 0]),
+                inTransition: { duration: 500, curve: 'easeOut' },
+                outTransition: { duration: 500, curve: 'easeOut' }
+            });
+            this.containerSurface.add(this.stateViewPlayer);
+        } else if(this.nodeDescription.transition === 2) {
+            this.stateViewPlayer = new Lightbox({
+                inOpacity: 1,
+                outOpacity: 1,
+                inOrigin: [0.5, 0.5],
+                outOrigin: [0.5, 0.5],
+                showOrigin: [0.5, 0.5],
+                inTransform: Transform.thenMove(Transform.rotateX(0.0), [this.size[0], 0, 0]),
+                outTransform: Transform.thenMove(Transform.rotateZ(0.0), [-this.size[0], 0, 0]),
+                inTransition: {duration: 500, curve: 'easeOut'},
+                outTransition: {duration: 500, curve: 'easeOut'}
+            });
+            this.containerSurface.add(this.stateViewPlayer);
+        } else if(this.nodeDescription.transition === 3) {
+            this.stateViewPlayer = new Lightbox({
+                inOpacity: 1,
+                outOpacity: 1,
+                inOrigin: [0.5, 0.5],
+                outOrigin: [0.5, 0.5],
+                showOrigin: [0.5, 0.5],
+                inTransform: Transform.thenMove(Transform.rotateX(0.0), [0, -this.size[1], 0]),
+                outTransform: Transform.thenMove(Transform.rotateZ(0.0), [0, this.size[1], 0]),
+                inTransition: {duration: 500, curve: 'easeOut'},
+                outTransition: {duration: 500, curve: 'easeOut'}
+            });
+            this.containerSurface.add(this.stateViewPlayer);
+        } else if(this.nodeDescription.transition === 4) {
+            this.stateViewPlayer = new Flipper({direction: Flipper.DIRECTION_X});
+            this.containerSurface.add(this.stateViewPlayer);
+        } else if(this.nodeDescription.transition === 5) {
+            this.stateViewPlayer = new Flipper({direction: Flipper.DIRECTION_Y});
+            this.containerSurface.add(this.stateViewPlayer);
+        } else if(this.nodeDescription.transition === 6) {
+            this.stateViewPlayer = new Lightbox();
+            this.containerSurface.add(this.stateViewPlayer);
+        } else {
+            this.stateViewPlayer = new EdgeSwapper();
+            this.containerSurface.add(this.stateViewPlayer);
+        }
+        return subRoot;
+    }
+
+    function _setScrollHolder(subRoot) {
+        var direction = this.nodeDescription.scrollDirection == 0 ? Utility.Direction.Y : Utility.Direction.X;
+        var scrollview = new Scrollview({ direction: direction});
+        this.containerSurface.add(scrollview);
+        var subMetNodes = this.metNodes;
+        subRoot = new View();
+        //var receiverSurface = new Surface({
+        //    size: this.size // Take up the entire view
+        //});
+        //subRoot.add(receiverSurface);
+
+        //receiverSurface.pipe(scrollview);
+        //subRoot.pipe(scrollview);
+        //scrollview.subscribe(receiverSurface);
+        //scrollview.subscribe(subRoot);
+        scrollview.sequenceFrom([subRoot]);
+        //this.add(container);
+
+        for(var metNode in subMetNodes) {
+            scrollview.subscribe(subMetNodes[metNode]);
+        }
+
+        scrollview.subscribe(this.mainSurface);
+
+        subRoot.on("click", function(data){
+            DebugUtils.log("subRoot event:" + data);
+        }.bind(this));
+
+        scrollview.on("click", function(data){
+            DebugUtils.log("scrollview event:" + data);
+        }.bind(this));
+
+        return subRoot;
+    }
 
     //function _listenToScroll() {
     //    this._eventInput.on('ScrollUpdated', _updateScrollValue.bind(this));

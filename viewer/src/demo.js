@@ -2044,118 +2044,154 @@ define(function(require, exports, module) {
 //        isToggled = !isToggled;
 //    }
 
-    //flipper demo
-    var Engine = require("famous/core/Engine");
-    var Surface = require("famous/core/Surface");
-    var Flipper = require("famous/views/Flipper");
-    var Modifier = require("famous/core/Modifier");
+    ////flipper demo
+    //var Engine = require("famous/core/Engine");
+    //var Surface = require("famous/core/Surface");
+    //var Flipper = require("famous/views/Flipper");
+    //var Modifier = require("famous/core/Modifier");
+    //var View = require('famous/core/View');
+    //var ContainerSurface = require("famous/surfaces/ContainerSurface");
+    //
+    //var mainContext = Engine.createContext();
+    //mainContext.setPerspective(500);
+    //
+    //var flipper = new Flipper();
+    //
+    //var frontSurface = new Surface({
+    //    size: [200, 200],
+    //    content: 'front',
+    //    properties: {
+    //        background: 'red',
+    //        lineHeight: '200px',
+    //        textAlign: 'center'
+    //    }
+    //});
+    //
+    //var frontSurfaceTial = new Surface({
+    //    size: [200, 200],
+    //    content: 'frontTial',
+    //    properties: {
+    //        background: 'green',
+    //        lineHeight: '200px',
+    //        textAlign: 'center'
+    //    }
+    //});
+    //
+    //var backSurface = new Surface({
+    //    size: [200, 200],
+    //    content: 'back',
+    //    properties: {
+    //        background: 'blue',
+    //        color: 'white',
+    //        lineHeight: '200px',
+    //        textAlign: 'center'
+    //    }
+    //});
+    //
+    //var backSurfaceTial = new Surface({
+    //    size: [200, 200],
+    //    content: 'backTial',
+    //    properties: {
+    //        background: 'gray',
+    //        color: 'white',
+    //        lineHeight: '200px',
+    //        textAlign: 'center'
+    //    }
+    //});
+    //
+    //var frontView = new View();
+    //var backView = new View();
+    //
+    //var frontRoot = frontView.add(new Modifier({size: [250, 250]}));
+    //frontRoot.add(new Modifier({
+    //    align: [0, 0],
+    //    origin: [0, 0]
+    //})).add(frontSurface);
+    //frontRoot.add(new Modifier({
+    //    align: [1, 1],
+    //    origin: [1, 1]
+    //})).add(frontSurfaceTial);
+    //
+    //
+    //var backRoot = backView.add(new Modifier({size: [250, 250]}));
+    //
+    //backRoot.add(new Modifier({
+    //    align: [0, 0],
+    //    origin: [0, 0]
+    //})).add(backSurface);
+    //
+    //backRoot.add(new Modifier({
+    //    align: [1, 1],
+    //    origin: [1, 1]
+    //})).add(backSurfaceTial);
+    //
+    //flipper.setFront(frontView);
+    //flipper.setBack(backView);
+    //
+    //var centerModifier = new Modifier({
+    //    align: [.5,.5],
+    //    origin: [.5, .5]
+    //});
+    //
+    //var rootModifier = new Modifier({
+    //    align: [.5, .5],
+    //    origin: [.5, .5]
+    //});
+    //
+    //var container = new ContainerSurface({
+    //    size: [210, 210],
+    //    properties: {
+    //        //overflow: 'hidden',
+    //        border: '1px solid rgb(0, 222, 0)'
+    //    }
+    //});
+    //
+    //
+    //container.add(centerModifier).add(flipper);
+    //
+    //mainContext.add(rootModifier).add(container);
+    //
+    //var toggle = false;
+    //Engine.on('click', function () {
+    //    var angle = toggle ? 0 : Math.PI;
+    //    flipper.setAngle(angle, {curve: 'easeOutBounce', duration: 500});
+    //    toggle = !toggle;
+    //});
+
+    var Engine = require('famous/core/Engine');
     var View = require('famous/core/View');
-    var ContainerSurface = require("famous/surfaces/ContainerSurface");
+    var Surface = require('famous/core/Surface');
 
-    var mainContext = Engine.createContext();
-    mainContext.setPerspective(500);
-
-    var flipper = new Flipper();
-
-    var frontSurface = new Surface({
-        size: [200, 200],
-        content: 'front',
+    var ctx = Engine.createContext();
+    var surf = new Surface({
+        size: [150, 150],
         properties: {
-            background: 'red',
-            lineHeight: '200px',
-            textAlign: 'center'
+            background: 'red'
         }
     });
 
-    var frontSurfaceTial = new Surface({
-        size: [200, 200],
-        content: 'frontTial',
-        properties: {
-            background: 'green',
-            lineHeight: '200px',
-            textAlign: 'center'
-        }
+    var view1 = new View();
+    var view2 = new View();
+
+    ctx.add(surf);
+
+    view1._eventOutput.subscribe(surf);
+    view2._eventOutput.subscribe(view1);
+
+    //surf.pipe(view1._eventOutput);
+    //view1.pipe(view2._eventOutput);
+
+    surf.on('click', function() {
+        //view1._eventOutput.emit('A');
+        surf.emit('A');
     });
 
-    var backSurface = new Surface({
-        size: [200, 200],
-        content: 'back',
-        properties: {
-            background: 'blue',
-            color: 'white',
-            lineHeight: '200px',
-            textAlign: 'center'
-        }
-    });
+    view1.on('A', function() {
+        console.log('A1');
+    })
 
-    var backSurfaceTial = new Surface({
-        size: [200, 200],
-        content: 'backTial',
-        properties: {
-            background: 'gray',
-            color: 'white',
-            lineHeight: '200px',
-            textAlign: 'center'
-        }
-    });
-
-    var frontView = new View();
-    var backView = new View();
-
-    var frontRoot = frontView.add(new Modifier({size: [250, 250]}));
-    frontRoot.add(new Modifier({
-        align: [0, 0],
-        origin: [0, 0]
-    })).add(frontSurface);
-    frontRoot.add(new Modifier({
-        align: [1, 1],
-        origin: [1, 1]
-    })).add(frontSurfaceTial);
-
-
-    var backRoot = backView.add(new Modifier({size: [250, 250]}));
-
-    backRoot.add(new Modifier({
-        align: [0, 0],
-        origin: [0, 0]
-    })).add(backSurface);
-
-    backRoot.add(new Modifier({
-        align: [1, 1],
-        origin: [1, 1]
-    })).add(backSurfaceTial);
-
-    flipper.setFront(frontView);
-    flipper.setBack(backView);
-
-    var centerModifier = new Modifier({
-        align: [.5,.5],
-        origin: [.5, .5]
-    });
-
-    var rootModifier = new Modifier({
-        align: [.5, .5],
-        origin: [.5, .5]
-    });
-
-    var container = new ContainerSurface({
-        size: [210, 210],
-        properties: {
-            //overflow: 'hidden',
-            border: '1px solid rgb(0, 222, 0)'
-        }
-    });
-
-
-    container.add(centerModifier).add(flipper);
-
-    mainContext.add(rootModifier).add(container);
-
-    var toggle = false;
-    Engine.on('click', function () {
-        var angle = toggle ? 0 : Math.PI;
-        flipper.setAngle(angle, {curve: 'easeOutBounce', duration: 500});
-        toggle = !toggle;
-    });
+    view2.on('A', function() {
+        console.log('A2');
+    })
 
 });

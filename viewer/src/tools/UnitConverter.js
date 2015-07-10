@@ -79,7 +79,7 @@ define(function(require, exports, module) {
     UnitConverter.rgba2ColorString = function(number)
     {
         if(!number) {
-            return "#000000";
+            return "rgba(0, 0, 0, 0)";
         }
 
         if((number & 0xFF) === 0xFF) {
@@ -94,7 +94,6 @@ define(function(require, exports, module) {
                 ((number >> 8) & 0xFF) + "," +
                 (((number & 0xFF) * 1.0 / 255) + "").substr(0, 4) + ")";
         }
-
     }
 
         module.exports = UnitConverter;

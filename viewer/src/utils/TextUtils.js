@@ -124,7 +124,6 @@ define(function (require, exports, module) {
                 var font_weight = (0 != block.fontStyle & MetTextFontStyleBold) ? "bold" : "normal";
                 var font_size = block.fontSize + "px";
                 var font_family = block.fontName;
-                font_family = "STHeitiSC-Light";
                 css += "font: " + font_style + " " + font_variant + " " + font_weight + " " + font_size + " " + font_family + ";"
                 css += TextUtils.sprintf("line-height: %dpx;", block.lineSpacing + block.fontSize);
 
@@ -142,10 +141,10 @@ define(function (require, exports, module) {
 
                 var btext = nodeText.slice(t_from, t_to);
 
-                DebugUtils.log("p_from " + p_from + " p_to " + p_to);
-                DebugUtils.log("k_from " + block.loc + " k_to " + (block.loc + block.length));
-                DebugUtils.log("t_from " + t_from + " t_to " + t_to);
-                DebugUtils.log("[" + btext + "]");
+                //DebugUtils.log("p_from " + p_from + " p_to " + p_to);
+                //DebugUtils.log("k_from " + block.loc + " k_to " + (block.loc + block.length));
+                //DebugUtils.log("t_from " + t_from + " t_to " + t_to);
+                //DebugUtils.log("[" + btext + "]");
 
                 // sup or sub begin tag
                 // fields: baselineStyle

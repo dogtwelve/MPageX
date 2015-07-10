@@ -33,3 +33,11 @@
 .z10 {
   z-index: 10;
 }
+
+.text_p{
+}
+
+.text_p span{
+  word-break: break-all;
+  word-wrap: break-word;
+}

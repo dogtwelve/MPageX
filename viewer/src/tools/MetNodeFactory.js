@@ -59,6 +59,21 @@ define(function(require, exports, module) {
                 shadow = null;
         }
 
+        // node stroke
+        var stroke = nodeDescription.nodeStroke;
+        var strokeAlpha = 0, strokeWidth = 0, strokeColor = "", strokeLineType = 0, strokeType = 0;
+        if(null != stroke){
+            strokeWidth = stroke.strokeWidth;
+            if(0 != strokeWidth){
+                strokeAlpha = stroke.strokeAlpha;
+                strokeColor = UnitConverter.rgba2ColorString(stroke.strokeColor);
+                strokeLineType = stroke.strokeLineType;
+                strokeType = stroke.strokeType;
+            }
+            else
+                stroke = null;
+        }
+
         // only for text node
         var textBgColor = UnitConverter.rgba2ColorString(nodeDescription.color);
         var textVertAlign = nodeDescription.verticalAlignment;
@@ -66,6 +81,7 @@ define(function(require, exports, module) {
 
         var newSurface = null;
 
+        // --------------- constants -------------------
         ////单色填充
         var METCOLORFILLTYPE = 0;
         ////渐变填充
@@ -82,6 +98,15 @@ define(function(require, exports, module) {
         var MetTextNodeVerticalAlignmentCenter = 1;
         // 底对齐
         var MetTextNodeVerticalAlignmentBottom = 2;
+
+        // # 描边线类型
+        var MetStrokeLineStyleLine = 0;
+        var MetStrokeLineStyleDot = 1;
+
+        // # 描边位置类型
+        var MetStrokeInner = 0;
+        var MetStrokeOuter = 1;
+        var MetStrokeMiddle = 2;
 
         if(type === "ShapeNode") {
             //newSurface = new Surface({
@@ -304,9 +329,9 @@ define(function(require, exports, module) {
             // html content for textNode
             var html = "<span style='display: table-cell; width:100%; margin:0px;";
             // text alignment in the TextNode
-            if(MetTextNodeVerticalAlignmentCenter == textVertAlign)
+            if (MetTextNodeVerticalAlignmentCenter == textVertAlign)
                 html += " vertial-align: middle; overflow:hidden;";
-            else if(MetTextNodeVerticalAlignmentBottom == textVertAlign)
+            else if (MetTextNodeVerticalAlignmentBottom == textVertAlign)
                 html += " vertial-align: bottom; overflow:hidden;";
             else
                 html += " vertial-align: top; overflow:hidden;";
@@ -315,15 +340,16 @@ define(function(require, exports, module) {
             html += "</span>";
 
             newSurface.setContent(html);
-            newSurface.on("click", function() {
+            newSurface.on("click", function () {
                 DebugUtils.log("text node click");
             })
-        }
-        // node shadow setting
-        if(null != shadow && null != newSurface){
-            newSurface.setProperties({
-                boxShadow: (TextUtils.sprintf("%fpx %fpx %fpx 0px %s", shadowX, shadowY, shadowBlur, shadowColor)),
-            });
+
+            // TextNode shadow setting
+            if (null != shadow) {
+                newSurface.setProperties({
+                    boxShadow: (TextUtils.sprintf("%fpx %fpx %fpx 0px %s", shadowX, shadowY, shadowBlur, shadowColor)),
+                });
+            }
         }
 
         var newNode = new MetNodeView({
@@ -352,6 +378,25 @@ define(function(require, exports, module) {
             else{
                 newNode.addSurface(newSurface);
             }
+        }
+
+        // for textNode use an extra surface to show border
+        if(type == "TextNode" && null != stroke) {
+            var a = (MetStrokeLineStyleDot == strokeLineType) ? "dashed" : "solid";
+            var b = 0;
+            if(MetStrokeOuter == strokeType)
+                b = strokeWidth;
+            else if(MetStrokeMiddle)
+                b = strokeWidth/2;
+
+            var borderSurface = new Surface({
+                size: [size[0] + b, size[1] + b],
+                classes: classes,
+                properties: {
+                    border: TextUtils.sprintf("%dpx %s %s", strokeWidth, a, strokeColor),
+                }
+            });
+            newNode.setFloatingSurface(borderSurface);
         }
 
         if(type === "MetAnimNode") {

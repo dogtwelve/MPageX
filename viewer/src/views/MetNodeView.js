@@ -90,6 +90,10 @@ define(function(require, exports, module) {
         this.mainSurface = newSurface;
     };
 
+    MetNodeView.prototype.setFloatingSurface = function(newSurface) {
+        this.floatingSurface = newSurface;
+    };
+
     MetNodeView.prototype.setContainerSurface = function(newSurface) {
         this.containerSurface = newSurface;
     };
@@ -212,6 +216,21 @@ define(function(require, exports, module) {
 
         }
 
+        if(this.floatingSurface){
+            var centerModifier = new Modifier({
+                size: this.floatingSurface.size,
+                align : [0.5, 0.5],
+                origin : [0.5, 0.5]
+            });
+
+            this._eventOutput.subscribe(this.floatingSurface);
+            //this.mainSurface.pipe(rootParent._eventOutput);
+            if(this.containerSurface) {
+                this.containerSurface.add(centerModifier).add(this.floatingSurface);
+            } else {
+                root.add(centerModifier).add(this.floatingSurface);
+            }
+        }
 
         ////children metnodes processing
         var subMetNodes = this.metNodes;

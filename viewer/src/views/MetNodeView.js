@@ -234,13 +234,43 @@ define(function(require, exports, module) {
                 });
                 this.containerSurface.add(this.stateViewPlayer);
             } else if(this.nodeDescription.transition === 1) {
-                this.stateViewPlayer = new EdgeSwapper();
+                this.stateViewPlayer = new Lightbox({
+                    inOpacity: 1,
+                    outOpacity: 0,
+                    inOrigin: [0.5, 0.5],
+                    outOrigin: [0.5, 0.5],
+                    showOrigin: [0.5, 0.5],
+                    inTransform: Transform.thenMove(Transform.rotateX(0.0), [0, 0, 0]),
+                    outTransform: Transform.thenMove(Transform.rotateZ(0.0), [0, 0, 0]),
+                    inTransition: { duration: 500, curve: 'easeOut' },
+                    outTransition: { duration: 500, curve: 'easeOut' }
+                });
                 this.containerSurface.add(this.stateViewPlayer);
             } else if(this.nodeDescription.transition === 2) {
-                this.stateViewPlayer = new EdgeSwapper();
+                this.stateViewPlayer = new Lightbox({
+                    inOpacity: 1,
+                    outOpacity: 1,
+                    inOrigin: [0.5, 0.5],
+                    outOrigin: [0.5, 0.5],
+                    showOrigin: [0.5, 0.5],
+                    inTransform: Transform.thenMove(Transform.rotateX(0.0), [this.size[0], 0, 0]),
+                    outTransform: Transform.thenMove(Transform.rotateZ(0.0), [-this.size[0], 0, 0]),
+                    inTransition: {duration: 500, curve: 'easeOut'},
+                    outTransition: {duration: 500, curve: 'easeOut'}
+                });
                 this.containerSurface.add(this.stateViewPlayer);
             } else if(this.nodeDescription.transition === 3) {
-                this.stateViewPlayer = new EdgeSwapper();
+                this.stateViewPlayer = new Lightbox({
+                    inOpacity: 1,
+                    outOpacity: 1,
+                    inOrigin: [0.5, 0.5],
+                    outOrigin: [0.5, 0.5],
+                    showOrigin: [0.5, 0.5],
+                    inTransform: Transform.thenMove(Transform.rotateX(0.0), [0, -this.size[1], 0]),
+                    outTransform: Transform.thenMove(Transform.rotateZ(0.0), [0, this.size[1], 0]),
+                    inTransition: {duration: 500, curve: 'easeOut'},
+                    outTransition: {duration: 500, curve: 'easeOut'}
+                });
                 this.containerSurface.add(this.stateViewPlayer);
             } else if(this.nodeDescription.transition === 4) {
                 this.stateViewPlayer = new Flipper({direction: Flipper.DIRECTION_X});
@@ -249,13 +279,10 @@ define(function(require, exports, module) {
                 this.stateViewPlayer = new Flipper({direction: Flipper.DIRECTION_Y});
                 this.containerSurface.add(this.stateViewPlayer);
             } else if(this.nodeDescription.transition === 6) {
-                this.stateViewPlayer = new Flipper({direction: Flipper.DIRECTION_Y});
+                this.stateViewPlayer = new Lightbox();
                 this.containerSurface.add(this.stateViewPlayer);
             } else {
-
-                this.stateViewPlayer = new Lightbox();
-                //set lightbox origin equal this view
-
+                this.stateViewPlayer = new EdgeSwapper();
                 this.containerSurface.add(this.stateViewPlayer);
             }
 

@@ -134,8 +134,10 @@ define(function (require, exports, module) {
                     var shadowX = shadow.shadowOffset * Math.cos(shadow.shadowAngle);
                     var shadowY = shadow.shadowOffset * Math.sin(shadow.shadowAngle);
                     var shadowBlur = shadow.shadowWidth;
-                    var shadowColor = UnitConverter.rgba2ColorString(shadow.shadowColor);
-                    css += TextUtils.sprintf(" text-shadow: %fpx %fpx %fpx %s;", shadowX, shadowY, shadowBlur, shadowColor)
+                    if(!(shadowX === 0 && shadowY === 0 && shadowBlur == 0)){
+                        var shadowColor = UnitConverter.rgba2ColorString(shadow.shadowColor);
+                        css += TextUtils.sprintf(" text-shadow: %fpx %fpx %fpx %s;", shadowX, shadowY, shadowBlur, shadowColor)
+                    }
                 }
 
                 var btext = nodeText.slice(t_from, t_to);

@@ -89,7 +89,7 @@ define(function(require, exports, module) {
         } else {
             //rgba(r, g, b, a)
             return "rgba(" +
-                ((number >> 32) & 0xFF) + "," +
+                ((number >> 24) & 0xFF) + "," +
                 ((number >> 16) & 0xFF) + "," +
                 ((number >> 8) & 0xFF) + "," +
                 (((number & 0xFF) * 1.0 / 255) + "").substr(0, 4) + ")";

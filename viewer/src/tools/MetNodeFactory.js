@@ -53,7 +53,10 @@ define(function(require, exports, module) {
             shadowX = shadow.shadowOffset * Math.cos(shadow.shadowAngle);
             shadowY = shadow.shadowOffset * Math.sin(shadow.shadowAngle);
             shadowBlur = shadow.shadowWidth;
-            shadowColor = UnitConverter.rgba2ColorString(shadow.shadowColor);
+            if(!(shadowX === 0 && shadowY === 0 && shadowBlur == 0))
+                shadowColor = UnitConverter.rgba2ColorString(shadow.shadowColor);
+            else
+                shadow = null;
         }
 
         // only for text node
@@ -198,11 +201,11 @@ define(function(require, exports, module) {
         }
 
         //below is for debug info
-        if(
-            type === "MetNode"
+        if(type === "MetNode"
             //|| type === "MetStateNode"
             //|| type === "MetScrollNode"
-        ) {
+            )
+        {
             newSurface = new Surface({
                 size: size,
                 content: name,
@@ -212,10 +215,8 @@ define(function(require, exports, module) {
                 }
             });
 
-        } else if(
-            type === "MetScrollNode"
-            || type === "MetStateNode"
-        ) {
+        }
+        else if(type === "MetScrollNode" || type === "MetStateNode"){
             //var imageUrl = "image\/386705-winter-solstice.jpg";
             //// url encode '(' and ')'
             //if ((imageUrl.indexOf('(') >= 0) || (imageUrl.indexOf(')') >= 0)) {
@@ -318,6 +319,12 @@ define(function(require, exports, module) {
                 DebugUtils.log("text node click");
             })
         }
+        // node shadow setting
+        if(null != shadow && null != newSurface){
+            newSurface.setProperties({
+                boxShadow: (TextUtils.sprintf("%fpx %fpx %fpx 0px %s", shadowX, shadowY, shadowBlur, shadowColor)),
+            });
+        }
 
         var newNode = new MetNodeView({
             size: size,
@@ -337,18 +344,14 @@ define(function(require, exports, module) {
             nodeDescription: nodeDescription
         });
 
-        if(newSurface) {
-            if(
-                type === "MetScrollNode"
-                || type === "MetStateNode"
-            ) {
+        // show newSurface
+        if(newSurface){
+            if(type === "MetScrollNode" || type === "MetStateNode"){
                 newNode.setContainerSurface(newSurface);
-            } else {
+            }
+            else{
                 newNode.addSurface(newSurface);
             }
-
-
-
         }
 
         if(type === "MetAnimNode") {

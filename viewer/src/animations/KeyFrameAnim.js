@@ -14,7 +14,7 @@ define(function (require, exports, module) {
         this.actor = actor;
         this.keyFrames = keyFrames;
         this.keyFramesCount = keyFrames.length;
-        this.elapsed = 30;
+        this.elapsed = 35;
         this.curAnimFrameIdx = 0;
         this.curAnimTime = 0;
         this.nextFrameTime = 0;

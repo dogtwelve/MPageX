@@ -1,4 +1,5 @@
-define(function(require, exports, module) {
+define(function (require, exports, module) {
+    'use strict';
     var View = require('famous/core/View');
     var Surface = require('famous/core/Surface');
     var Transform = require('famous/core/Transform');
@@ -37,8 +38,8 @@ define(function(require, exports, module) {
             showOrigin: [0, 0],
             inTransform: Transform.thenMove(Transform.rotateX(0.9), [0, -300, -300]),
             outTransform: Transform.thenMove(Transform.rotateZ(0.7), [0, window.innerHeight, -1000]),
-            inTransition: { duration: 650, curve: 'easeOut' },
-            outTransition: { duration: 500, curve: Easing.inCubic }
+            inTransition: {duration: 650, curve: 'easeOut'},
+            outTransition: {duration: 500, curve: Easing.inCubic}
         }
     };
 
@@ -65,17 +66,17 @@ define(function(require, exports, module) {
         this.showCurrentSlide();
     }
 
-    SlideshowView.prototype.showCurrentSlide = function() {
+    SlideshowView.prototype.showCurrentSlide = function () {
         this.ready = false;
 
         var slide = this.slides[this.currentIndex];
-        this.lightbox.show(slide, function() {
+        this.lightbox.show(slide, function () {
             this.ready = true;
             slide.fadeIn();
         }.bind(this));
     };
 
-    SlideshowView.prototype.showNextSlide = function() {
+    SlideshowView.prototype.showNextSlide = function () {
         if (!this.ready) return;
 
         this.currentIndex++;

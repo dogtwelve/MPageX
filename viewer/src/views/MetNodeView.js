@@ -15,9 +15,9 @@ define(function(require, exports, module) {
     var TweenTransition     = require('famous/transitions/TweenTransition');
     var Timer               = require("famous/utilities/Timer");
     var Utility               = require("famous/utilities/Utility");
-    var Lightbox            = require('famous/views/Lightbox');
-    var EdgeSwapper            = require('famous/views/EdgeSwapper');
-    var Flipper            = require('famous/views/Flipper');
+    var MetLightbox            = require('container/MetLightbox');
+    var MetEdgeSwapper            = require('container/MetEdgeSwapper');
+    var MetFlipper            = require('container/MetFlipper');
     var UnitConverter       = require('tools/UnitConverter');
     var MotionPath          = require('utils/MotionPath');
     var KeyFrameAnim        = require('animations/KeyFrameAnim');
@@ -422,7 +422,7 @@ define(function(require, exports, module) {
             });
             this.containerSurface.add(this.stateViewPlayer);
         } else if(this.nodeDescription.transition === 1) {
-            this.stateViewPlayer = new Lightbox({
+            this.stateViewPlayer = new MetLightbox({
                 inOpacity: 1,
                 outOpacity: 0,
                 inOrigin: [0.5, 0.5],
@@ -435,7 +435,7 @@ define(function(require, exports, module) {
             });
             this.containerSurface.add(this.stateViewPlayer);
         } else if(this.nodeDescription.transition === 2) {
-            this.stateViewPlayer = new Lightbox({
+            this.stateViewPlayer = new MetLightbox({
                 inOpacity: 1,
                 outOpacity: 1,
                 inOrigin: [0.5, 0.5],
@@ -448,7 +448,7 @@ define(function(require, exports, module) {
             });
             this.containerSurface.add(this.stateViewPlayer);
         } else if(this.nodeDescription.transition === 3) {
-            this.stateViewPlayer = new Lightbox({
+            this.stateViewPlayer = new MetLightbox({
                 inOpacity: 1,
                 outOpacity: 1,
                 inOrigin: [0.5, 0.5],
@@ -461,16 +461,16 @@ define(function(require, exports, module) {
             });
             this.containerSurface.add(this.stateViewPlayer);
         } else if(this.nodeDescription.transition === 4) {
-            this.stateViewPlayer = new Flipper({direction: Flipper.DIRECTION_X});
+            this.stateViewPlayer = new MetFlipper({direction: MetFlipper.DIRECTION_X});
             this.containerSurface.add(this.stateViewPlayer);
         } else if(this.nodeDescription.transition === 5) {
-            this.stateViewPlayer = new Flipper({direction: Flipper.DIRECTION_Y});
+            this.stateViewPlayer = new MetFlipper({direction: MetFlipper.DIRECTION_Y});
             this.containerSurface.add(this.stateViewPlayer);
         } else if(this.nodeDescription.transition === 6) {
-            this.stateViewPlayer = new Lightbox();
+            this.stateViewPlayer = new MetLightbox();
             this.containerSurface.add(this.stateViewPlayer);
         } else {
-            this.stateViewPlayer = new EdgeSwapper();
+            this.stateViewPlayer = new MetEdgeSwapper();
             this.containerSurface.add(this.stateViewPlayer);
         }
         return subRoot;

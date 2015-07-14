@@ -235,9 +235,9 @@ define(function(require, exports, module) {
                 size: size,
                 content: name,
                 classes: classes,
-                properties: {
-                    border: '1px dashed rgb(210, 208, 203)'
-                }
+            //    properties: {
+            //        border: '1px dashed rgb(210, 208, 203)'
+            //    }
             });
 
         }
@@ -254,7 +254,7 @@ define(function(require, exports, module) {
                 classes: classes,
                 properties: {
                     overflow:"hidden",
-                    border: "1px dashed rgba(0,255,0, .8)",
+                    //border: "1px dashed rgba(0,255,0, .8)",
                     //borderRadius: "10px 0px 0px 10px",
                     //backgroundImage: 'url(' + imageUrl + ')'
                     //backgroundColor: 'gray'

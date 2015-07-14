@@ -8,6 +8,7 @@
  */
 
 define(function(require, exports, module) {
+    'use strict';
     var PhysicsEngine = require('../physics/PhysicsEngine');
     var Particle = require('../physics/bodies/Particle');
     var Drag = require('../physics/forces/Drag');

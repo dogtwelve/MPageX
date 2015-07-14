@@ -5,10 +5,10 @@ define(function (require, exports, module) {
     var View = require('famous/core/View');
     var Scrollview = require('famous/Kviews/KScrollview');
     var StateModifier = require('famous/modifiers/StateModifier');
-    Timeline=function Timeline(options) {
-         View.apply(this, arguments);//Init
-         if (arguments[0].options)
-             this._optionsManager.setOptions(arguments[0].options);
+    Timeline = function Timeline(options) {
+        View.apply(this, arguments);//Init
+        if (arguments[0].options)
+            this._optionsManager.setOptions(arguments[0].options);
         this.mode = options.mode;
         this.onUpdate = options.onUpdate;
         this.curIndex = 0;
@@ -22,9 +22,9 @@ define(function (require, exports, module) {
             HELIX: 2,
             X_SCROLLER: 3,
             X_SCROLLER_EX: 4,
-            CAROUSEL_X:5,
-            HELIX_X:6,
-            PARAPOL:7
+            CAROUSEL_X: 5,
+            HELIX_X: 6,
+            PARAPOL: 7
         }
         // note: change the type of experience you want here
         // by setting to one of the above values
@@ -51,36 +51,36 @@ define(function (require, exports, module) {
         this.scrollview.outputFrom(function (offset) {
 
             switch (self.outputType) {
-            case (self.outputTypeEnum.Z_SCROLLER):
-                //console.log(offset);
-                return Transform.translate(0, -offset / 1.5, -offset);
-            case (self.outputTypeEnum.X_SCROLLER):
-                //console.log(offset);
-                return Transform.translate(offset, 0, 0);
-            case (self.outputTypeEnum.X_SCROLLER_EX):
-                //console.log(offset);
-                return Transform.translate(offset/3, 0, 0);
-            case (self.outputTypeEnum.CAROUSEL):
-                return Transform.moveThen([0, 0, 600], Transform.rotateY((3.14*2.0/(self.data.length*self.surfaceW))* offset));
-            case (self.outputTypeEnum.CAROUSEL_X):
-            	return Transform.moveThen([0, 0, 600], Transform.rotateX((3.14*2.0/(self.data.length*self.surfaceW))* offset));
-            case (self.outputTypeEnum.HELIX_X):
-            	return Transform.moveThen([0, -offset/10.0, 600-Math.abs(offset/10.0)], Transform.rotateY(0.0025 * offset));
-           
-            case (self.outputTypeEnum.HELIX):
-            default:
-                return Transform.moveThen([0, offset/6, 400], Transform.rotateY(0.0025 * offset));
+                case (self.outputTypeEnum.Z_SCROLLER):
+                    //console.log(offset);
+                    return Transform.translate(0, -offset / 1.5, -offset);
+                case (self.outputTypeEnum.X_SCROLLER):
+                    //console.log(offset);
+                    return Transform.translate(offset, 0, 0);
+                case (self.outputTypeEnum.X_SCROLLER_EX):
+                    //console.log(offset);
+                    return Transform.translate(offset / 3, 0, 0);
+                case (self.outputTypeEnum.CAROUSEL):
+                    return Transform.moveThen([0, 0, 600], Transform.rotateY((3.14 * 2.0 / (self.data.length * self.surfaceW)) * offset));
+                case (self.outputTypeEnum.CAROUSEL_X):
+                    return Transform.moveThen([0, 0, 600], Transform.rotateX((3.14 * 2.0 / (self.data.length * self.surfaceW)) * offset));
+                case (self.outputTypeEnum.HELIX_X):
+                    return Transform.moveThen([0, -offset / 10.0, 600 - Math.abs(offset / 10.0)], Transform.rotateY(0.0025 * offset));
+
+                case (self.outputTypeEnum.HELIX):
+                default:
+                    return Transform.moveThen([0, offset / 6, 400], Transform.rotateY(0.0025 * offset));
             }
         });
-        
-        
+
+
         this.add(this.scrollview)
 
     }
 
     Timeline.prototype = Object.create(View.prototype);
     Timeline.prototype.constructor = Timeline;
-    
+
     Timeline.prototype.setMode = function (mode) {
         this.mode = mode;
         this.outputType = this.mode == "3D" ? this.outputTypeEnum.Z_SCROLLER : this.outputTypeEnum.X_SCROLLER;
@@ -88,14 +88,14 @@ define(function (require, exports, module) {
         option.fog = this.mode == "3D" ? 0.3 : 0;
         this.scrollview.setOptions(option);
     }
-    Timeline.prototype.updateData = function(data){
-    	this.data = data;
-    	this.surfaces=[];
-    	_createSurfaces.call(this);
-       this.scrollview.sequenceFrom(this.surfaces);
-    	
+    Timeline.prototype.updateData = function (data) {
+        this.data = data;
+        this.surfaces = [];
+        _createSurfaces.call(this);
+        this.scrollview.sequenceFrom(this.surfaces);
+
     }
-    
+
     var _createSurfaces = function () {
         var self = this;
         //dummy 3 last surface
@@ -126,6 +126,7 @@ define(function (require, exports, module) {
                         timeline.curIndex = next;
                     }
                 }
+
                 surface.on("click", click.bind(surface, self));
             }
 
@@ -138,13 +139,13 @@ define(function (require, exports, module) {
         //if(this.scrollview.goToPage(index==this.curIndex?0:index))
         this.scrollview.goToPage(index);
         return;
-        
+
     }
     Timeline.prototype.goToPreviousPage = function () {
         //if(this.scrollview.goToPage(index==this.curIndex?0:index))
         this.scrollview.goToPreviousPage();
         return;
-        
+
     }
 
     module.exports = Timeline;

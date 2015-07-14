@@ -1,4 +1,5 @@
 define(function(require, exports, module) {
+    'use strict';
     var View = require('famous/core/View');
     var StyleGuide = require("Css/StyleGuide");
     var Modifier = require("famous/core/Modifier");

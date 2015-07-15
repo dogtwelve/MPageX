@@ -233,7 +233,7 @@ define(function(require, exports, module) {
         {
             newSurface = new Surface({
                 size: size,
-                content: name,
+                //content: name,
                 classes: classes,
             //    properties: {
             //        border: '1px dashed rgb(210, 208, 203)'
@@ -399,9 +399,9 @@ define(function(require, exports, module) {
             newNode.setFloatingSurface(borderSurface);
         }
 
-        if(type === "MetAnimNode") {
-            newNode.setKeyFrameAnim(nodeDescription.keyframes, nodeDescription.duration, nodeDescription.autoreverses);
-        }
+        //if(type === "MetAnimNode") {
+        //    newNode.setKeyFrameAnim(nodeDescription.keyframes, nodeDescription.duration, nodeDescription.autoreverses);
+        //}
 
 
         var subMetNodes = nodeDescription.nodes;

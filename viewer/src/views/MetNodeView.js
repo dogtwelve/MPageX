@@ -11,10 +11,10 @@ define(function(require, exports, module) {
     var Transform           = require('famous/core/Transform');
     var ModifierChain       = require('famous/modifiers/ModifierChain');
     var RenderController    = require("famous/views/RenderController");
-    var Scrollview          = require('famous/views/Scrollview');
     var TweenTransition     = require('famous/transitions/TweenTransition');
     var Timer               = require("famous/utilities/Timer");
     var Utility               = require("famous/utilities/Utility");
+    var MetScrollview          = require('container/MetScrollview');
     var MetLightbox            = require('container/MetLightbox');
     var MetEdgeSwapper            = require('container/MetEdgeSwapper');
     var MetFlipper            = require('container/MetFlipper');
@@ -52,7 +52,7 @@ define(function(require, exports, module) {
         this.containerSize = this.options.containerSize;
         this.renderController = new RenderController();
         this.timer = -1;
-        this.nodeDescription = this.options.nodeDescription;
+        this.nodeDesc = this.options.nodeDescription;
         //console.log(this.name + " containerSize(" + this.containerSize[0] + "," + this.containerSize[1] + ")");
         //_listenToScroll.call(this);
         _listenToAction.call(this);
@@ -137,15 +137,6 @@ define(function(require, exports, module) {
             this._eventOutput.subscribe(this.mainSurface);
             //this.mainSurface.pipe(rootParent._eventOutput);
             root.add(this.mainSurface);
-            this.mainSurface.on("click", function(data){
-                //this.hideMetNode();
-                DebugUtils.log(this.metNodeId + " mainSurface event click");
-                //rootParent._eventOutput.trigger('metview-click', {metNodeId:this.metNodeId} );
-            }.bind(this));
-
-            //this.on("click", function(data){
-            //    DebugUtils.log(this.metNodeId + " type = " + this.type + " view event click");
-            //}.bind(this));
         }
 
 
@@ -186,7 +177,11 @@ define(function(require, exports, module) {
 
         if (this.mainSurface === undefined) {
             this.mainSurface = new Surface({
-                size: this.size
+                size: this.size,
+                classes: classes,
+                //properties: {
+                //    border: '1px dashed rgb(210, 208, 203)'
+                //}
             });
         }
 
@@ -195,9 +190,9 @@ define(function(require, exports, module) {
         }
 
         if (this.mainSurface) {
-            for(var holder in holdersSync) {
-                this.mainSurface.pipe(holdersSync[holder]);
-            }
+            //for(var holder in holdersSync) {
+            //    this.mainSurface.pipe(holdersSync[holder]);
+            //}
 
             this._eventOutput.subscribe(this.mainSurface);
             //this.mainSurface.pipe(rootParent._eventOutput);
@@ -236,11 +231,11 @@ define(function(require, exports, module) {
         var subMetNodes = this.metNodes;
         var subRoot = root;
 
-        if(this.type == "MetStateNode") {
+        if(this.type === "MetStateNode") {
             subRoot = _setStatePlayer.call(this, subRoot);
         }
 
-        if(this.type == "MetScrollNode") {
+        if(this.type === "MetScrollNode") {
             subRoot = _setScrollHolder.call(this, subRoot);
         }
 
@@ -267,19 +262,23 @@ define(function(require, exports, module) {
         }
 
         //if(this.type == "MetScrollNode") {
-        //    scrollview.sequenceFrom([subRoot]);
+        //    MetScrollview.sequenceFrom([subRoot]);
         //}
 
 
 
 
-        if(this.type == "MetStateNode") {
-            this.curStateIdx = this.nodeDescription.defaultState;
+        if(this.type === "MetStateNode") {
+            this.curStateIdx = this.nodeDesc.defaultState;
             this.stateShowElapsed = 2000;
             this.showState();
         }
 
-        if(this.curAnim) {
+        if(this.type === "MetAnimNode" && (this.nodeDesc.autoplay || true)) {
+            if(!this.curAnim) {
+                this.setKeyFrameAnim(this.nodeDesc.keyframes, this.nodeDesc.duration, this.nodeDesc.autoreverses);
+            }
+
             this.curAnim.activeAnim();
         }
     };
@@ -288,8 +287,8 @@ define(function(require, exports, module) {
         var subMetNodes = this.metNodes;
 
         if(
-            this.nodeDescription.transition === 4 ||
-            this.nodeDescription.transition === 5
+            this.nodeDesc.transition === 4 ||
+            this.nodeDesc.transition === 5
         ) {
             this.stateViewPlayer.setFront(subMetNodes[this.curStateIdx]);
             this.stateViewPlayer.setBack(subMetNodes[this.curStateIdx + 1]);
@@ -413,7 +412,7 @@ define(function(require, exports, module) {
         });
 
 
-        if(this.nodeDescription.transition === 0) {
+        if(this.nodeDesc.transition === 0) {
             //instant
             this.stateViewPlayer = new RenderController({
                 inTransition: false,
@@ -421,7 +420,7 @@ define(function(require, exports, module) {
                 overlap: false
             });
             this.containerSurface.add(this.stateViewPlayer);
-        } else if(this.nodeDescription.transition === 1) {
+        } else if(this.nodeDesc.transition === 1) {
             this.stateViewPlayer = new MetLightbox({
                 inOpacity: 1,
                 outOpacity: 0,
@@ -434,7 +433,7 @@ define(function(require, exports, module) {
                 outTransition: { duration: 500, curve: 'easeOut' }
             });
             this.containerSurface.add(this.stateViewPlayer);
-        } else if(this.nodeDescription.transition === 2) {
+        } else if(this.nodeDesc.transition === 2) {
             this.stateViewPlayer = new MetLightbox({
                 inOpacity: 1,
                 outOpacity: 1,
@@ -447,7 +446,7 @@ define(function(require, exports, module) {
                 outTransition: {duration: 500, curve: 'easeOut'}
             });
             this.containerSurface.add(this.stateViewPlayer);
-        } else if(this.nodeDescription.transition === 3) {
+        } else if(this.nodeDesc.transition === 3) {
             this.stateViewPlayer = new MetLightbox({
                 inOpacity: 1,
                 outOpacity: 1,
@@ -460,13 +459,13 @@ define(function(require, exports, module) {
                 outTransition: {duration: 500, curve: 'easeOut'}
             });
             this.containerSurface.add(this.stateViewPlayer);
-        } else if(this.nodeDescription.transition === 4) {
+        } else if(this.nodeDesc.transition === 4) {
             this.stateViewPlayer = new MetFlipper({direction: MetFlipper.DIRECTION_X});
             this.containerSurface.add(this.stateViewPlayer);
-        } else if(this.nodeDescription.transition === 5) {
+        } else if(this.nodeDesc.transition === 5) {
             this.stateViewPlayer = new MetFlipper({direction: MetFlipper.DIRECTION_Y});
             this.containerSurface.add(this.stateViewPlayer);
-        } else if(this.nodeDescription.transition === 6) {
+        } else if(this.nodeDesc.transition === 6) {
             this.stateViewPlayer = new MetLightbox();
             this.containerSurface.add(this.stateViewPlayer);
         } else {
@@ -477,8 +476,8 @@ define(function(require, exports, module) {
     }
 
     function _setScrollHolder(subRoot) {
-        var direction = this.nodeDescription.scrollDirection == 0 ? Utility.Direction.Y : Utility.Direction.X;
-        var scrollview = new Scrollview({ direction: direction});
+        var direction = this.nodeDesc.scrollDirection == 0 ? Utility.Direction.Y : Utility.Direction.X;
+        var scrollview = new MetScrollview({ direction: direction});
         this.containerSurface.add(scrollview);
         var subMetNodes = this.metNodes;
         subRoot = new View();
@@ -521,7 +520,19 @@ define(function(require, exports, module) {
         //    DebugUtils.log(this.metNodeId + " type = " + this.type + " view event click");
         //}.bind(this));
 
-        if(this.type == "MetStateNode") {
+        ////anim node pause and resume temp test
+        //if(this.type == "MetAnimNode") {
+        //    this.on('click', function(data) {
+        //        DebugUtils.log(this.metNodeId + " type = " + this.type + " view event click");
+        //        if(this.curAnim.isPaused() === true) {
+        //            this.curAnim.resumeAnim();
+        //        } else {
+        //            this.curAnim.pauseAnim();
+        //        }
+        //    }.bind(this));
+        //}
+
+        if(this.type === "MetStateNode") {
             var sync = new GenericSync(
                 ['mouse', 'touch'],
                 {direction : GenericSync.DIRECTION_X}

@@ -22,6 +22,7 @@ define(function (require, exports, module) {
         this.initOffsetX = 0;
         this.initOffsetY = 0;
         this.loop = loop;
+        this.isPause = false;
     };
 
     KeyFrameAnim.prototype.activeAnim = function() {
@@ -39,6 +40,32 @@ define(function (require, exports, module) {
         this.curAnimTime = 0;
         this.curAnimFrameIdx = -1;
         this.goNextKeyFrame();
+    };
+
+
+    KeyFrameAnim.prototype.stopAnim = function() {
+        this.actor.resetMetNodePosAdjustZ();
+        if(this.animTimer) {
+            Timer.clear(this.animTimer);
+            delete this.animTimer;
+        }
+    };
+
+    KeyFrameAnim.prototype.pauseAnim = function() {
+        this.isPause = true;
+        if(this.animTimer) {
+            Timer.clear(this.animTimer);
+            delete this.animTimer;
+        }
+    };
+
+    KeyFrameAnim.prototype.resumeAnim = function() {
+        this.isPause = false;
+        this.animTimer = Timer.setInterval(function(){this.updateAnim();}.bind(this), this.elapsed);
+    };
+
+    KeyFrameAnim.prototype.isPaused = function() {
+        return this.isPause;
     };
 
     KeyFrameAnim.prototype.readyDisplacement = function() {
@@ -120,15 +147,11 @@ define(function (require, exports, module) {
         this.readyOpacity();
     };
 
-    KeyFrameAnim.prototype.stopAnim = function() {
-        this.actor.resetMetNodePosAdjustZ();
-        if(this.animTimer) {
-            Timer.clear(this.animTimer);
-            delete this.animTimer;
-        }
-    };
-
     KeyFrameAnim.prototype.updateAnim = function() {
+        if(this.isPause) {
+            return;
+        }
+
         this.curAnimTime += this.elapsed;
         var isFireNextFrame = false;
 

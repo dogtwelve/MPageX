@@ -24,11 +24,6 @@ define(function(require, exports, module) {
         if (options && options.canvasSize) this._canvasSize = options.canvasSize;
         Surface.apply(this, arguments);
         if (!this._canvasSize) this._canvasSize = this.getSize();
-        this._backBuffer = document.createElement('canvas');
-        if (this._canvasSize) {
-            this._backBuffer.width = this._canvasSize[0];
-            this._backBuffer.height = this._canvasSize[1];
-        }
         this._contextId = undefined;
     }
 
@@ -58,11 +53,6 @@ define(function(require, exports, module) {
             target.width = this._canvasSize[0];
             target.height = this._canvasSize[1];
         }
-        if (this._contextId === '2d') {
-            target.getContext(this._contextId).drawImage(this._backBuffer, 0, 0);
-            this._backBuffer.width = 0;
-            this._backBuffer.height = 0;
-        }
     };
 
     /**
@@ -76,11 +66,7 @@ define(function(require, exports, module) {
     CanvasSurface.prototype.recall = function recall(target) {
         var size = this.getSize();
 
-        this._backBuffer.width = target.width;
-        this._backBuffer.height = target.height;
-
         if (this._contextId === '2d') {
-            this._backBuffer.getContext(this._contextId).drawImage(target, 0, 0);
             target.width = 0;
             target.height = 0;
         }
@@ -94,7 +80,7 @@ define(function(require, exports, module) {
      */
     CanvasSurface.prototype.getContext = function getContext(contextId) {
         this._contextId = contextId;
-        return this._currentTarget ? this._currentTarget.getContext(contextId) : this._backBuffer.getContext(contextId);
+        return this._currentTarget ? this._currentTarget.getContext(contextId) : null;
     };
 
     /**

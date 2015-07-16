@@ -123,11 +123,16 @@ define(function(require, exports, module) {
 
         var root = this.add(new Modifier({size: this.size})).add(this.modifierChain);
 
-        if (this.mainSurface === undefined) {
-            this.mainSurface = new Surface({
-                size: this.size
-            });
-        }
+        //var classes = ['z2', 'backfaceVisibility'];
+        //if (this.mainSurface === undefined) {
+        //    this.mainSurface = new Surface({
+        //        size: this.size,
+        //        //classes: classes,
+        //        //properties: {
+        //        //    border: '1px dashed rgb(210, 208, 203)'
+        //        //}
+        //    });
+        //}
 
         if (this.mainSurface) {
             //for(var holder in holdersSync) {
@@ -173,21 +178,21 @@ define(function(require, exports, module) {
         //
         //}.bind(this));
 
-        var classes = ['z2', 'backfaceVisibility'];
-
-        if (this.mainSurface === undefined) {
-            this.mainSurface = new Surface({
-                size: this.size,
-                classes: classes,
-                //properties: {
-                //    border: '1px dashed rgb(210, 208, 203)'
-                //}
-            });
-        }
+        //var classes = ['z2', 'backfaceVisibility'];
 
         if(this.containerSurface) {
             root.add(this.containerSurface);
         }
+
+        //if (!this.mainSurface) {
+        //    this.mainSurface = new Surface({
+        //        size: this.size,
+        //        //classes: classes,
+        //        ////properties: {
+        //        ////    border: '1px dashed rgb(210, 208, 203)'
+        //        ////}
+        //    });
+        //}
 
         if (this.mainSurface) {
             //for(var holder in holdersSync) {
@@ -481,27 +486,15 @@ define(function(require, exports, module) {
         this.containerSurface.add(scrollview);
         var subMetNodes = this.metNodes;
         subRoot = new View();
-        //var receiverSurface = new Surface({
-        //    size: this.size // Take up the entire view
-        //});
-        //subRoot.add(receiverSurface);
-
-        //receiverSurface.pipe(scrollview);
-        //subRoot.pipe(scrollview);
-        //scrollview.subscribe(receiverSurface);
-        //scrollview.subscribe(subRoot);
         scrollview.sequenceFrom([subRoot]);
-        //this.add(container);
 
         for(var metNode in subMetNodes) {
             scrollview.subscribe(subMetNodes[metNode]);
         }
 
-        scrollview.subscribe(this.mainSurface);
-
-        subRoot.on("click", function(data){
-            DebugUtils.log("subRoot event:" + data);
-        }.bind(this));
+        if(this.mainSurface) {
+            scrollview.subscribe(this.mainSurface);
+        }
 
         scrollview.on("click", function(data){
             DebugUtils.log("scrollview event:" + data);

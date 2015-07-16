@@ -12,6 +12,11 @@ define(function(require, exports, module) {
     var DebugUtils = require('utils/DebugUtils');
     var TextUtils = require('utils/TextUtils');
 
+    var Transform = require('famous/core/Transform');
+    var TransformUtils = require('utils/TransformUtils');
+
+    var MetNodeAction = require('actions/MetNodeAction');
+
     function MetNodeFactory() {
           // Container to store created actors by name.
           this.metNodesFromFactory = {};
@@ -79,7 +84,11 @@ define(function(require, exports, module) {
         var textVertAlign = nodeDescription.verticalAlignment;
         var textBlocks = nodeDescription.blocks;
 
+        // actions for nodes
+        var nodeActions = MetNodeAction.parseActionsFromArray(nodeDescription.actions);
+
         var newSurface = null;
+        var newContainerSurface = null;
 
         // --------------- constants -------------------
         ////单色填充
@@ -117,8 +126,105 @@ define(function(require, exports, module) {
             //    },
             //    classes: classes
             //});
+            if(MetNodeAction.hasEraseOneInActions(nodeActions)) {
+                newSurface = new CanvasSurface({
+                    size: size,
+                    classes: classes,
+                    properties: {
+                    }
+                });
 
-            if (filltype === METIMAGEFILLTYPE) {
+                var pending = false;
+                var ready = false;
+                var needDraw = false;
+                var fromPos = [];
+
+                newSurface.render = function render() {
+                    var ctx = this.getContext('2d');
+                    if(null == ctx)
+                        return this.id;
+
+                    if(pending)
+                        return this.id;
+                    else
+                        pending = true;
+
+                    switch (filltype) {
+                        case METIMAGEFILLTYPE:
+                        {
+                            var imageObj = new Image();
+                            imageObj.src = nodeDescription.imageFill.rawImageURL;
+                            imageObj.onload = function() {
+                                ready = true;
+                                ctx.save();
+                                setJPath(ctx, jpath);
+                                ctx.clip();
+                                ctx.drawImage(imageObj, 0, 0, ctx.canvas.width, ctx.canvas.height);
+                                ctx.restore();
+                            };
+                        }
+                            break;
+                        case METCOLORFILLTYPE:
+                        case METGRADIENTFILLTYPE:
+                        {
+                            ctx.save();
+                            setJPath(ctx, jpath);
+                            ctx.clip();
+                            ctx.fillStyle = fillColor;
+                            ctx.fill();
+                            ctx.restore();
+
+                        }
+                            break;
+
+                    }
+                    return this.id;
+                };
+
+                newSurface.on("mousedown", function(e){
+                    e.preventDefault();
+                    if(!ready)
+                        return;
+
+                    var _self = newSurface._currentTarget;
+                    var trans = TransformUtils.transformFromElement(_self, document.body);
+                    fromPos = [e.clientX, e.clientY];
+                    fromPos = TransformUtils.pointApplyTransform(fromPos, trans);
+                    needDraw = true;
+                });
+                newSurface.on("mousemove", function(e) {
+                    e.preventDefault();
+                    if (!needDraw)
+                        return;
+
+                    var RADIUS = 12;
+                    var _self = newSurface._currentTarget;
+                    var trans = TransformUtils.transformFromElement(_self, document.body);
+                    var toPos = [e.clientX, e.clientY];
+                    toPos = TransformUtils.pointApplyTransform(toPos, trans);
+
+                    var ctx = newSurface.getContext('2d');
+
+                    ctx.save();
+                    ctx.beginPath();
+
+                    var angle = Math.atan2(toPos[1] - fromPos[1], toPos[0] - fromPos[0]);
+                    ctx.arc(fromPos[0], fromPos[1], RADIUS, angle - Math.PI/2, angle + Math.PI/2, true);
+                    ctx.arc(toPos[0], toPos[1], RADIUS, angle - Math.PI*3/2, angle - Math.PI/2, true);
+                    ctx.closePath();
+
+                    ctx.clip();
+                    ctx.clearRect(Math.min(fromPos[0], toPos[0]) - RADIUS, Math.min(fromPos[1], toPos[1]) - RADIUS, Math.abs(toPos[0] - fromPos[0]) + RADIUS * 2, Math.abs(toPos[1] - fromPos[1]) + RADIUS * 2);
+
+                    ctx.restore();
+                    fromPos = toPos;
+                });
+                newSurface.on("mouseup", function(e) {
+                    e.preventDefault();
+                    needDraw = false;
+                });
+            }
+            else if (filltype === METIMAGEFILLTYPE) {
                 newSurface = new ImageSurface({
                     size: size,
                     content: nodeDescription.imageFill.rawImageURL,
@@ -127,7 +233,8 @@ define(function(require, exports, module) {
                     //},
                     classes: classes
                 });
-            } else {
+            }
+            else {
                 //TODO:using svg for compatibility
                 newSurface = new CanvasSurface({
                     size: size,
@@ -241,7 +348,7 @@ define(function(require, exports, module) {
             });
 
         }
-        else if(type === "MetScrollNode" || type === "MetStateNode"){
+        if(type === "MetScrollNode" || type === "MetStateNode"){
             //var imageUrl = "image\/386705-winter-solstice.jpg";
             //// url encode '(' and ')'
             //if ((imageUrl.indexOf('(') >= 0) || (imageUrl.indexOf(')') >= 0)) {
@@ -249,7 +356,7 @@ define(function(require, exports, module) {
             //    imageUrl = imageUrl.split(')').join('%29');
             //}
 
-            newSurface = new ContainerSurface({
+            newContainerSurface = new ContainerSurface({
                 size: size,
                 classes: classes,
                 properties: {
@@ -370,15 +477,39 @@ define(function(require, exports, module) {
             nodeDescription: nodeDescription
         });
 
+
+
         // show newSurface
-        if(newSurface){
-            if(type === "MetScrollNode" || type === "MetStateNode"){
-                newNode.setContainerSurface(newSurface);
-            }
-            else{
-                newNode.addSurface(newSurface);
-            }
+
+        if(newContainerSurface) {
+            newNode.setContainerSurface(newContainerSurface);
         }
+
+        if(!newSurface) {
+            if(newContainerSurface) {
+                newSurface = new Surface({
+                    size: size,
+                    //properties: {
+                    //    border: '1px dashed rgb(210, 208, 203)',
+                    //    backgroundColor: 'white'
+                    //}
+                });
+            } else {
+                newSurface = new Surface({
+                    size: size,
+                    classes: classes,
+                    //properties: {
+                    //    border: '1px dashed rgb(210, 208, 203)',
+                    //    backgroundColor: 'white'
+                    //}
+                });
+            }
+
+        }
+
+        newNode.addSurface(newSurface);
+
+
 
         // for textNode use an extra surface to show border
         if(type == "TextNode" && null != stroke) {

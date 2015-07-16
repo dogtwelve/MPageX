@@ -138,5 +138,14 @@ define(function (require, exports, module) {
         return false;
     }
 
+    MetNodeAction.findInActionsByActionType = function(actions, action_type){
+        for(var i in actions){
+            var ac = actions[i];
+            if(action_type === ac.actionType)
+                return ac;
+        }
+        return null;
+    }
+
     module.exports = MetNodeAction;
 });

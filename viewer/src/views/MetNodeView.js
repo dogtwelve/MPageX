@@ -248,14 +248,13 @@ define(function(require, exports, module) {
         this.showMetNode();
 
         for(var metNode in subMetNodes) {
-            //if(this.type === "MetStateNode") {
-            //    subRoot = new View({size: this.size});
-            //    this.stateGroup.push(subRoot);
-            //} else if(this.type === "MetScrollNode") {
-            //    subRoot.subscribe(subMetNodes[metNode]);
-            //}
-            //
-            this._eventOutput.subscribe(subMetNodes[metNode]);
+            if(subMetNodes[metNode].type === "MetScrollNode")
+            {
+                console.log("no subscribe MetScrollNode");
+            } else {
+                this._eventOutput.subscribe(subMetNodes[metNode]);
+            }
+
             ////subMetNodes[metNode].pipe(subRoot);
             //subMetNodes[metNode].initMetNode(holdersSync, subRoot);
 

@@ -118,14 +118,6 @@ define(function(require, exports, module) {
         var MetStrokeMiddle = 2;
 
         if(type === "ShapeNode") {
-            //newSurface = new Surface({
-            //    size: size,
-            //    content: name,
-            //    properties: {
-            //        backgroundColor: fillColor
-            //    },
-            //    classes: classes
-            //});
             if(MetNodeAction.hasEraseOneInActions(nodeActions)) {
                 newSurface = new CanvasSurface({
                     size: size,
@@ -134,28 +126,18 @@ define(function(require, exports, module) {
                     }
                 });
 
-                var pending = false;
-                var ready = false;
-                var needDraw = false;
-                var fromPos = [];
+                var erase_action = MetNodeAction.findInActionsByActionType(nodeActions, MetNodeAction.MetNodeActionTypeErase);
+                var radius = Math.floor(erase_action.f1);
+                var percent = erase_action.f2;
 
-                newSurface.render = function render() {
-                    var ctx = this.getContext('2d');
-                    if(null == ctx)
-                        return this.id;
-
-                    if(pending)
-                        return this.id;
-                    else
-                        pending = true;
-
+                var _resetAll = function(){
+                    var ctx = newSurface.getContext('2d');
                     switch (filltype) {
                         case METIMAGEFILLTYPE:
                         {
                             var imageObj = new Image();
                             imageObj.src = nodeDescription.imageFill.rawImageURL;
                             imageObj.onload = function() {
-                                ready = true;
                                 ctx.save();
                                 setJPath(ctx, jpath);
                                 ctx.clip();
@@ -173,17 +155,63 @@ define(function(require, exports, module) {
                             ctx.fillStyle = fillColor;
                             ctx.fill();
                             ctx.restore();
-
                         }
                             break;
-
                     }
+                };
+
+                var _eraseAll = function(){
+                    var ctx = newSurface.getContext('2d');
+                    ctx.save();
+                    ctx.clearRect(0, 0, size[0], size[1]);
+                    ctx.restore();
+                };
+
+                var canvas_tick = 0;
+                var needDraw = false;
+                var fromPos = [];
+
+                // variables for calc cleaned percent
+                var flags = [];
+                var flags_wc = Math.max(20, size[0]);
+                var flags_hc = Math.max(20, size[1]);
+                for (var i = 0; i < flags_wc * flags_hc; i++) flags[i] = false;
+                var _flagCleaned = function(ctx){
+                    var cell_w = size[0] / flags_wc;
+                    var cell_h = size[1] / flags_hc;
+                    for (var i = 0; i < flags.length; i++){
+                        if(flags[i]) continue;
+                        var pt = [(i/flags_wc +.5) * cell_h, (i%flags_wc +.5) * cell_w];
+                        if(ctx.isPointInPath(pt[0], pt[1]))
+                            flags[i] = true;
+                    }
+                };
+                var _checkCleanedPercent = function(){
+                    // check if cleaned enough
+                    var needed = flags.length * percent;
+                    var cleaned = 0;
+                    for (var i = 0; i < flags.length; i++){
+                        if(flags[i]) cleaned++;
+                        if(cleaned >= needed) break;
+                    }
+                    if(cleaned >= needed){
+                        alert("cleaned enough!!!");
+                        _eraseAll();
+                    }
+                };
+
+                newSurface.render = function render() {
+                    var ctx = this.getContext('2d');
+                    if(canvas_tick > 1) return this.id;
+                    if(canvas_tick === 1) _resetAll();
+                    canvas_tick++;
+
                     return this.id;
                 };
 
                 newSurface.on("mousedown", function(e){
                     e.preventDefault();
-                    if(!ready)
+                    if(canvas_tick <= 1)
                         return;
 
                     var _self = newSurface._currentTarget;
@@ -197,7 +225,6 @@ define(function(require, exports, module) {
                     if (!needDraw)
                         return;
 
-                    var RADIUS = 12;
                     var _self = newSurface._currentTarget;
                     var trans = TransformUtils.transformFromElement(_self, document.body);
                     var toPos = [e.clientX, e.clientY];
@@ -209,19 +236,32 @@ define(function(require, exports, module) {
                     ctx.beginPath();
 
                     var angle = Math.atan2(toPos[1] - fromPos[1], toPos[0] - fromPos[0]);
-                    ctx.arc(fromPos[0], fromPos[1], RADIUS, angle - Math.PI/2, angle + Math.PI/2, true);
-                    ctx.arc(toPos[0], toPos[1], RADIUS, angle - Math.PI*3/2, angle - Math.PI/2, true);
+                    ctx.arc(fromPos[0], fromPos[1], radius, angle - Math.PI/2, angle + Math.PI/2, true);
+                    ctx.arc(toPos[0], toPos[1], radius, angle - Math.PI*3/2, angle - Math.PI/2, true);
                     ctx.closePath();
 
-                    ctx.clip();
-                    ctx.clearRect(Math.min(fromPos[0], toPos[0]) - RADIUS, Math.min(fromPos[1], toPos[1]) - RADIUS, Math.abs(toPos[0] - fromPos[0]) + RADIUS * 2, Math.abs(toPos[1] - fromPos[1]) + RADIUS * 2);
+                    // flag cleaned info
+                    _flagCleaned(ctx);
 
+                    ctx.clip();
+                    ctx.clearRect(Math.min(fromPos[0], toPos[0]) - radius, Math.min(fromPos[1], toPos[1]) - radius, Math.abs(toPos[0] - fromPos[0]) + radius * 2, Math.abs(toPos[1] - fromPos[1]) + radius * 2);
                     ctx.restore();
+
                     fromPos = toPos;
+                });
+                newSurface.on("mouseout", function(e) {
+                    e.preventDefault();
+
+                    if(!needDraw) return;
+                    needDraw = false;
+                    // check if cleaned enough
+                    _checkCleanedPercent();
                 });
                 newSurface.on("mouseup", function(e) {
                     e.preventDefault();
                     needDraw = false;
+                    // check if cleaned enough
+                    _checkCleanedPercent();
                 });
             }
             else if (filltype === METIMAGEFILLTYPE) {
@@ -243,30 +283,20 @@ define(function(require, exports, module) {
                     }
                 });
 
+                var initialized = false;
                 newSurface.render = function render() {
-
                     var ctx = this.getContext('2d');
+                    if(initialized){
+                        return this.id;
+                    }
+                    else
+                        initialized = true;
 
                     //ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-
                     //ctx.fillStyle = fillColor;
                     //ctx.fill();
 
-
                     switch (filltype) {
-                        //case METIMAGEFILLTYPE:
-                        //{
-                        //    var imageObj = new Image();
-                        //    imageObj.src = nodeDescription.imageFill.rawImageURL;
-                        //    imageObj.onload = function() {
-                        //       ctx.save();
-                        //        setJPath(ctx, jpath);
-                        //        ctx.clip();
-                        //        ctx.drawImage(imageObj, 0, 0, ctx.canvas.width, ctx.canvas.height);
-                        //        ctx.restore();
-                        //    };
-                        //}
-                        //    break;
                         case METCOLORFILLTYPE:
                         case METGRADIENTFILLTYPE:
                         {

@@ -10,7 +10,7 @@ define(function(require, exports, module) {
     var Surface       = require('famous/core/Surface');
     var ImageSurface  = require('famous/surfaces/ImageSurface');
     var Draggable = require('famous/modifiers/Draggable');
-    var Scrollview = require("famous/views/Scrollview");
+    var MetScrollview = require('container/MetScrollview');
     var ContainerSurface = require("famous/surfaces/ContainerSurface");
     var RenderController    = require("famous/views/RenderController");
     var StageView = require('views/StageView');
@@ -176,7 +176,7 @@ define(function(require, exports, module) {
         //    max_page_height +=  subpage.height;
         //}
 
-        var scrollview = new Scrollview({paginated: false});
+        var scrollview = new MetScrollview({paginated: false});
         scrollview.sequenceFrom(pageViews);
 
 

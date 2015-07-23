@@ -2158,40 +2158,30 @@ define(function(require, exports, module) {
     //    toggle = !toggle;
     //});
 
-    var Engine = require('famous/core/Engine');
-    var View = require('famous/core/View');
-    var Surface = require('famous/core/Surface');
+    // Famo.us EventFilter subscribe filter
+    var Engine       = require('famous/core/Engine');
+    var EventHandler = require('famous/core/EventHandler');
+    var EventFilter  = require('famous/events/EventFilter');
 
-    var ctx = Engine.createContext();
-    var surf = new Surface({
-        size: [150, 150],
-        properties: {
-            background: 'red'
-        }
+    var eventHandlerA = new EventHandler();
+    var eventHandlerB = new EventHandler();
+
+    var myFilter = new EventFilter(function(type, data) {
+        return data && (data.msg === 'ALERT!');
     });
 
-    var view1 = new View();
-    var view2 = new View();
-
-    ctx.add(surf);
-
-    view1._eventOutput.subscribe(surf);
-    view2._eventOutput.subscribe(view1);
-
-    //surf.pipe(view1._eventOutput);
-    //view1.pipe(view2._eventOutput);
-
-    surf.on('click', function() {
-        //view1._eventOutput.emit('A');
-        surf.emit('A');
+    eventHandlerB.subscribe(myFilter);
+    myFilter.subscribe(eventHandlerA);
+    eventHandlerB.on('A', function(data){
+        alert('subscribed message: ' + data.msg);
     });
 
-    view1.on('A', function() {
-        console.log('A1');
-    })
+    var currentMsg = 'ALERT!';
 
-    view2.on('A', function() {
-        console.log('A2');
-    })
+    Engine.on('click', function() {
+        eventHandlerA.trigger('A', {msg: currentMsg});
+        currentMsg = currentMsg === 'ALERT!' ? 'chickenDogStar': 'ALERT!';
+    });
+
 
 });

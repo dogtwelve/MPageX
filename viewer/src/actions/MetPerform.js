@@ -67,5 +67,11 @@ define(function (require, exports, module) {
         this.longLongParam = dic.longLongParam || 0;
     };
 
+	MetPerform.prototype.execute = function(){
+		if(MetPerform.MetNodeActionPerformNone == this.performType)
+			return;
+		alert("perform executed!! LOL!!!");
+	}
+
     module.exports = MetPerform;
 });

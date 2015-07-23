@@ -4,47 +4,106 @@ define(function(require, exports, module) {
     // import dependencies
     var Engine = require('famous/core/Engine');
     var Utility = require('famous/utilities/Utility');
-    var Modifier      = require('famous/core/Modifier');
-    var Transform     = require('famous/core/Transform');
-    var View          = require('famous/core/View');
-    var Surface       = require('famous/core/Surface');
-    var ImageSurface  = require('famous/surfaces/ImageSurface');
-    var Draggable = require('famous/modifiers/Draggable');
-    var MetScrollview = require('container/MetScrollview');
-    var ContainerSurface = require("famous/surfaces/ContainerSurface");
-    var RenderController    = require("famous/views/RenderController");
+    var Modifier = require('famous/core/Modifier');
+    var Transform = require('famous/core/Transform');
+    var View = require('famous/core/View');
+    var Surface = require('famous/core/Surface');
+    var ImageSurface = require('famous/surfaces/ImageSurface');
+    var Easing = require('famous/transitions/Easing');
+    var MetLightbox = require("container/MetLightbox");
+
     var StageView = require('views/StageView');
     var Director = require('tools/Director');
     var DebugUtils = require('utils/DebugUtils');
 
+    var director = new Director();
+
+    var dataContent = "dummy";
+
     var context = null;
-    //var appDims;
 
-    var renderController = new RenderController();
-    //var draggable = new Draggable();
+    var project = {};
+    var pages = {};
+    var chapterPageIDs = {};
+    var sectionPageIDs = {};
+    // current index in chapters(level-1 pages)
+    var currentChapter = window._initChapter || 0;
+    // current index in sections(level-2 pages)
+    var currentSection = window._initSection || 0;
 
-    //function getPageDims(context, origW, origH){
-    //    var size = context.getSize();
-    //    var scaleX = size[0] / origW;
-    //    var scaleY = size[1] / origH;
-    //
-    //    //here we are going to let the bottom of the screen be cut off to allow fit to more
-    //    //devices
-    //    var scale = Math.min(scaleX, scaleY);
-    //    //var scale = 1;
-    //
-    //    var pageWidth = origW * scale;
-    //    var pageHeight = origH * scale;
-    //
-    //    return [pageWidth, pageHeight, scale];
-    //}
+    function _synthesizeLightBoxOptions(transition, page_size){
+        var options = {
+            inOpacity: 1,
+            outOpacity: 1,
+            inOrigin: [0.5, 0.5],
+            outOrigin: [0.5, 0.5],
+            showOrigin: [0.5, 0.5],
+            inTransform: Transform.identity,
+            outTransform: Transform.identity,
+            inTransition: {duration: 500, curve: Easing.inQuad},
+            outTransition: {duration: 500, curve: Easing.outQuad},
+        }
+        // 无 - MetStateNodeContentSlidingStyleNone
+        if(transition === 0)
+            ;
+        // 渐变 - MetStateNodeContentSlidingStyleFade
+        else if(transition === 1) {
+            options.inOpacity = 1;
+            options.outOpacity = 0;
+        }
+        // 纵向吸附 - MetStateNodeContentSlidingStyleStickVertSlide
+        else if(transition === 2) {
+            options.inTransform = Transform.translate(0, page_size[1], 0);
+            options.outTransform = Transform.translate(0, -page_size[1], 0);
+        }
+        // 横向吸附 - MetStateNodeContentSlidingStyleStickHorizSlide
+        else if(transition === 3) {
+            options.inTransform = Transform.translate(page_size[0], 0, 0);
+            options.outTransform = Transform.translate(-page_size[0], 0, 0);
+        }
+        // 3D翻转X - MetStateNodeContentSlidingStyleRotationX
+        else if(transition === 4) {
+            options.inTransform = Transform.rotateX(-Math.PI/2);
+            options.outTransform = Transform.rotateX(Math.PI/2);
+        }
+        // 3D翻转Y - MetStateNodeContentSlidingStyleRotationY
+        else if(transition === 5){
+            options.inTransform = Transform.rotateY(-Math.PI/2);
+            options.outTransform = Transform.rotateY(Math.PI/2);
+        }
+        // 缩放 - MetStateNodeContentSlidingStyleZoom
+        else if(transition === 6) {
+            options.inTransform = Transform.scale(0.001, 0.001, 1);
+            options.outTransform = Transform.scale(0.001, 0.001, 1);
+        }
+        // 弹出 - MetStateNodeContentSlidingStyleBounce
+        else if(transition === 7) {
+            options.inTransform = Transform.scale(0.001, 0.001, 1);
+            options.outTransform = Transform.scale(0.001, 0.001, 1);
+            options.inTransition = {duration: 500, curve: Easing.outBack};
+            options.outTransition = {duration: 500, curve: Easing.inBack};
+        }
+        // 飞驰 - MetStateNodeContentSlidingStyleFly
+        else if(transition === 8) {
+            options.inTransform = Transform.identity;
+            options.outTransform = Transform.translate(0, page_size[1], 0);
+        }
+        // 交换 - MetStateNodeContentSlidingStyleSwitch
+        else if(transition === 9) {
+            options.inTransform = Transform.scale(0, 0, 1);
+            options.outTransform = Transform.scale(0, 0, 1);
+        }
+        // 覆盖 - MetStateNodeContentSlidingStyleSync
+        else if(transition === 10) {
+            options.inTransform = Transform.scale(0, 0, 1);
+            options.outTransform = Transform.scale(0, 0, 1);
+        }
 
-    var modifier = new Modifier({
-        origin: [0.5, 0],
-        align: [0.5, 0]
-    });
+        return options;
+    }
+    var renderController = new MetLightbox(_synthesizeLightBoxOptions(0, [0, 0]));
 
-    function _resize(){
+    function __resizeMetView(){
         var contextContainer = document.getElementById("met-view");
         //TODO: i would do this in CSS, and not call _resize on contextContainer
         //_resize(contextContainer, origW, origH);
@@ -52,170 +111,155 @@ define(function(require, exports, module) {
         contextContainer.style.height = window.innerHeight + "px";
         contextContainer.overflow = "hidden";
         contextContainer.style.background="black";
+        return contextContainer;
+    }
 
-
+    function _resize(){
+        __resizeMetView();
     }
 
     function _init(){
-        var contextContainer = document.getElementById("met-view");
-        //TODO: i would do this in CSS, and not call _resize on contextContainer
-        //_resize(contextContainer, origW, origH);
-        contextContainer.style.width = window.innerWidth + "px";
-        contextContainer.style.height = window.innerHeight + "px";
-        contextContainer.overflow = "hidden";
-        contextContainer.style.background="black";
-        //create the new one
+        var contextContainer = __resizeMetView();
 
+        //create the new one
         context = Engine.createContext(contextContainer);
         context.setPerspective(3000);
 
         Engine.on("resize",
             function() {
                 _resize();
-                Utility.loadURL("dataValue.json", initApp);
-
-            });
+                Utility.loadURL("zres/project.json", initApp);
+            }
+        );
         Engine.on("orientationchange",
             function(){
                 _resize();
-                Utility.loadURL("dataValue.json", initApp);
-            });
-    }
-
-    function _loadApp(){
-
-    }
-
-
-
-
-    //var stageView = new StageView();
-    var director = new Director();
-
-    var dataContent = "dummy";
-
-    var pages = {};
-
-    function initApp(data) {
-        // Check response
-        if (!data) {
-            return;
-        }
-
-        // Consume response
-        var content =  JSON.parse(data);
-
-
-
-        var page;
-
-        //TODO:multi-type input json data
-        if(content.class === "MetProjectPage") {
-            page = content;
-            pages[page.id_] = page;
-        } else if(content instanceof Array) {
-            for(var contentPage in content) {
-                var pageItem = content[contentPage];
-                pages[pageItem.id_] = pageItem;
+                Utility.loadURL("zres/project.json", initApp);
             }
+        );
+    }
 
-            page = content[0];
-        } else {
-            DebugUtils.log("current json data format is not supported!");
+	function _getPageAt(chapter, section){
+		var pageID = chapterPageIDs[chapter];
+		if(section > 0)
+			pageID = sectionPageIDs[chapter][section - 1];
+		return pages[pageID];
+	}
+
+    function _updateChaptersLoading(current, total) {
+        // TODO: show loading animation during chapters loading?
+        if (current >= total) {
+            // begin loading sections after chapters loading finished
+            _loadSections();
         }
+    }
 
+    function _loadChapters(arr){
+        var current = 0;
+        var total = arr.length;
+        if(current >= total)
+            _updateChaptersLoading(current, total);
+        else {
+            for (var i in arr) {
+                var exe = function () {
+                    var pageID = chapterPageIDs[i] = arr[i];
+                    sectionPageIDs[i] = {};
+                    Utility.loadURL("zres/pages/" + pageID + ".json", function (page_data) {
+                        var page_content = JSON.parse(page_data);
+                        pages[pageID] = page_content;
+                        current++;
+                        _updateChaptersLoading(current, total);
+                    }, true);
+                };
+                exe();
+            }
+        }
+    }
 
-        DebugUtils.log("dataContent:" +  dataContent);
+    function _updateSectionsLoading(current, total) {
+        // TODO: show loading animation during sections loading?
+        if (current >= total) {
+            _showPages();
+        }
+    }
 
-        var max_page_width = page.width;
+    function _loadSections(){
+        var arr = [];
+        for(var j in chapterPageIDs) {
+            var arr2 = pages[chapterPageIDs[j]].pageIDs || [];
+            for(var i in arr2){
+                var pageID = arr2[i];
+                arr.push(pageID);
+            }
+        }
+        var current = 0;
+        var total = arr.length;
+        // load sections
+        if(current >= total)
+            _updateSectionsLoading(current, total);
+        else {
+            for (var i in arr) {
+                var exe = function () {
+                    var pageID = sectionPageIDs[j][i] = arr[i];
+                    Utility.loadURL("zres/pages/" + pageID + ".json", function (page_data) {
+                        var page_content = JSON.parse(page_data);
+                        pages[pageID] = page_content;
+                        current++;
+                        _updateSectionsLoading(current, total);
+                    }, true);
+                };
+                exe();
+            }
+        }
+    }
 
-        var max_page_height = page.height;
+    function _showPages(){
+        var currentPage = _getPageAt(currentChapter, currentSection);
+        var pageView = createPageView(currentPage);
 
-        var subpage_counts = page.pageIDs.length;
+        renderController.show(pageView, null, null);
+    }
 
-        var viewPortSize = context.getSize();
+    function initApp(data){
+        if(!data) return;
+
+        project = JSON.parse(data);
+        var arr = project.pageIDs || [];
+
+		// asynscronized load chapters, will trigger a serials operation about loading pages
+        _loadChapters(arr);
+
+        Engine.on("click", function(e){
+            currentChapter = (currentChapter + 1) % arr.length;
+            var options = _synthesizeLightBoxOptions(3, [project.width, project.height]);
+            renderController.setOptions(options);
+            _showPages();
+        });
+    }
+
+    function createPageView(page){
+        if(!project || !page) return null;
+        var vsize = context.getSize();
+        var csize = [project.width, project.height];
+        var psize = [page.width, page.height];
 
         var pageView = new StageView({
-            size: viewPortSize,
-            pageId:  page.id_,
+            pageId: page.id_,
             pageDesc: page,
-            contextSize: [page.width, page.height],
-            bgSize: viewPortSize
+            projSize: csize,
+            pageSize: psize,
+            containerSize: vsize,
         });
-
         director.populateStage(pageView, page.nodes);
 
-
-
-        //context.add(modifier).add(pageView);
-
-
-
-
-        var draggable = new Draggable();
-        ////draggable.subscribe(pageView.scrollRecieverSurface);
-        ////mainContext.add(originModifier).add(draggable).add(pageView);
-        //
-        var pageViews = [];
-
-        pageViews.push(pageView);
-
-        //for(var subpageIdx = 0 ; subpageIdx < subpage_counts; subpageIdx ++ ) {
-        //    var subpage = pages[page.pageIDs[subpageIdx]];
-        //    var subpageView = new StageView({
-        //        size: viewPortSize,
-        //        pageId:  subpage.id_,
-        //        pageDesc: subpage,
-        //        contextSize: [subpage.width, subpage.height],
-        //        bgSize: viewPortSize
-        //    });
-        //
-        //    director.populateStage(subpageView, subpage.nodes);
-        //    pageViews.push(subpageView);
-        //
-        //    max_page_height +=  subpage.height;
-        //}
-
-        var scrollview = new MetScrollview({paginated: false});
-        scrollview.sequenceFrom(pageViews);
-
-
-        //draggable.setOptions({
-        //        xRange: [0, 0],
-        //        yRange: [- (max_page_height - viewPortSize[1]), 0]
-        //    }
-        //);
-
-        for(var pageView in pageViews) {
-            scrollview.subscribe(pageViews[pageView]);
-        }
-
-        //var originScrollviewModifier = new Modifier({
-        //    size:[max_page_width, max_page_height],
-        //    origin: [0.5, 0],
-        //    align: [0.5, 0]
-        //});
-
-
-
-        //appDims = getPageDims(context, max_page_width, max_page_height);
-        //modifier.sizeFrom([max_page_width, undefined]);
-        //
-        //modifier.transformFrom(Transform.scale(appDims[2], appDims[2], 1));
-
-        renderController.show(scrollview, {
-                duration: 0
-        });
-    }
+        return pageView;
+	}
 
     _init();
     // create the main context
     _resize();
     context.add(renderController);
-    Utility.loadURL("dataValue.json", initApp);
 
-
-    //director.populateStageNew(stageView, nodeDescriptions, actionDescriptions);
-    //
-    //mainContext.add(stageView);
+    // TODO: show loading animation during project loading?
+    Utility.loadURL("zres/project.json", initApp);
 });

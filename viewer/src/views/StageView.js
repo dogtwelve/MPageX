@@ -15,6 +15,9 @@ define(function(require, exports, module) {
     var TouchSync     = require('famous/inputs/TouchSync');
     var ScrollSync    = require('famous/inputs/ScrollSync');
 
+    var MetScrollview = require('container/MetScrollview');
+    var RenderNode = require('famous/core/RenderNode');
+
     var UnitConverter = require('tools/UnitConverter');
     var BgImageSurface = require('surfaces/BgImageSurface');
     var DebugUtils = require('utils/DebugUtils');
@@ -31,14 +34,16 @@ define(function(require, exports, module) {
         this.pageId = this.options.pageId;
         this._arrowData = this.options.arrowData;
         this.pageDesc = this.options.pageDesc;
-        this.containerSize = this.options.contextSize;
-        this.bgSize = this.options.bgSize;
+        this.projSize = this.options.projSize;
+        this.pageSize = this.options.pageSize;
+        this.containerSize = this.options.containerSize;
 
-        var appDims = getPageDims(this.bgSize[0], this.bgSize[1], this.containerSize[0], this.containerSize[1]);
+        var pageContainerDims = getPageContainerDims(this.containerSize[0], this.containerSize[1], this.projSize[0], this.projSize[1]);
+        var pageContentDims = getPageContentDims(pageContainerDims[0], pageContainerDims[1], this.pageSize[0], this.pageSize[1]);
+
         //_setupContainer.call(this);
-        _setupStageBgSurface.call(this, appDims);
-        //_setupContextContainer.call(this);
-        _initRootNode.call(this, appDims);
+        _setupStageBgSurface.call(this, pageContainerDims);
+        _initRootNode.call(this, pageContainerDims, pageContentDims);
         //_handleScroll.call(this);
         //_handleSwipe.call(this);
         //_setupArrowKeyBreakpoints.call(this, 16, 60);
@@ -51,7 +56,7 @@ define(function(require, exports, module) {
             speed: 4,
             step: 10
         },
-        //containerSize: [window.innerWidth, window.innerHeight]
+        //projSize: [window.innerWidth, window.innerHeight]
     };
 
     StageView.prototype = Object.create(View.prototype);
@@ -76,23 +81,6 @@ define(function(require, exports, module) {
         this._arrowData.breakpoints = newBreakpoints;
     };
 
-    //function _setupContextContainer(){
-    //    this.contextContainer = new ContainerSurface({
-    //        //size: [1000, 600]
-    //        //properties: {
-    //        //    overflow: 'hidden'
-    //        //}
-    //
-    //        //properties: {
-    //        //    backgroundImage: 'url(' + this.pageDesc.imageFill.rawImageURL + ')'
-    //        //}
-    //    });
-    //
-    //    this.add(this.contextContainer);
-    //
-    //    this.contextContainer.context.setPerspective(3000);
-    //}
-
     function _setupContainer() {
         var imageUrl = this.pageDesc.imageFill.rawImageURL;
         // url encode '(' and ')'
@@ -102,12 +90,12 @@ define(function(require, exports, module) {
         }
 
         this.containerBox = new ContainerSurface({
-            size: this.bgSize,
+            size: this.containerSize,
             properties: {
                 //overflow:"hidden",
                 border: "2px solid rgba(255,255,255, .8)",
                 //borderRadius: "10px 0px 0px 10px",
-                backgroundImage: 'url(' + imageUrl + ')'
+                backgroundImage: 'url(zres/' + imageUrl + ')'
             }
         });
 
@@ -115,7 +103,7 @@ define(function(require, exports, module) {
 
     }
 
-    function _setupStageBgSurface(appDims) {
+    function _setupStageBgSurface(pageContainerDims) {
         ////单色填充
         var METCOLORFILLTYPE = 0;
         ////渐变填充
@@ -127,14 +115,14 @@ define(function(require, exports, module) {
 
         var classes = ['z1'];
 
-        var bgSize = this.bgSize;
+        var containerSize = this.containerSize;
 
         if(this.pageDesc.fillType == METCOLORFILLTYPE) {
-            bgSize = [appDims[0], appDims[1]];
+            containerSize = [pageContainerDims[0], pageContainerDims[1]];
             var fillColor = UnitConverter.rgba2ColorString(this.pageDesc.colorFill.fillColor);
             this.stageBgSurface = new Surface({
                 //size: [undefined, undefined] // Take up the entire view
-                size: bgSize, //this.bgSize,
+                size: containerSize, //this.containerSize,
                 classes: classes,
                 properties: {
                     backgroundColor: fillColor
@@ -144,7 +132,7 @@ define(function(require, exports, module) {
             var fillImage = this.pageDesc.imageFill.rawImageURL;
             var contentMode = this.pageDesc.imageFill.contentMode;
             this.stageBgSurface = new BgImageSurface({
-                size: bgSize,
+                size: containerSize,
                 content: fillImage,
                 classes: classes,
                 sizeMode: BgImageSurface.SizeMode.ASPECTFILL,
@@ -154,7 +142,7 @@ define(function(require, exports, module) {
             });
         } else {
             this.stageBgSurface = new Surface({
-                size: bgSize,
+                size: containerSize,
                 classes: classes,
                 properties: {
                     backgroundColor: 'gray'
@@ -163,7 +151,7 @@ define(function(require, exports, module) {
         }
 
         var modifier = new Modifier({
-            size: bgSize,
+            size: containerSize,
             origin: [0.5, 0.5],
             align: [0.5, 0.5]
         });
@@ -176,33 +164,52 @@ define(function(require, exports, module) {
         }.bind(this));
     }
 
-    function _initRootNode(appDims) {
-        //var appDims = getPageDims(this.bgSize[0], this.bgSize[1], this.containerSize[0], this.containerSize[1]);
+    function _initRootNode(pageContainerDims, pageContentDims) {
+        var classes = ['z2'];
 
-        var rootModifier = new Modifier({
-            size: this.containerSize,
-            origin: [0.5, 0],
-            align: [0.5, 0],
-            transform: Transform.scale(appDims[2], appDims[2], 1),
+        var modifier = new Modifier({
+            size: [pageContainerDims[0], pageContainerDims[1]],
+            origin: [0.5, 0.5],
+            align: [0.5, 0.5]
         });
 
-        this.rootNode = this.add(rootModifier);
+        var container = new ContainerSurface({
+            size: [pageContainerDims[0], pageContainerDims[1]],
+            classes: classes,
+        });
+
+        var rootModifier = new Modifier({
+            size: this.pageSize,
+            origin: [0.5, 0],
+            align: [0.5, 0],
+            transform: Transform.scale(pageContentDims[2], pageContentDims[2], 1),
+        });
+
+        var renderNode = new RenderNode();
+
+        var scrollView = new MetScrollview({paginated: false});
+        scrollView.sequenceFrom([renderNode]);
+        scrollView.subscribe(container);
+
+        this.add(modifier).add(container);
+        container.add(scrollView);
+
+        this.rootNode = renderNode.add(rootModifier);
     }
 
-    function getPageDims(viewportW, viewportH, origW, origH){
-        var size = [viewportW, viewportH];
-        var scaleX = size[0] / origW;
-        var scaleY = size[1] / origH;
+    function getPageContainerDims(viewportW, viewportH, origW, origH){
+        var scaleX = viewportW / origW;
+        var scaleY = viewportH / origH;
 
         //here we are going to let the bottom of the screen be cut off to allow fit to more
         //devices
-        var scale = 1 || Math.min(scaleX, scaleY);
-        //var scale = 1;
+        var scale = Math.min(scaleX, scaleY);
+        return [origW * scale, origH * scale, scale];
+    }
 
-        var pageWidth = origW * scale;
-        var pageHeight = origH * scale;
-
-        return [pageWidth, pageHeight, scale];
+    function getPageContentDims(containerW, containerH, origW, origH){
+        var scale = containerW / origW;
+        return [origW * scale, origH * scale, scale];
     }
 
     //function _handleScroll() {

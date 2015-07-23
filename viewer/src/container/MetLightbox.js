@@ -160,8 +160,9 @@ define(function(require, exports, module) {
             this.nodes.splice(this.nodes.indexOf(node), 1);
             this.states.splice(this.states.indexOf(stateItem), 1);
             this.transforms.splice(this.transforms.indexOf(transform), 1);
-            if (callback) callback.call(this);
         }.bind(this));
+
+        if (callback) callback.call(this);
 
         if (!transition) transition = this.options.outTransition;
         stateItem.transform.set(this.options.outTransform, transition, _cb);

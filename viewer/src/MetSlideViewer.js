@@ -63,7 +63,7 @@ define(function(require, exports, module) {
         }
 
 
-        DebugUtils.log("dataContent:" +  dataContent);
+        //DebugUtils.log("dataContent:" +  dataContent);
 
         var max_page_width = page.width;
 

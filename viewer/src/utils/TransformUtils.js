@@ -175,5 +175,13 @@ define(function (require, exports, module) {
         return [px[0], px[1], px[2]];
     }
 
+    TransformUtils.vectorApplyTransform = function(vector, m){
+        if(!vector[2]) vector[2] = 0;
+        var zero = [0, 0, 0];
+        zero = TransformUtils.pointApplyTransform(zero, m);
+        vector = TransformUtils.pointApplyTransform(vector, m);
+        return [vector[0] - zero[0], vector[1] - zero[1], vector[2] - zero[2]];
+    }
+
     module.exports = TransformUtils;
 });

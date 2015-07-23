@@ -25,11 +25,11 @@ define(function(require, exports, module) {
 
         stage._eventInput.on('metview-click',function(data){
             if(this instanceof MetNodeView) {
-                DebugUtils.log(this.metNodeId + " on metview-click event from " + data.metNodeId);
+                //DebugUtils.log(this.metNodeId + " on metview-click event from " + data.metNodeId);
             } else if(this instanceof StageView) {
-                DebugUtils.log("StageView on metview-click event from " + data.metNodeId);
+                //DebugUtils.log("StageView on metview-click event from " + data.metNodeId);
             } else {
-                DebugUtils.log("other on metview-click event from " + data.metNodeId);
+                //DebugUtils.log("other on metview-click event from " + data.metNodeId);
             }
 
         }.bind(stage));

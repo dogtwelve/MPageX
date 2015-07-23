@@ -9,8 +9,18 @@ define(function(require, exports, module) {
     var CanvasSurface  = require('famous/surfaces/CanvasSurface');
     var UnitConverter      = require('tools/UnitConverter');
     var ContainerSurface    = require("famous/surfaces/ContainerSurface");
+
+    // for gravity interaction
+    var PhysicsEngine = require('famous/physics/PhysicsEngine');
+    var Rectangle = require('famous/physics/bodies/Rectangle');
+    var VectorField = require('famous/physics/forces/VectorField');
+    var Walls = require('famous/physics/constraints/Walls');
+
+    var Timer = require("famous/utilities/Timer");
+
     var DebugUtils = require('utils/DebugUtils');
     var TextUtils = require('utils/TextUtils');
+    var EasingUtils = require('utils/EasingUtils');
 
     var Transform = require('famous/core/Transform');
     var TransformUtils = require('utils/TransformUtils');
@@ -125,153 +135,29 @@ define(function(require, exports, module) {
                     properties: {
                     }
                 });
-
-                var erase_action = MetNodeAction.findInActionsByActionType(nodeActions, MetNodeAction.MetNodeActionTypeErase);
-                var radius = Math.floor(erase_action.f1);
-                var percent = erase_action.f2;
-
-                var _resetAll = function(){
-                    var ctx = newSurface.getContext('2d');
-                    switch (filltype) {
-                        case METIMAGEFILLTYPE:
-                        {
-                            var imageObj = new Image();
-                            imageObj.src = nodeDescription.imageFill.rawImageURL;
-                            imageObj.onload = function() {
-                                ctx.save();
-                                setJPath(ctx, jpath);
-                                ctx.clip();
-                                ctx.drawImage(imageObj, 0, 0, ctx.canvas.width, ctx.canvas.height);
-                                ctx.restore();
-                            };
-                        }
-                            break;
-                        case METCOLORFILLTYPE:
-                        case METGRADIENTFILLTYPE:
-                        {
-                            ctx.save();
-                            setJPath(ctx, jpath);
-                            ctx.clip();
-                            ctx.fillStyle = fillColor;
-                            ctx.fill();
-                            ctx.restore();
-                        }
-                            break;
-                    }
-                };
-
-                var _eraseAll = function(){
-                    var ctx = newSurface.getContext('2d');
-                    ctx.save();
-                    ctx.clearRect(0, 0, size[0], size[1]);
-                    ctx.restore();
-                };
-
-                var canvas_tick = 0;
-                var needDraw = false;
-                var fromPos = [];
-
-                // variables for calc cleaned percent
-                var flags = [];
-                var flags_wc = Math.max(20, size[0]);
-                var flags_hc = Math.max(20, size[1]);
-                for (var i = 0; i < flags_wc * flags_hc; i++) flags[i] = false;
-                var _flagCleaned = function(ctx){
-                    var cell_w = size[0] / flags_wc;
-                    var cell_h = size[1] / flags_hc;
-                    for (var i = 0; i < flags.length; i++){
-                        if(flags[i]) continue;
-                        var pt = [(i/flags_wc +.5) * cell_h, (i%flags_wc +.5) * cell_w];
-                        if(ctx.isPointInPath(pt[0], pt[1]))
-                            flags[i] = true;
-                    }
-                };
-                var _checkCleanedPercent = function(){
-                    // check if cleaned enough
-                    var needed = flags.length * percent;
-                    var cleaned = 0;
-                    for (var i = 0; i < flags.length; i++){
-                        if(flags[i]) cleaned++;
-                        if(cleaned >= needed) break;
-                    }
-                    if(cleaned >= needed){
-                        alert("cleaned enough!!!");
-                        _eraseAll();
-                    }
-                };
-
-                newSurface.render = function render() {
-                    var ctx = this.getContext('2d');
-                    if(canvas_tick > 1) return this.id;
-                    if(canvas_tick === 1) _resetAll();
-                    canvas_tick++;
-
-                    return this.id;
-                };
-
-                newSurface.on("mousedown", function(e){
-                    e.preventDefault();
-                    if(canvas_tick <= 1)
-                        return;
-
-                    var _self = newSurface._currentTarget;
-                    var trans = TransformUtils.transformFromElement(_self, document.body);
-                    fromPos = [e.clientX, e.clientY];
-                    fromPos = TransformUtils.pointApplyTransform(fromPos, trans);
-                    needDraw = true;
-                });
-                newSurface.on("mousemove", function(e) {
-                    e.preventDefault();
-                    if (!needDraw)
-                        return;
-
-                    var _self = newSurface._currentTarget;
-                    var trans = TransformUtils.transformFromElement(_self, document.body);
-                    var toPos = [e.clientX, e.clientY];
-                    toPos = TransformUtils.pointApplyTransform(toPos, trans);
-
-                    var ctx = newSurface.getContext('2d');
-
-                    ctx.save();
-                    ctx.beginPath();
-
-                    var angle = Math.atan2(toPos[1] - fromPos[1], toPos[0] - fromPos[0]);
-                    ctx.arc(fromPos[0], fromPos[1], radius, angle - Math.PI/2, angle + Math.PI/2, true);
-                    ctx.arc(toPos[0], toPos[1], radius, angle - Math.PI*3/2, angle - Math.PI/2, true);
-                    ctx.closePath();
-
-                    // flag cleaned info
-                    _flagCleaned(ctx);
-
-                    ctx.clip();
-                    ctx.clearRect(Math.min(fromPos[0], toPos[0]) - radius, Math.min(fromPos[1], toPos[1]) - radius, Math.abs(toPos[0] - fromPos[0]) + radius * 2, Math.abs(toPos[1] - fromPos[1]) + radius * 2);
-                    ctx.restore();
-
-                    fromPos = toPos;
-                });
-                newSurface.on("mouseout", function(e) {
-                    e.preventDefault();
-
-                    if(!needDraw) return;
-                    needDraw = false;
-                    // check if cleaned enough
-                    _checkCleanedPercent();
-                });
-                newSurface.on("mouseup", function(e) {
-                    e.preventDefault();
-                    needDraw = false;
-                    // check if cleaned enough
-                    _checkCleanedPercent();
-                });
             }
             else if (filltype === METIMAGEFILLTYPE) {
-                newSurface = new ImageSurface({
+                // get imageRect
+                //"imageRect" : "{{-850.35943603515625, -0.00079511082731187344}, {1616.3837890625, 1048.1239013671875}}",
+                var ir = nodeDescription.imageFill.imageRect;
+                ir = ir.replace(/[\{\}]/g, "");
+                ir = ir.split(",");
+                if(!ir instanceof Array)
+                    ir = [0, 0, size[0], size[1]];
+                else
+                    for(var i = 0; i < ir.length; i++) ir[i] = Number(ir[i]);
+
+                newSurface = new Surface({
                     size: size,
-                    content: nodeDescription.imageFill.rawImageURL,
-                    //properties: {
-                    //    backgroundColor: fillColor
-                    //},
-                    classes: classes
+                    content: "",
+                    classes: classes,
+                    properties: {
+                        backgroundImage: TextUtils.sprintf("url('zres/%s')", nodeDescription.imageFill.rawImageURL),
+                        backgroundRepeat: "no-repeat",
+                        backgroundAttachment: "relative",
+                        backgroundPosition: TextUtils.sprintf("%dpx %dpx", ir[0], ir[1]),
+                        backgroundSize: TextUtils.sprintf("%dpx %dpx", ir[2], ir[3]),
+                    }
                 });
             }
             else {
@@ -400,7 +286,7 @@ define(function(require, exports, module) {
         }
 
         if(type === "VideoNode") {
-            var videoURL = nodeDescription.videoURL;
+            var videoURL = "zres/" + nodeDescription.videoURL;
             newSurface = new Surface({
                 //src: videoURL,
                 size: size,
@@ -421,7 +307,7 @@ define(function(require, exports, module) {
                 videoParam += " poster=" + "image/BBB_480_Poster.jpg";
             }
 
-            newSurface.setContent(videoParam + " src=\"" + videoURL + "\" width=" + size[0]+ "px" + " height=" + size[1]+ "px" + " </video>");
+            newSurface.setContent(videoParam + " src=\"zres/" + videoURL + "\" width=" + size[0]+ "px" + " height=" + size[1]+ "px" + " </video>");
 
             newSurface.on("click", function() {
                 var video = document.getElementById(video_dom_id);
@@ -539,7 +425,356 @@ define(function(require, exports, module) {
 
         newNode.addSurface(newSurface);
 
+        // Interaction parts
+        for(var k in nodeActions){
+            var obj = nodeActions[k];
+            // 播放(autoplay)
+            if(MetNodeAction.MetNodeActionTypeAuto == obj.actionType){
+            }
+            // 点击(tap)
+            else if(MetNodeAction.MetNodeActionTypeTap == obj.actionType){
+            }
+            // 双击(doubleTap)
+            else if(MetNodeAction.MetNodeActionTypeDoubleTap == obj.actionType){
+            }
+            // 长按(longTap)
+            else if(MetNodeAction.MetNodeActionTypeLongTap == obj.actionType){
+            }
+            // 缩放(zoom)
+            else if(MetNodeAction.MetNodeActionTypeZoom == obj.actionType){
+            }
+            // 拖拽(drag)
+            else if(MetNodeAction.MetNodeActionTypeDrag == obj.actionType){
+                var act = obj;
+                var fromX = Math.min(act.f1, act.f2), toX = Math.max(act.f1, act.f2);
+                var fromY = Math.min(act.f3, act.f4), toY = Math.max(act.f3, act.f4);
+                var dir = act.i1; // TODO: 处理方向相关
 
+                var fromPos = null, toPos = [];
+
+                // down
+                var _on_down = function(e){
+                    e.preventDefault();
+                    fromPos = [e.clientX || e.changedTouches[0].clientX, e.clientY || e.changedTouches[0].clientY];
+                };
+                newSurface.on("mousedown", _on_down);
+                newSurface.on("touchstart", _on_down);
+
+                // move
+                var _on_move = function(e) {
+                    e.preventDefault();
+                    if(null == fromPos)
+                        return;
+                    toPos = [e.clientX || e.changedTouches[0].clientX, e.clientY || e.changedTouches[0].clientY];
+
+                    var delta = [toPos[0] - fromPos[0], toPos[1] - fromPos[1]];
+                    var _self = newSurface._currentTarget;
+                    var trans = TransformUtils.transformFromElement(_self, document.body);
+                    delta = TransformUtils.vectorApplyTransform(delta, trans);
+
+                    var me_trans = Transform.rotateZ(newNode.rotationZ);
+                    delta = TransformUtils.vectorApplyTransform(delta, me_trans);
+
+                    var px = newNode.xPosition * newNode.containerSize[0] + delta[0];
+                    var py = newNode.yPosition * newNode.containerSize[1] + delta[1];
+                    if(px < fromX) px = fromX; else if(px > toX) px = toX;
+                    if(py < fromY) py = fromY; else if(py > toY) py = toY;
+                    newNode.xPosition = px/newNode.containerSize[0];
+                    newNode.yPosition = py/newNode.containerSize[1];
+
+                    fromPos = toPos;
+                };
+                newSurface.on("mousemove", _on_move);
+                newSurface.on("touchmove", _on_move);
+
+                // up
+                var _on_up = function(e) {
+                    e.preventDefault();
+                    if(null != fromPos){
+                        act.executePerforms();
+                    }
+                    fromPos = null;
+                };
+                newSurface.on("mouseout", _on_up);
+                newSurface.on("touchcancel", _on_up);
+                newSurface.on("mouseup", _on_up);
+                newSurface.on("touchend", _on_up);
+            }
+            // 滚动
+            else if(MetNodeAction.MetNodeActionTypeScroll == obj.actionType){
+            }
+            // 猛滑
+            else if(MetNodeAction.MetNodeActionTypeSlide == obj.actionType){
+                var act = obj;
+                var toX = act.f2, toY = act.f4;
+                var dir = act.i1; // TODO: 处理方向相关
+                var easing = act.i2;
+                var fromPos = null, toPos = [];
+
+                // down
+                var _on_down = function(e){
+                    e.preventDefault();
+                    fromPos = [e.clientX || e.changedTouches[0].clientX, e.clientY || e.changedTouches[0].clientY];
+                };
+                newSurface.on("mousedown", _on_down);
+                newSurface.on("touchstart", _on_down);
+
+                // move
+                var _on_move = function(e) {
+                    e.preventDefault();
+                    if(null == fromPos)
+                        return;
+                    toPos = [e.clientX || e.changedTouches[0].clientX, e.clientY || e.changedTouches[0].clientY];
+
+                    var delta = [toPos[0] - fromPos[0], toPos[1] - fromPos[1]];
+                    var _self = newSurface._currentTarget;
+                    var trans = TransformUtils.transformFromElement(_self, document.body);
+                    delta = TransformUtils.vectorApplyTransform(delta, trans);
+
+                    var me_trans = Transform.rotateZ(newNode.rotationZ);
+                    delta = TransformUtils.vectorApplyTransform(delta, me_trans);
+
+                    newNode.xPosition += delta[0]/newNode.containerSize[0];
+                    newNode.yPosition += delta[1]/newNode.containerSize[1];
+
+                    fromPos = toPos;
+                };
+                newSurface.on("mousemove", _on_move);
+                newSurface.on("touchmove", _on_move);
+
+                // up
+                var _on_up = function(e) {
+                    e.preventDefault();
+                    if(null != fromPos){
+                        var fromPosition = [newNode.xPosition, newNode.yPosition];
+                        var toPosition = [toX/newNode.containerSize[0], toY/newNode.containerSize[1]];
+                        var ef = EasingUtils.easingFuncBy(easing);
+                        var ticks = 20;
+                        for(var i = 0; i < ticks; i++) {
+                            var process = ef((i + 1)/ticks);
+                            var pos = [
+                                fromPosition[0] + (toPosition[0] - fromPosition[0]) * process,
+                                fromPosition[1] + (toPosition[1] - fromPosition[1]) * process,
+                            ];
+                            Timer.after(
+                                function (finished) {
+                                    newNode.xPosition = this.pos[0];
+                                    newNode.yPosition = this.pos[1];
+                                    if(finished){
+                                        act.executePerforms();
+                                    }
+                                }.bind({"pos":pos}, i === ticks - 1),
+                                i
+                            );
+                        }
+                    }
+                    fromPos = null;
+                };
+                newSurface.on("mouseout", _on_up);
+                newSurface.on("touchcancel", _on_up);
+                newSurface.on("mouseup", _on_up);
+                newSurface.on("touchend", _on_up);
+            }
+            // 涂抹
+            else if(MetNodeAction.MetNodeActionTypeErase == obj.actionType){
+                var act = obj;
+                var radius = Math.floor(act.f1);
+                var percent = act.f2;
+
+                var _resetAll = function(){
+                    var ctx = newSurface.getContext('2d');
+                    switch (filltype) {
+                        case METIMAGEFILLTYPE:
+                        {
+                            var imageObj = new Image();
+                            imageObj.src = "zres/" + nodeDescription.imageFill.rawImageURL;
+                            imageObj.onload = function() {
+                                ctx.save();
+                                setJPath(ctx, jpath);
+                                ctx.clip();
+                                ctx.drawImage(imageObj, 0, 0, ctx.canvas.width, ctx.canvas.height);
+                                ctx.restore();
+                            };
+                        }
+                            break;
+                        case METCOLORFILLTYPE:
+                        case METGRADIENTFILLTYPE:
+                        {
+                            ctx.save();
+                            setJPath(ctx, jpath);
+                            ctx.clip();
+                            ctx.fillStyle = fillColor;
+                            ctx.fill();
+                            ctx.restore();
+                        }
+                            break;
+                    }
+                };
+
+                var _eraseAll = function(){
+                    var ctx = newSurface.getContext('2d');
+                    ctx.save();
+                    ctx.clearRect(0, 0, size[0], size[1]);
+                    ctx.restore();
+                };
+
+                var canvas_tick = 0;
+                var needDraw = false;
+                var finished = false;
+                var fromPos = [];
+
+                var _checkCleanedPercent = function(ctx){
+                    if(finished)
+                        return;
+                    var cw = ctx.canvas.width, ch = ctx.canvas.height;
+                    var data = ctx.getImageData(0, 0, cw, ch);
+                    data = data.data;
+                    // check if cleaned enough
+                    var needed = cw * ch * percent;
+                    var cleaned = 0;
+                    for (var i = 0; i < data.length; i += 4){
+                        if(data[i + 3] === 0) cleaned++;
+                        if(cleaned >= needed) break;
+                    }
+                    if(cleaned >= needed){
+                        finished = true;
+                        _eraseAll();
+                        act.executePerforms();
+                    }
+                };
+
+                newSurface.render = function render() {
+                    var ctx = this.getContext('2d');
+                    if(canvas_tick > 1) return this.id;
+                    if(canvas_tick === 1) _resetAll();
+                    canvas_tick++;
+
+                    return this.id;
+                };
+
+                // down
+                var _on_down = function(e){
+                    e.preventDefault();
+                    if(canvas_tick <= 1)
+                        return;
+
+                    var _self = newSurface._currentTarget;
+                    var trans = TransformUtils.transformFromElement(_self, document.body);
+                    fromPos = [e.clientX || e.changedTouches[0].clientX, e.clientY || e.changedTouches[0].clientY];
+                    fromPos = TransformUtils.pointApplyTransform(fromPos, trans);
+                    needDraw = true;
+                };
+                newSurface.on("mousedown", _on_down);
+                newSurface.on("touchstart", _on_down);
+
+                // move
+                var _on_move = function(e) {
+                    e.preventDefault();
+                    if (!needDraw)
+                        return;
+
+                    var _self = newSurface._currentTarget;
+                    var trans = TransformUtils.transformFromElement(_self, document.body);
+                    var toPos = [e.clientX || e.changedTouches[0].clientX, e.clientY || e.changedTouches[0].clientY];
+                    toPos = TransformUtils.pointApplyTransform(toPos, trans);
+
+                    var ctx = newSurface.getContext('2d');
+
+                    ctx.save();
+                    ctx.beginPath();
+
+                    var angle = Math.atan2(toPos[1] - fromPos[1], toPos[0] - fromPos[0]);
+                    ctx.arc(fromPos[0], fromPos[1], radius, angle - Math.PI/2, angle + Math.PI/2, true);
+                    ctx.arc(toPos[0], toPos[1], radius, angle - Math.PI*3/2, angle - Math.PI/2, true);
+                    ctx.closePath();
+
+                    ctx.clip();
+                    ctx.clearRect(Math.min(fromPos[0], toPos[0]) - radius, Math.min(fromPos[1], toPos[1]) - radius, Math.abs(toPos[0] - fromPos[0]) + radius * 2, Math.abs(toPos[1] - fromPos[1]) + radius * 2);
+                    ctx.restore();
+
+                    fromPos = toPos;
+                };
+                newSurface.on("mousemove", _on_move);
+                newSurface.on("touchmove", _on_move);
+
+                // cancel
+                var _on_cancel = function(e) {
+                    e.preventDefault();
+
+                    if(!needDraw) return;
+                    needDraw = false;
+                    // check if cleaned enough
+                    var ctx = newSurface.getContext('2d');
+                    _checkCleanedPercent(ctx);
+                };
+                newSurface.on("mouseout", _on_cancel);
+                newSurface.on("touchcancel", _on_cancel);
+
+                // up
+                var _on_up = function(e) {
+                    e.preventDefault();
+                    needDraw = false;
+                    // check if cleaned enough
+                    var ctx = newSurface.getContext('2d');
+                    _checkCleanedPercent(ctx);
+                };
+                newSurface.on("mouseup", _on_up);
+                newSurface.on("touchend", _on_up);
+            }
+            // 重力感应(gravity)
+            else if(MetNodeAction.MetNodeActionTypeGravity == obj.actionType){
+                if(!window.DeviceMotionEvent) {
+                    alert('亲，你的浏览器不支持DeviceMotionEvent哦~');
+                    continue;
+                }
+
+                var act = obj;
+                var fromX = Math.min(act.f1, act.f2), toX = Math.max(act.f1, act.f2);
+                var fromY = Math.min(act.f3, act.f4), toY = Math.max(act.f3, act.f4);
+                var gravity = act.f5;
+
+                var px = newNode.xPosition * newNode.containerSize[0];
+                var py = newNode.yPosition * newNode.containerSize[1];
+
+                var physics = new PhysicsEngine();
+                var rectBody = new Rectangle({
+                    position: [px, py, 0],
+                    size: size,
+                });
+                physics.addBody(rectBody);
+
+                var wallConstraint = new Walls({
+                    size:[toX - fromX, toY - fromY],
+                });
+                var gravity = new VectorField({
+                    strength: 0.0001,
+                    direction: [0, 0, 0],
+                    field: VectorField.FIELDS.LINEAR,
+                });
+                physics.attach([wallConstraint, gravity], rectBody);
+
+                Timer.every(function () {
+                    var modifier = newNode.baseModifier;
+                    if(modifier){
+                        modifier.setTransform(rectBody.getTransform());
+                    }
+                }, 60);
+
+                var _on_device_motion = function(eventData){
+                    var acceleration = eventData.accelerationIncludingGravity;
+                    var facingUp = -1;
+                    if (acceleration.z > 0) {
+                        facingUp = +1;
+                    }
+                    var tiltLR = Math.round(((acceleration.x) / 9.81) * -90);
+                    var tiltFB = Math.round(((acceleration.y + 9.81) / 9.81) * 90 * facingUp);
+
+                    var rotation = "rotate(" + tiltLR + "deg) rotate3d(1,0,0, " + (tiltFB) + "deg)";
+                    newSurface.setContent(rotation);
+                };
+                window.addEventListener('devicemotion', _on_device_motion, false);
+            }
+        }
 
         // for textNode use an extra surface to show border
         if(type == "TextNode" && null != stroke) {

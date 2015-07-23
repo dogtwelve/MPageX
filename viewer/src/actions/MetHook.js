@@ -61,5 +61,11 @@ define(function (require, exports, module) {
         this.target.mutual = dic.target.mutual || false;
     };
 
+    MetHook.prototype.execute = function(){
+        if(MetPerform.MetNodeActionPerformNone == this.performType)
+            return;
+        alert("hook fired!! LOL!!!");
+    }
+
     module.exports = MetHook;
 });

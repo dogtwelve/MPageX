@@ -123,21 +123,7 @@ define(function(require, exports, module) {
 
         var root = this.add(new Modifier({size: this.size})).add(this.modifierChain);
 
-        //var classes = ['z2', 'backfaceVisibility'];
-        //if (this.mainSurface === undefined) {
-        //    this.mainSurface = new Surface({
-        //        size: this.size,
-        //        //classes: classes,
-        //        //properties: {
-        //        //    border: '1px dashed rgb(210, 208, 203)'
-        //        //}
-        //    });
-        //}
-
         if (this.mainSurface) {
-            //for(var holder in holdersSync) {
-            //    this.mainSurface.pipe(holdersSync[holder]);
-            //}
 
             this._eventOutput.subscribe(this.mainSurface);
             //this.mainSurface.pipe(rootParent._eventOutput);
@@ -183,16 +169,6 @@ define(function(require, exports, module) {
         if(this.containerSurface) {
             root.add(this.containerSurface);
         }
-
-        //if (!this.mainSurface) {
-        //    this.mainSurface = new Surface({
-        //        size: this.size,
-        //        //classes: classes,
-        //        ////properties: {
-        //        ////    border: '1px dashed rgb(210, 208, 203)'
-        //        ////}
-        //    });
-        //}
 
         if (this.mainSurface) {
             //for(var holder in holdersSync) {
@@ -337,7 +313,6 @@ define(function(require, exports, module) {
                 //        }.bind(this),
                 //        this.stateShowElapsed);
                 //}
-
             }.bind(this));
         }
         //this.curStateIdx = (this.curStateIdx + 1) % subMetNodes.length;
@@ -386,11 +361,10 @@ define(function(require, exports, module) {
             }
         );
 
-        DebugUtils.log(this.name +
-            //" Pos(" + UnitConverter.ratioXtoPixels(newNode.xPosition, containerSize[0]) + "," + UnitConverter.ratioXtoPixels(newNode.yPosition + containerSize[1]) + ") " +
-        " Size(" + this.size[0] + "," + this.size[1] + ") " +
-        " zPosition=" + this.zPosition +
-        " id_=" + this.metNodeId);
+        //DebugUtils.log(this.name +
+        //" Size(" + this.size[0] + "," + this.size[1] + ") " +
+        //" zPosition=" + this.zPosition +
+        //" id_=" + this.metNodeId);
 
     };
 
@@ -545,7 +519,7 @@ define(function(require, exports, module) {
                 //}
                 //
                 //this.pageViewPos.set(Math.max(0, currentPosition + data.delta));
-                DebugUtils.log("MetStateNode update " + data.velocity);
+                //DebugUtils.log("MetStateNode update " + data.velocity);
             }.bind(this));
 
             sync.on('update', function(data) {
@@ -555,7 +529,7 @@ define(function(require, exports, module) {
                 //}
                 //
                 //this.pageViewPos.set(Math.max(0, currentPosition + data.delta));
-                DebugUtils.log("MetStateNode update " + data.velocity);
+                //DebugUtils.log("MetStateNode update " + data.velocity);
             }.bind(this));
 
             sync.on('end', (function(data) {
@@ -587,7 +561,7 @@ define(function(require, exports, module) {
                 }
 
 
-                DebugUtils.log("MetStateNode end " + velocity);
+                //DebugUtils.log("MetStateNode end " + velocity);
             }).bind(this));
         } else {
             this.on('click', function(data) {

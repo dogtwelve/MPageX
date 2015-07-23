@@ -96,7 +96,7 @@ define(function(require, exports, module) {
             dampingRatio: this.options.edgeDamp
         });
         this.drag = new Drag({
-            forceFunction: Drag.FORCE_FUNCTIONS.LINEAR,
+            forceFunction: Drag.FORCE_FUNCTIONS.QUADRATIC,
             strength: this.options.drag
         });
         this.friction = new Drag({
@@ -222,6 +222,7 @@ define(function(require, exports, module) {
 
     function _bindEvents() {
         this._eventInput.bindThis(this);
+
         this._eventInput.on('start', _handleStart);
         this._eventInput.on('update', _handleMove);
         this._eventInput.on('end', _handleEnd);

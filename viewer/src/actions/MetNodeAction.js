@@ -147,5 +147,13 @@ define(function (require, exports, module) {
         return null;
     }
 
+    MetNodeAction.prototype.executePerforms = function(){
+        var pfs = this.peforms;
+        for(var k in pfs){
+            var pf = pfs[k];
+            pf.execute();
+        }
+    }
+
     module.exports = MetNodeAction;
 });

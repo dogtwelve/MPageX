@@ -16,13 +16,13 @@ define(function(require, exports, module) {
     var Utility               = require("famous/utilities/Utility");
     var MetScrollview          = require('container/MetScrollview');
     var MetLightbox            = require('container/MetLightbox');
-    var MetEdgeSwapper            = require('container/MetEdgeSwapper');
-    var MetFlipper            = require('container/MetFlipper');
     var UnitConverter       = require('tools/UnitConverter');
     var MotionPath          = require('utils/MotionPath');
     var KeyFrameAnim        = require('animations/KeyFrameAnim');
     var DebugUtils          = require('utils/DebugUtils');
     var StageView          = require('views/StageView');
+
+    var TransitionUtils = require('utils/TransitionUtils');
 
     function MetNodeView() {
         View.apply(this, arguments);
@@ -264,58 +264,17 @@ define(function(require, exports, module) {
     };
 
     MetNodeView.prototype.showState = function() {
-        var subMetNodes = this.metNodes;
-
-        if(
-            this.nodeDesc.transition === 4 ||
-            this.nodeDesc.transition === 5
-        ) {
-            this.stateViewPlayer.setFront(subMetNodes[this.curStateIdx]);
-            this.stateViewPlayer.setBack(subMetNodes[this.curStateIdx + 1]);
-            //this.toggle = false;
-            //if(!this.stateTimer) {
-            //    this.stateTimer = Timer.setInterval(
-            //        function () {
-            //            var angle = this.toggle ? 0 : Math.PI;
-            //            this.curStateIdx = (this.curStateIdx + 1) % subMetNodes.length;
-            //            this.stateViewPlayer.setAngle(angle, {duration: 500}, function () {
-            //                    if (this.toggle) {
-            //                        this.stateViewPlayer.setFront(subMetNodes[this.curStateIdx]);
-            //                    } else {
-            //                        this.stateViewPlayer.setBack(subMetNodes[this.curStateIdx]);
-            //                    }
-            //                    this.resetMetNodePosAdjustZ();
-            //                }.bind(this));
-            //            this.toggle = !this.toggle;
-            //            this.setMetNodePosAdjustZ(this.zPosition);
-            //        }.bind(this), this.stateShowElapsed);
-            //}
-
-            var angle = this.toggle ? 0 : Math.PI;
-
-            this.stateViewPlayer.setAngle(angle, {duration: 500}, function () {
-                this.curStateIdx = (this.curStateIdx + 1) % subMetNodes.length;
-                if (this.toggle) {
-                    this.stateViewPlayer.setFront(subMetNodes[this.curStateIdx]);
-                } else {
-                    this.stateViewPlayer.setBack(subMetNodes[this.curStateIdx]);
-                }
-                //this.resetMetNodePosAdjustZ();
-            }.bind(this));
-            this.toggle = !this.toggle;
-            this.setMetNodePosAdjustZ(this.zPosition);
-        } else {
-            this.stateViewPlayer.show(subMetNodes[this.curStateIdx], function() {
-                //if(!this.stateTimer) {
-                //    this.stateTimer = Timer.setInterval(
-                //        function(){
-                //            this.showState();
-                //        }.bind(this),
-                //        this.stateShowElapsed);
-                //}
-            }.bind(this));
+        var originStateKeyframe = this.stateViewPlayer.renderables[this.stateViewPlayer.renderables.length - 1];
+        var stateKeyframe = this.metNodes[this.curStateIdx];
+        this.stateViewPlayer.show(stateKeyframe, null, null);
+        if(!this.stateViewPlayer.options.together)
+            this.stateViewPlayer.hide(originStateKeyframe, null, function(){
+                this.stateViewPlayer.show(stateKeyframe, null, null);
+            });
+        else {
+            this.stateViewPlayer.hide(originStateKeyframe, null, null);
+            this.stateViewPlayer.show(stateKeyframe, null, null);
         }
-        //this.curStateIdx = (this.curStateIdx + 1) % subMetNodes.length;
     };
 
     MetNodeView.prototype.showNextState = function() {
@@ -389,67 +348,8 @@ define(function(require, exports, module) {
             origin : [0.5, 0.5]
         });
 
-
-        if(this.nodeDesc.transition === 0) {
-            //instant
-            this.stateViewPlayer = new RenderController({
-                inTransition: false,
-                outTransition: false,
-                overlap: false
-            });
-            this.containerSurface.add(this.stateViewPlayer);
-        } else if(this.nodeDesc.transition === 1) {
-            this.stateViewPlayer = new MetLightbox({
-                inOpacity: 1,
-                outOpacity: 0,
-                inOrigin: [0.5, 0.5],
-                outOrigin: [0.5, 0.5],
-                showOrigin: [0.5, 0.5],
-                inTransform: Transform.thenMove(Transform.rotateX(0.0), [0, 0, 0]),
-                outTransform: Transform.thenMove(Transform.rotateZ(0.0), [0, 0, 0]),
-                inTransition: { duration: 500, curve: 'easeOut' },
-                outTransition: { duration: 500, curve: 'easeOut' }
-            });
-            this.containerSurface.add(this.stateViewPlayer);
-        } else if(this.nodeDesc.transition === 2) {
-            this.stateViewPlayer = new MetLightbox({
-                inOpacity: 1,
-                outOpacity: 1,
-                inOrigin: [0.5, 0.5],
-                outOrigin: [0.5, 0.5],
-                showOrigin: [0.5, 0.5],
-                inTransform: Transform.thenMove(Transform.rotateX(0.0), [this.size[0], 0, 0]),
-                outTransform: Transform.thenMove(Transform.rotateZ(0.0), [-this.size[0], 0, 0]),
-                inTransition: {duration: 500, curve: 'easeOut'},
-                outTransition: {duration: 500, curve: 'easeOut'}
-            });
-            this.containerSurface.add(this.stateViewPlayer);
-        } else if(this.nodeDesc.transition === 3) {
-            this.stateViewPlayer = new MetLightbox({
-                inOpacity: 1,
-                outOpacity: 1,
-                inOrigin: [0.5, 0.5],
-                outOrigin: [0.5, 0.5],
-                showOrigin: [0.5, 0.5],
-                inTransform: Transform.thenMove(Transform.rotateX(0.0), [0, -this.size[1], 0]),
-                outTransform: Transform.thenMove(Transform.rotateZ(0.0), [0, this.size[1], 0]),
-                inTransition: {duration: 500, curve: 'easeOut'},
-                outTransition: {duration: 500, curve: 'easeOut'}
-            });
-            this.containerSurface.add(this.stateViewPlayer);
-        } else if(this.nodeDesc.transition === 4) {
-            this.stateViewPlayer = new MetFlipper({direction: MetFlipper.DIRECTION_X});
-            this.containerSurface.add(this.stateViewPlayer);
-        } else if(this.nodeDesc.transition === 5) {
-            this.stateViewPlayer = new MetFlipper({direction: MetFlipper.DIRECTION_Y});
-            this.containerSurface.add(this.stateViewPlayer);
-        } else if(this.nodeDesc.transition === 6) {
-            this.stateViewPlayer = new MetLightbox();
-            this.containerSurface.add(this.stateViewPlayer);
-        } else {
-            this.stateViewPlayer = new MetEdgeSwapper();
-            this.containerSurface.add(this.stateViewPlayer);
-        }
+        this.stateViewPlayer = new MetLightbox(TransitionUtils.synthesizeLightBoxOptions(this.nodeDesc.transition, this.size, [1, 1]));
+        this.containerSurface.add(this.stateViewPlayer);
         return subRoot;
     }
 

@@ -48,7 +48,7 @@ define(function(require, exports, module) {
 
         if (options) this.setOptions(options);
 
-        this._showing = false;
+        this.renderables = [];
         this.nodes = [];
         this.transforms = [];
         this.states = [];
@@ -69,7 +69,6 @@ define(function(require, exports, module) {
         showAlign: [0.5, 0.5],
         inTransition: true,
         outTransition: true,
-        overlap: false,
         together: false,
     };
 
@@ -88,27 +87,13 @@ define(function(require, exports, module) {
      *  execute afterwards.
      * @method show
      * @param {Object} renderable The renderable you want to show.
-     * @param {Transition} [transition] Overwrites the default transition in to display the
+     * @param {Transition} transition Overwrites the default transition in to display the
      * passed-in renderable.
-     * @param {function} [callback] Executes after transitioning in the renderable.
+     * @param {function} callback Executes after transitioning in the renderable.
      */
     MetLightbox.prototype.show = function show(renderable, transition, callback) {
-        if (!renderable) {
-            return this.hide(callback);
-        }
-
-        if (transition instanceof Function) {
-            callback = transition;
-            transition = undefined;
-        }
-
-        if (this._showing) {
-            if (this.options.overlap) this.hide();
-            else {
-                return this.hide(this.show.bind(this, renderable, transition, callback));
-            }
-        }
-        this._showing = true;
+        if (!renderable)
+            return this.hide(null, null, callback);
 
         var stateItem = {
             transform: new TransitionableTransform(this.options.inTransform),
@@ -125,6 +110,7 @@ define(function(require, exports, module) {
         });
         var node = new RenderNode();
         node.add(transform).add(renderable);
+        this.renderables.push(renderable);
         this.nodes.push(node);
         this.states.push(stateItem);
         this.transforms.push(transform);
@@ -141,36 +127,43 @@ define(function(require, exports, module) {
     /**
      * Hide hides the currently displayed renderable with an out transition.
      * @method hide
-     * @param {Transition} [transition] Overwrites the default transition in to hide the
+     * @param {Object} renderable The renderable you want to hide.
+     * @param {Transition} transition Overwrites the default transition in to hide the
      * currently controlled renderable.
-     * @param {function} [callback] Executes after transitioning out the renderable.
+     * @param {function} callback Executes after transitioning out the renderable.
      */
-    MetLightbox.prototype.hide = function hide(transition, callback) {
-        if (!this._showing) return;
-        this._showing = false;
-
-        if (transition instanceof Function) {
-            callback = transition;
-            transition = undefined;
+    MetLightbox.prototype.hide = function hide(renderable, transition, callback) {
+        var index = -1;
+        if(!renderable){
+            if(this.renderables.length > 0) {
+                index = this.renderables.length - 1;
+                renderable = this.renderables[index];
+            }
         }
 
-        var node = this.nodes[this.nodes.length - 1];
-        var transform = this.transforms[this.transforms.length - 1];
-        var stateItem = this.states[this.states.length - 1];
-        var right_now = this.options.together;
+        if(!renderable){
+            if (callback) callback.call(this);
+            return;
+        }
+
+        if(index == -1)
+            index = this.renderables.indexOf(renderable);
+        if(index == -1){
+            if (callback) callback.call(this);
+            return;
+        }
+
+        var node = this.nodes[index];
+        var transform = this.transforms[index];
+        var stateItem = this.states[index];
 
         var _cb = Utility.after(3, function() {
+            this.renderables.splice(this.renderables.indexOf(renderable), 1);
             this.nodes.splice(this.nodes.indexOf(node), 1);
             this.states.splice(this.states.indexOf(stateItem), 1);
             this.transforms.splice(this.transforms.indexOf(transform), 1);
-            if(!right_now) {
-                if (callback) callback.call(this);
-            }
-        }.bind(this));
-
-        if(right_now) {
             if (callback) callback.call(this);
-        }
+        }.bind(this));
 
         if (!transition) transition = this.options.outTransition;
         stateItem.transform.set(this.options.outTransform, transition, _cb);

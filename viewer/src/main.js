@@ -4,16 +4,14 @@ define(function(require, exports, module) {
     // import dependencies
     var Engine = require('famous/core/Engine');
     var Utility = require('famous/utilities/Utility');
-    var Modifier = require('famous/core/Modifier');
-    var Transform = require('famous/core/Transform');
-    var View = require('famous/core/View');
+
     var Surface = require('famous/core/Surface');
     var ImageSurface = require('famous/surfaces/ImageSurface');
-    var Easing = require('famous/transitions/Easing');
     var MetLightbox = require("container/MetLightbox");
 
     var StageView = require('views/StageView');
     var Director = require('tools/Director');
+    var TransitionUtils = require('utils/TransitionUtils');
     var DebugUtils = require('utils/DebugUtils');
 
     var director = new Director();
@@ -31,82 +29,7 @@ define(function(require, exports, module) {
     // current index in sections(level-2 pages)
     var currentSection = window._initSection || 0;
 
-    function _synthesizeLightBoxOptions(transition, page_size){
-        var options = {
-            inOpacity: 1,
-            outOpacity: 1,
-            inOrigin: [0.5, 0.5],
-            outOrigin: [0.5, 0.5],
-            showOrigin: [0.5, 0.5],
-            inTransform: Transform.identity,
-            outTransform: Transform.identity,
-            inTransition: {duration: 500, curve: Easing.outQuad},
-            outTransition: {duration: 500, curve: Easing.outQuad},
-        }
-        // 无 - MetStateNodeContentSlidingStyleNone
-        if(transition === 0)
-            ;
-        // 渐变 - MetStateNodeContentSlidingStyleFade
-        else if(transition === 1) {
-            options.inOpacity = 1;
-            options.outOpacity = 0;
-            options.together = true;
-        }
-        // 纵向吸附 - MetStateNodeContentSlidingStyleStickVertSlide
-        else if(transition === 2) {
-            options.inTransform = Transform.translate(0, page_size[1], 0);
-            options.outTransform = Transform.translate(0, -page_size[1], 0);
-            options.together = true;
-        }
-        // 横向吸附 - MetStateNodeContentSlidingStyleStickHorizSlide
-        else if(transition === 3) {
-            options.inTransform = Transform.translate(page_size[0], 0, 0);
-            options.outTransform = Transform.translate(-page_size[0], 0, 0);
-            options.together = true;
-        }
-        // 3D翻转X - MetStateNodeContentSlidingStyleRotationX
-        else if(transition === 4) {
-            options.inTransform = Transform.rotateX(-Math.PI/2);
-            options.outTransform = Transform.rotateX(Math.PI/2);
-        }
-        // 3D翻转Y - MetStateNodeContentSlidingStyleRotationY
-        else if(transition === 5){
-            options.inTransform = Transform.rotateY(-Math.PI/2);
-            options.outTransform = Transform.rotateY(Math.PI/2);
-        }
-        // 缩放 - MetStateNodeContentSlidingStyleZoom
-        else if(transition === 6) {
-            options.inTransform = Transform.scale(0.001, 0.001, 1);
-            options.outTransform = Transform.scale(0.001, 0.001, 1);
-        }
-        // 弹出 - MetStateNodeContentSlidingStyleBounce
-        else if(transition === 7) {
-            options.inTransform = Transform.scale(0.001, 0.001, 1);
-            options.outTransform = Transform.scale(0.001, 0.001, 1);
-            options.inTransition = {duration: 500, curve: Easing.outBack};
-            options.outTransition = {duration: 500, curve: Easing.inBack};
-        }
-        // 飞驰 - MetStateNodeContentSlidingStyleFly
-        else if(transition === 8) {
-            options.inTransform = Transform.identity;
-            options.outTransform = Transform.translate(0, page_size[1], 0);
-            options.together = true;
-        }
-        // 交换 - MetStateNodeContentSlidingStyleSwitch
-        else if(transition === 9) {
-            options.inTransform = Transform.scale(0, 0, 1);
-            options.outTransform = Transform.scale(0, 0, 1);
-        }
-        // 覆盖 - MetStateNodeContentSlidingStyleSync
-        else if(transition === 10) {
-            options.inTransform = Transform.translate(0, -page_size[1], 0);
-            options.outTransform = Transform.identity;
-            options.together = true;
-        }
-
-        return options;
-    }
-    var renderController = new MetLightbox(_synthesizeLightBoxOptions(0, [0, 0]));
+    var renderController = new MetLightbox(TransitionUtils.synthesizeLightBoxOptions(0, [0, 0]));
 
     function __resizeMetView(){
         var contextContainer = document.getElementById("met-view");
@@ -218,11 +141,19 @@ define(function(require, exports, module) {
         }
     }
 
-    function _showPages(){
+    function _showPages(together){
         var currentPage = _getPageAt(currentChapter, currentSection);
         var pageView = createPageView(currentPage);
 
-        renderController.show(pageView, null, null);
+        var originPageView = renderController.renderables[renderController.renderables.length - 1];
+        if(!together)
+            renderController.hide(originPageView, null, function(){
+                renderController.show(pageView, null, null);
+            });
+        else {
+            renderController.hide(originPageView, null, null);
+            renderController.show(pageView, null, null);
+        }
     }
 
     function initApp(data){
@@ -234,15 +165,15 @@ define(function(require, exports, module) {
 		// asynscronized load chapters, will trigger a serials operation about loading pages
         _loadChapters(arr);
 
-        Engine.on("click", function(e){
+        Engine.on("dblclick", function(e){
             var vsize = context.getSize();
             var csize = [project.width, project.height];
             var dims = StageView.getPageContainerDims(vsize[0], vsize[1], csize[0], csize[1]);
 
             currentChapter = (currentChapter + 1) % arr.length;
-            var options = _synthesizeLightBoxOptions(9, [dims[0], dims[1]]);
+            var options = TransitionUtils.synthesizeLightBoxOptions(4, [dims[0], dims[1]], [1, 1]);
             renderController.setOptions(options);
-            _showPages();
+            _showPages(options.together);
         });
     }
 

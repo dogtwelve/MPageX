@@ -40,7 +40,7 @@ define(function(require, exports, module) {
             showOrigin: [0.5, 0.5],
             inTransform: Transform.identity,
             outTransform: Transform.identity,
-            inTransition: {duration: 500, curve: Easing.inQuad},
+            inTransition: {duration: 500, curve: Easing.outQuad},
             outTransition: {duration: 500, curve: Easing.outQuad},
         }
         // 无 - MetStateNodeContentSlidingStyleNone
@@ -50,16 +50,19 @@ define(function(require, exports, module) {
         else if(transition === 1) {
             options.inOpacity = 1;
             options.outOpacity = 0;
+            options.together = true;
         }
         // 纵向吸附 - MetStateNodeContentSlidingStyleStickVertSlide
         else if(transition === 2) {
             options.inTransform = Transform.translate(0, page_size[1], 0);
             options.outTransform = Transform.translate(0, -page_size[1], 0);
+            options.together = true;
         }
         // 横向吸附 - MetStateNodeContentSlidingStyleStickHorizSlide
         else if(transition === 3) {
             options.inTransform = Transform.translate(page_size[0], 0, 0);
             options.outTransform = Transform.translate(-page_size[0], 0, 0);
+            options.together = true;
         }
         // 3D翻转X - MetStateNodeContentSlidingStyleRotationX
         else if(transition === 4) {
@@ -87,6 +90,7 @@ define(function(require, exports, module) {
         else if(transition === 8) {
             options.inTransform = Transform.identity;
             options.outTransform = Transform.translate(0, page_size[1], 0);
+            options.together = true;
         }
         // 交换 - MetStateNodeContentSlidingStyleSwitch
         else if(transition === 9) {
@@ -95,8 +99,9 @@ define(function(require, exports, module) {
         }
         // 覆盖 - MetStateNodeContentSlidingStyleSync
         else if(transition === 10) {
-            options.inTransform = Transform.scale(0, 0, 1);
-            options.outTransform = Transform.scale(0, 0, 1);
+            options.inTransform = Transform.translate(0, -page_size[1], 0);
+            options.outTransform = Transform.identity;
+            options.together = true;
         }
 
         return options;
@@ -230,8 +235,12 @@ define(function(require, exports, module) {
         _loadChapters(arr);
 
         Engine.on("click", function(e){
+            var vsize = context.getSize();
+            var csize = [project.width, project.height];
+            var dims = StageView.getPageContainerDims(vsize[0], vsize[1], csize[0], csize[1]);
+
             currentChapter = (currentChapter + 1) % arr.length;
-            var options = _synthesizeLightBoxOptions(3, [project.width, project.height]);
+            var options = _synthesizeLightBoxOptions(9, [dims[0], dims[1]]);
             renderController.setOptions(options);
             _showPages();
         });

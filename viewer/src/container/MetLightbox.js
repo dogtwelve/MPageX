@@ -69,7 +69,8 @@ define(function(require, exports, module) {
         showAlign: [0.5, 0.5],
         inTransition: true,
         outTransition: true,
-        overlap: false
+        overlap: false,
+        together: false,
     };
 
     /**
@@ -156,13 +157,20 @@ define(function(require, exports, module) {
         var node = this.nodes[this.nodes.length - 1];
         var transform = this.transforms[this.transforms.length - 1];
         var stateItem = this.states[this.states.length - 1];
+        var right_now = this.options.together;
+
         var _cb = Utility.after(3, function() {
             this.nodes.splice(this.nodes.indexOf(node), 1);
             this.states.splice(this.states.indexOf(stateItem), 1);
             this.transforms.splice(this.transforms.indexOf(transform), 1);
+            if(!right_now) {
+                if (callback) callback.call(this);
+            }
         }.bind(this));
 
-        if (callback) callback.call(this);
+        if(right_now) {
+            if (callback) callback.call(this);
+        }
 
         if (!transition) transition = this.options.outTransition;
         stateItem.transform.set(this.options.outTransform, transition, _cb);

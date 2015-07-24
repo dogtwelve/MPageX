@@ -18,7 +18,7 @@ define(function(require, exports, module) {
     function _init()
     {
         GenericSync.register({
-            //MouseSync: MouseSync,
+            MouseSync: MouseSync,
             TouchSync: TouchSync
         });
 
@@ -41,7 +41,7 @@ define(function(require, exports, module) {
         if (options === undefined) options = {};
         if (options.minimum_press_duration === undefined) options.minimum_press_duration = 800;
 
-        sync = new GenericSync(["TouchSync"]);
+        sync = new GenericSync(["TouchSync", "MouseSync"]);
         element.pipe(sync);
 
         sync.on("start", function(data)
@@ -86,7 +86,7 @@ define(function(require, exports, module) {
         if (options.maximum_press_duration === undefined) options.maximum_press_duration = 150;
         if (options.allowable_movement === undefined) options.allowable_movement = 5;
 
-        sync = new GenericSync(["TouchSync"]);
+        sync = new GenericSync(["TouchSync", "MouseSync"]);
 
         element.pipe(sync);
 
@@ -156,7 +156,7 @@ define(function(require, exports, module) {
         if (options.allowable_movement === undefined) options.allowable_y_offset = 10;
 
         var boundary_exceeded = false;
-        var sync = new GenericSync(["TouchSync"]);
+        var sync = new GenericSync(["TouchSync", "MouseSync"]);
         var boundary = {};
 
         element.pipe(sync);
@@ -349,4 +349,46 @@ define(function(require, exports, module) {
     {
         return this._optionsManager.setOptions(options);
     };
+
+
+
+    //////// test code snippet/////////////////
+    //var Engine = require("famous/core/Engine");
+    //var Surface = require("famous/core/Surface");
+    //var Gestures = require("Gestures");
+    //
+    //var context = Engine.createContext();
+    //
+    //var surface = new Surface({
+    //    size: [100, 100],
+    //    properties: {
+    //        backgroundColor: "red"
+    //    }
+    //});
+    //
+    //context.add(surface);
+    //
+    //// example with default options
+    //Gestures.tapRecognizer(surface, tapCallback);
+    //
+    //// example with custom options
+    //Gestures.longPressRecognizer(surface, longPressCallback, {
+    //    // defaults to 800 ms
+    //    minimum_press_duration: 1000,
+    //
+    //    // movement from origin in px
+    //    allowable_movement: 8
+    //});
+    //
+    //function tapCallback(event_data)
+    //{
+    //    console.log("tapRecognizer recognized a tap");
+    //    console.log(event_data);
+    //}
+    //
+    //function longPressCallback(event_data)
+    //{
+    //    console.log("longPressRecognizer recognized a longPress");
+    //    console.log(event_data);
+    //}
 });

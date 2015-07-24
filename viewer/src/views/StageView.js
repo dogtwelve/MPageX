@@ -38,8 +38,8 @@ define(function(require, exports, module) {
         this.pageSize = this.options.pageSize;
         this.containerSize = this.options.containerSize;
 
-        var pageContainerDims = getPageContainerDims(this.containerSize[0], this.containerSize[1], this.projSize[0], this.projSize[1]);
-        var pageContentDims = getPageContentDims(pageContainerDims[0], pageContainerDims[1], this.pageSize[0], this.pageSize[1]);
+        var pageContainerDims = StageView.getPageContainerDims(this.containerSize[0], this.containerSize[1], this.projSize[0], this.projSize[1]);
+        var pageContentDims = StageView.getPageContentDims(pageContainerDims[0], pageContainerDims[1], this.pageSize[0], this.pageSize[1]);
 
         //_setupContainer.call(this);
         _setupStageBgSurface.call(this, pageContainerDims);
@@ -197,7 +197,7 @@ define(function(require, exports, module) {
         this.rootNode = renderNode.add(rootModifier);
     }
 
-    function getPageContainerDims(viewportW, viewportH, origW, origH){
+    StageView.getPageContainerDims = function(viewportW, viewportH, origW, origH){
         var scaleX = viewportW / origW;
         var scaleY = viewportH / origH;
 
@@ -207,7 +207,7 @@ define(function(require, exports, module) {
         return [origW * scale, origH * scale, scale];
     }
 
-    function getPageContentDims(containerW, containerH, origW, origH){
+    StageView.getPageContentDims = function(containerW, containerH, origW, origH){
         var scale = containerW / origW;
         return [origW * scale, origH * scale, scale];
     }

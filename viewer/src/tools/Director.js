@@ -36,12 +36,12 @@ define(function(require, exports, module) {
 
         for (var nodeToStage in stageMetnodes) {
             var curNode = stageMetnodes[nodeToStage];
-            if(curNode.type === "MetScrollNode")
-            {
-                console.log("no subscribe MetScrollNode");
-            } else {
-                stage._eventOutput.subscribe(curNode);
-            }
+            //if(curNode.type === "MetScrollNode")
+            //{
+            //    console.log("no subscribe MetScrollNode");
+            //} else {
+            //    stage._eventOutput.subscribe(curNode);
+            //}
             stage.addMetNode(curNode);
         }
 

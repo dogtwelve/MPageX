@@ -64,6 +64,7 @@ define(function(require, exports, module) {
 
     StageView.prototype.addMetNode = function(newNode) {
         newNode.initMetSubNode([/*this.syncScroll, this.syncSwipe*/], this.rootNode);
+        _subscribeEvent(this, newNode);
         //newNode.activate(this.syncSwipe);
         //newNode.subscribe(this._eventOutput);
         //this.add(newNode);
@@ -157,11 +158,12 @@ define(function(require, exports, module) {
         });
 
         this.add(modifier).add(this.stageBgSurface);
-        this._eventOutput.subscribe(this.stageBgSurface);
+        //this._eventOutput.subscribe(this.stageBgSurface);
+        _subscribeEvent(this, this.stageBgSurface);
 
-        this.on('click', function(data) {
-            DebugUtils.log(this.pageId + " type =  stage view event click");
-        }.bind(this));
+        //this.on('click', function(data) {
+        //    DebugUtils.log(this.pageId + " type =  stage view event click");
+        //}.bind(this));
     }
 
     function _initRootNode(pageContainerDims, pageContentDims) {
@@ -189,7 +191,7 @@ define(function(require, exports, module) {
 
         var scrollView = new MetScrollview({paginated: false});
         scrollView.sequenceFrom([renderNode]);
-        scrollView.subscribe(container);
+        //scrollView.subscribe(container);
 
         this.add(modifier).add(container);
         container.add(scrollView);
@@ -210,6 +212,10 @@ define(function(require, exports, module) {
     StageView.getPageContentDims = function(containerW, containerH, origW, origH){
         var scale = containerW / origW;
         return [origW * scale, origH * scale, scale];
+    }
+
+    function _subscribeEvent(subscriber, src) {
+        subscriber.subscribe(src);
     }
 
     //function _handleScroll() {

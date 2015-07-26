@@ -56,6 +56,7 @@ define(function(require, exports, module) {
         //console.log(this.name + " containerSize(" + this.containerSize[0] + "," + this.containerSize[1] + ")");
         //_listenToScroll.call(this);
         _listenToAction.call(this);
+        _processEventBind.call(this);
     }
 
     MetNodeView.DEFAULT_OPTIONS = {
@@ -124,9 +125,8 @@ define(function(require, exports, module) {
         var root = this.add(new Modifier({size: this.size})).add(this.modifierChain);
 
         if (this.mainSurface) {
-
-            this._eventOutput.subscribe(this.mainSurface);
-            //this.mainSurface.pipe(rootParent._eventOutput);
+            //this._eventOutput.subscribe(this.mainSurface);
+            _subscribeEvent(this, this.mainSurface);
             root.add(this.mainSurface);
         }
 
@@ -136,7 +136,8 @@ define(function(require, exports, module) {
         var subRoot = root;
 
         for(var metNode in subMetNodes) {
-            this._eventOutput.subscribe(subMetNodes[metNode]);
+            //this._eventOutput.subscribe(subMetNodes[metNode]);
+            _subscribeEvent(this, subMetNodes[metNode]);
             subMetNodes[metNode].initMetSubNode(holdersSync, subRoot);
         }
 
@@ -175,7 +176,8 @@ define(function(require, exports, module) {
             //    this.mainSurface.pipe(holdersSync[holder]);
             //}
 
-            this._eventOutput.subscribe(this.mainSurface);
+            //this._eventOutput.subscribe(this.mainSurface);
+            _subscribeEvent(this, this.mainSurface);
             //this.mainSurface.pipe(rootParent._eventOutput);
             if(this.containerSurface) {
                 this.containerSurface.add(this.mainSurface);
@@ -183,11 +185,11 @@ define(function(require, exports, module) {
                 root.add(this.mainSurface);
             }
 
-            this.mainSurface.on("click", function(data){
-                //this.hideMetNode();
-                DebugUtils.log(this.metNodeId + " mainSurface event click");
-                //rootParent._eventOutput.trigger('metview-click', {metNodeId:this.metNodeId} );
-            }.bind(this));
+            //this.mainSurface.on("click", function(data){
+            //    //this.hideMetNode();
+            //    DebugUtils.log(this.metNodeId + " mainSurface event click");
+            //    //rootParent._eventOutput.trigger('metview-click', {metNodeId:this.metNodeId} );
+            //}.bind(this));
 
 
         }
@@ -199,7 +201,8 @@ define(function(require, exports, module) {
                 origin : [0.5, 0.5]
             });
 
-            this._eventOutput.subscribe(this.floatingSurface);
+            //this._eventOutput.subscribe(this.floatingSurface);
+            _subscribeEvent(this, this.floatingSurface);
             //this.mainSurface.pipe(rootParent._eventOutput);
             if(this.containerSurface) {
                 this.containerSurface.add(centerModifier).add(this.floatingSurface);
@@ -224,12 +227,13 @@ define(function(require, exports, module) {
         this.showMetNode();
 
         for(var metNode in subMetNodes) {
-            if(subMetNodes[metNode].type === "MetScrollNode")
-            {
-                console.log("no subscribe MetScrollNode");
-            } else {
-                this._eventOutput.subscribe(subMetNodes[metNode]);
-            }
+            //if(subMetNodes[metNode].type === "MetScrollNode")
+            //{
+            //    console.log("no subscribe MetScrollNode");
+            //} else {
+            //    this._eventOutput.subscribe(subMetNodes[metNode]);
+            //}
+            _subscribeEvent(this, subMetNodes[metNode]);
 
             ////subMetNodes[metNode].pipe(subRoot);
             //subMetNodes[metNode].initMetNode(holdersSync, subRoot);
@@ -362,11 +366,13 @@ define(function(require, exports, module) {
         scrollview.sequenceFrom([subRoot]);
 
         for(var metNode in subMetNodes) {
-            scrollview.subscribe(subMetNodes[metNode]);
+            //scrollview.subscribe(subMetNodes[metNode]);
+            _subscribeEvent(scrollview, subMetNodes[metNode]);
         }
 
         if(this.mainSurface) {
-            scrollview.subscribe(this.mainSurface);
+            //scrollview.subscribe(this.mainSurface);
+            _subscribeEvent(scrollview, this.mainSurface);
         }
 
         scrollview.on("click", function(data){
@@ -379,6 +385,23 @@ define(function(require, exports, module) {
     //function _listenToScroll() {
     //    this._eventInput.on('ScrollUpdated', _updateScrollValue.bind(this));
     //};
+
+    function _subscribeEvent(subscriber, src) {
+        subscriber.subscribe(src);
+    }
+
+    function _processEventBind() {
+        [
+            'click', 'mousedown', 'mousemove', 'mouseup', 'mouseleave',
+            'touchstart', 'touchmove','touchend', 'touchcancel'
+        ].forEach(function(type) {
+                this._eventInput.on(type, function(event) {
+
+                    //pipe to downstream if necc
+                    this._eventOutput.emit(type, event);
+                }.bind(this))
+            }.bind(this))
+    }
 
     function _listenToAction() {
 
@@ -404,10 +427,10 @@ define(function(require, exports, module) {
                 {direction : GenericSync.DIRECTION_X}
             );
 
-            this.on('click', function(data) {
-                DebugUtils.log(this.metNodeId + " type = " + this.type + " view event click");
-                this.showNextState();
-            }.bind(this));
+            //this.on('click', function(data) {
+            //    DebugUtils.log(this.metNodeId + " type = " + this.type + " view event click");
+            //    this.showNextState();
+            //}.bind(this));
 
             this.pipe(sync);
 
@@ -464,9 +487,9 @@ define(function(require, exports, module) {
                 //DebugUtils.log("MetStateNode end " + velocity);
             }).bind(this));
         } else {
-            this.on('click', function(data) {
-                DebugUtils.log(this.metNodeId + " type = " + this.type + " view event click");
-            }.bind(this));
+            //this.on('click', function(data) {
+            //    DebugUtils.log(this.metNodeId + " type = " + this.type + " view event click");
+            //}.bind(this));
         }
     };
 

@@ -66,8 +66,8 @@ define(function(require, exports, module) {
         var result;
         if (nodeStore.length > 0) {
             result = nodeStore.pop();
-            // eric: È·±£Âß¼­²ãÃæ"ĞÂÉêÇë"µÄ½Úµãz´ÎĞòÒ²ÒªÎª×îºó
-            // ¹Ù·½Ëµ¿ÉÒÔÊ¹ÓÃ insertBefore ·½·¨²åÈë/ÒÆ¶¯ÒÑÓĞÔªËØ
+            // eric: ç¡®ä¿é€»è¾‘å±‚é¢"æ–°ç”³è¯·"çš„èŠ‚ç‚¹zæ¬¡åºä¹Ÿè¦ä¸ºæœ€å
+            // å®˜æ–¹è¯´å¯ä»¥ä½¿ç”¨ insertBefore æ–¹æ³•æ’å…¥/ç§»åŠ¨å·²æœ‰å…ƒç´ 
             this.container.insertBefore(result, null);
         }
         else {

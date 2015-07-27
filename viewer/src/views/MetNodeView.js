@@ -289,7 +289,7 @@ define(function(require, exports, module) {
 
     MetNodeView.prototype.showPreState = function() {
         var subMetNodes = this.metNodes;
-        this.curStateIdx = (this.curStateIdx - 1) >= 0 ? this.curStateIdx - 1 : subMetNodes.length - 1;
+        this.curStateIdx = (this.curStateIdx + subMetNodes.length - 1) % subMetNodes.length;
         this.showState();
     }
 

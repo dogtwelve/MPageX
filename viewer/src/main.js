@@ -29,7 +29,7 @@ define(function(require, exports, module) {
     // current index in sections(level-2 pages)
     var currentSection = window._initSection || 0;
 
-    var renderController = new MetLightbox(TransitionUtils.synthesizeLightBoxOptions(0, [0, 0]));
+    var renderController = new MetLightbox(TransitionUtils.synthesizeLightBoxOptions(0, [0, 0], [1, 1]));
 
     function __resizeMetView(){
         var contextContainer = document.getElementById("met-view");

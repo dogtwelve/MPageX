@@ -2158,30 +2158,148 @@ define(function(require, exports, module) {
     //    toggle = !toggle;
     //});
 
-    // Famo.us EventFilter subscribe filter
-    var Engine       = require('famous/core/Engine');
-    var EventHandler = require('famous/core/EventHandler');
-    var EventFilter  = require('famous/events/EventFilter');
+    //// Famo.us EventFilter subscribe filter
+    //var Engine       = require('famous/core/Engine');
+    //var EventHandler = require('famous/core/EventHandler');
+    //var EventFilter  = require('famous/events/EventFilter');
+    //
+    //var eventHandlerA = new EventHandler();
+    //var eventHandlerB = new EventHandler();
+    //
+    //var myFilter = new EventFilter(function(type, data) {
+    //    return data && (data.msg === 'ALERT!');
+    //});
+    //
+    //eventHandlerB.subscribe(myFilter);
+    //myFilter.subscribe(eventHandlerA);
+    //eventHandlerB.on('A', function(data){
+    //    alert('subscribed message: ' + data.msg);
+    //});
+    //
+    //var currentMsg = 'ALERT!';
+    //
+    //Engine.on('click', function() {
+    //    eventHandlerA.trigger('A', {msg: currentMsg});
+    //    currentMsg = currentMsg === 'ALERT!' ? 'chickenDogStar': 'ALERT!';
+    //});
 
-    var eventHandlerA = new EventHandler();
-    var eventHandlerB = new EventHandler();
 
-    var myFilter = new EventFilter(function(type, data) {
-        return data && (data.msg === 'ALERT!');
+
+    /////// Gestures test//////
+    //var Engine = require("famous/core/Engine");
+    //var Surface = require("famous/core/Surface");
+    //var View = require("famous/core/View");
+    //var Gestures = require("input/Gestures");
+    //
+    //var context = Engine.createContext();
+    //
+    //var surface = new Surface({
+    //    size: [100, 100],
+    //    properties: {
+    //        backgroundColor: "red"
+    //    }
+    //});
+    //
+    //var view = new View();
+    //
+    //view.add(surface);
+    //view._eventOutput.subscribe(surface);
+    //
+    //context.add(view);
+    //
+    //// example with default options
+    //Gestures.tapRecognizer(view, tapCallback);
+    //
+    //// example with custom options
+    //Gestures.longPressRecognizer(view, longPressCallback, {
+    //    // defaults to 800 ms
+    //    minimum_press_duration: 1000,
+    //
+    //    // movement from origin in px
+    //    allowable_movement: 8
+    //});
+    //
+    //function tapCallback(event_data)
+    //{
+    //    console.log("tapRecognizer recognized a tap");
+    //    console.log(event_data);
+    //}
+    //
+    //function longPressCallback(event_data)
+    //{
+    //    console.log("longPressRecognizer recognized a longPress");
+    //    console.log(event_data);
+    //}
+
+
+    ////Intercepting link clicks in Famo.us
+    var Engine = require('famous/core/Engine');
+
+    var Surface = require('famous/core/Surface');
+    var Utility = require('famous/utilities/Utility');
+
+    var mainContext = Engine.createContext();
+
+    this.backSurface = new Surface({
+        size: [undefined, undefined],
+        content: ''
     });
 
-    eventHandlerB.subscribe(myFilter);
-    myFilter.subscribe(eventHandlerA);
-    eventHandlerB.on('A', function(data){
-        alert('subscribed message: ' + data.msg);
+    this.mySurface = new Surface({
+        size: [true, true],
+        content: '<a target="_blank" href="http://famo.us">This is a link</a>',
+        properties: {
+            backgroundColor: 'grey',
+            fontColor: 'white'
+        }
     });
 
-    var currentMsg = 'ALERT!';
+    this.mySurface.clickNullifier = function (e) {
+        if (e.target && e.target.nodeName == 'A' && e.target.href) {
+            console.log('href', e.target.href);
+            this.mySurface.emit('href-clicked', {
+                data: {
+                    href: e.target.href
+                }
+            })
+        }
+        e.preventDefault();
+        return false;
+    }.bind(this);
 
-    Engine.on('click', function() {
-        eventHandlerA.trigger('A', {msg: currentMsg});
-        currentMsg = currentMsg === 'ALERT!' ? 'chickenDogStar': 'ALERT!';
+    this.mySurface.on('deploy', function () {
+        console.log('onload',this);
+        // sets up the click function on the surface DOM object
+        this._currentTarget.onclick = this.clickNullifier;
     });
+
+    this.mySurface.on('click', function (event) {
+        // event from the surface itself
+        console.log('mySurface Event Target',event.target);
+    });
+
+    this.mySurface.on('href-clicked', function (event) {
+        console.log(event.data);
+        // handle your code for the iframe
+        // not always doable in the case of 'X-Frame-Options' to 'SAMEORIGIN'
+        loadIframe.call(this, event.data.href);
+        // or loadURL like here. Note this needs CORS open on the href server
+        //Utility.loadURL(event.data.href, loadLink.bind(this));
+
+        // or choose to load just the href link somewhere
+        //this.backSurface.setContent(event.data.href);
+    }.bind(this));
+
+    function loadIframe(content) {
+        this.backSurface.setContent('<iframe src="' + content + '" frameborder="0" height="100%" width="100%"></iframe>');
+    };
+
+    function loadLink(content) {
+        this.backSurface.setContent(content);
+    };
+
+    mainContext.add(this.backSurface);
+    mainContext.add(this.mySurface);
 
 
 });

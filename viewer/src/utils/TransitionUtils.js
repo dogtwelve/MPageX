@@ -10,16 +10,18 @@ define(function (require, exports, module) {
     // dir = [-1|0|1, -1|0|1]
     // 部分效果(例如3D翻转X)需要有方向性, 默认为 [1, 1]
     TransitionUtils.synthesizeLightBoxOptions = function(transition, page_size, dir) {
+        // Chrome使用3D功能前, 需要练习一下, 所以我们用Transform.scale(1, 1, 1.00001) 来代替原本的Transform.identity
         var options = {
             inOpacity: 1,
             outOpacity: 1,
             inOrigin: [0.5, 0.5],
             outOrigin: [0.5, 0.5],
             showOrigin: [0.5, 0.5],
-            inTransform: Transform.identity,
-            outTransform: Transform.identity,
+            inTransform: Transform.scale(1, 1, 1.00001),
+            outTransform: Transform.scale(1, 1, 1.00001),
             inTransition: {duration: 500, curve: Easing.outQuad},
             outTransition: {duration: 500, curve: Easing.outQuad},
+            showTransform: Transform.scale(1, 1, 1.00001),
         }
         // 无 - MetStateNodeContentSlidingStyleNone
         if(transition === 0)

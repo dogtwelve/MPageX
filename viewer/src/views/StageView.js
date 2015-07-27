@@ -152,27 +152,22 @@ define(function(require, exports, module) {
         }
 
         var modifier = new Modifier({
-            size: containerSize,
-            origin: [0.5, 0.5],
-            align: [0.5, 0.5]
+            align: [0.5, 0.5],
         });
 
         this.add(modifier).add(this.stageBgSurface);
-        //this._eventOutput.subscribe(this.stageBgSurface);
-        _subscribeEvent(this, this.stageBgSurface);
+        this._eventOutput.subscribe(this.stageBgSurface);
 
-        //this.on('click', function(data) {
-        //    DebugUtils.log(this.pageId + " type =  stage view event click");
-        //}.bind(this));
+        this.on('click', function(data) {
+            DebugUtils.log(this.pageId + " type =  stage view event click");
+        }.bind(this));
     }
 
     function _initRootNode(pageContainerDims, pageContentDims) {
         var classes = ['z2'];
 
         var modifier = new Modifier({
-            size: [pageContainerDims[0], pageContainerDims[1]],
-            origin: [0.5, 0.5],
-            align: [0.5, 0.5]
+            align: [0.5, 0.5],
         });
 
         var container = new ContainerSurface({
@@ -191,7 +186,7 @@ define(function(require, exports, module) {
 
         var scrollView = new MetScrollview({paginated: false});
         scrollView.sequenceFrom([renderNode]);
-        //scrollView.subscribe(container);
+        scrollView.subscribe(container);
 
         this.add(modifier).add(container);
         container.add(scrollView);

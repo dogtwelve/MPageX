@@ -25,10 +25,12 @@
         <!--&lt;!&ndash; module loader &ndash;&gt;-->
         <script type="text/javascript" src="./src/lib/require.js"></script>
 
-
-        <!-- app code -->
-
         <script type="text/javascript">
+            // following two lines are prepared for MetSlider tools dynamic replace them.
+            // so, don't delete them, but you are free to modify numbers in them.
+            window._initChapter = 0;
+            window._initSection = 0;
+
             require.config({
                 baseUrl: './src/'
             });

@@ -270,7 +270,6 @@ define(function(require, exports, module) {
     MetNodeView.prototype.showState = function() {
         var originStateKeyframe = this.stateViewPlayer.renderables[this.stateViewPlayer.renderables.length - 1];
         var stateKeyframe = this.metNodes[this.curStateIdx];
-        this.stateViewPlayer.show(stateKeyframe, null, null);
         if(!this.stateViewPlayer.options.together)
             this.stateViewPlayer.hide(originStateKeyframe, null, function(){
                 this.stateViewPlayer.show(stateKeyframe, null, null);
@@ -482,11 +481,9 @@ define(function(require, exports, module) {
                 if(velocity > 0.35) {
                     this.showPreState();
                 }
-
-
-                //DebugUtils.log("MetStateNode end " + velocity);
             }).bind(this));
-        } else {
+        }
+        else {
             //this.on('click', function(data) {
             //    DebugUtils.log(this.metNodeId + " type = " + this.type + " view event click");
             //}.bind(this));

@@ -184,7 +184,10 @@ define(function(require, exports, module) {
         for (var i = 0; i < this.nodes.length; i++) {
             result.push(this.nodes[i].render());
         }
-        return result;
+        if(result.length > 0)
+            return result;
+        else
+            return ".";
     };
 
     module.exports = MetLightbox;

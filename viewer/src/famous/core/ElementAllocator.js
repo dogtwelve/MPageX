@@ -66,6 +66,9 @@ define(function(require, exports, module) {
         var result;
         if (nodeStore.length > 0) {
             result = nodeStore.pop();
+            // eric: 确保逻辑层面"新申请"的节点z次序也要为最后
+            // 官方说可以使用 insertBefore 方法插入/移动已有元素
+            this.container.insertBefore(result, null);
         }
         else {
             result = document.createElement(type);

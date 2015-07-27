@@ -12,8 +12,8 @@ define(function(require, exports, module) {
     var ModifierChain       = require('famous/modifiers/ModifierChain');
     var RenderController    = require("famous/views/RenderController");
     var TweenTransition     = require('famous/transitions/TweenTransition');
-    var Timer               = require("famous/utilities/Timer");
-    var Utility               = require("famous/utilities/Utility");
+    var Timer               = require('famous/utilities/Timer');
+    var Utility               = require('famous/utilities/Utility');
     var MetScrollview          = require('container/MetScrollview');
     var MetLightbox            = require('container/MetLightbox');
     var UnitConverter       = require('tools/UnitConverter');
@@ -21,6 +21,7 @@ define(function(require, exports, module) {
     var KeyFrameAnim        = require('animations/KeyFrameAnim');
     var DebugUtils          = require('utils/DebugUtils');
     var StageView          = require('views/StageView');
+    var EventDispatcher     = require('input/EventDispatcher');
 
     var TransitionUtils = require('utils/TransitionUtils');
 
@@ -56,7 +57,8 @@ define(function(require, exports, module) {
         //console.log(this.name + " containerSize(" + this.containerSize[0] + "," + this.containerSize[1] + ")");
         //_listenToScroll.call(this);
         _listenToAction.call(this);
-        _processEventBind.call(this);
+        _setEventProcesser2Dispatcher.call(this);
+        //_processEventBind.call(this);
     }
 
     MetNodeView.DEFAULT_OPTIONS = {
@@ -344,6 +346,10 @@ define(function(require, exports, module) {
         );
     };
 
+    MetNodeView.prototype.getEventDispatcher = function() {
+        return this.eventDispatcher;
+    };
+
     function _setStatePlayer(subRoot) {
         var centerModifier = new Modifier({
             size: this.size,
@@ -386,20 +392,32 @@ define(function(require, exports, module) {
     //};
 
     function _subscribeEvent(subscriber, src) {
-        subscriber.subscribe(src);
+        if(src instanceof MetNodeView && src.getEventDispatcher()) {
+            subscriber.subscribe(src.getEventDispatcher()).subscribe(src);
+        } else {
+            subscriber.subscribe(src);
+        }
+    }
+
+    function _setEventProcesser2Dispatcher() {
+        this.eventDispatcher = new EventDispatcher(_processEventBind.call(this));
     }
 
     function _processEventBind() {
-        [
-            'click', 'mousedown', 'mousemove', 'mouseup', 'mouseleave',
-            'touchstart', 'touchmove','touchend', 'touchcancel'
-        ].forEach(function(type) {
-                this._eventInput.on(type, function(event) {
+        //[
+        //    'click', 'mousedown', 'mousemove', 'mouseup', 'mouseleave',
+        //    'touchstart', 'touchmove','touchend', 'touchcancel'
+        //].forEach(function(type) {
+        //        this._eventInput.on(type, function(event) {
+        //
+        //            //pipe to downstream if necc
+        //            this._eventOutput.emit(type, event);
+        //        }.bind(this))
+        //    }.bind(this))
 
-                    //pipe to downstream if necc
-                    this._eventOutput.emit(type, event);
-                }.bind(this))
-            }.bind(this))
+
+        //default, could be processed by downstream elements
+        return false;
     }
 
     function _listenToAction() {

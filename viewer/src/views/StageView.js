@@ -19,8 +19,8 @@ define(function(require, exports, module) {
     var RenderNode = require('famous/core/RenderNode');
 
     var UnitConverter = require('tools/UnitConverter');
-    var BgImageSurface = require('surfaces/BgImageSurface');
     var DebugUtils = require('utils/DebugUtils');
+    var TextUtils = require('utils/TextUtils');
 
     GenericSync.register({
         'mouse': MouseSync,
@@ -41,8 +41,7 @@ define(function(require, exports, module) {
         var pageContainerDims = StageView.getPageContainerDims(this.containerSize[0], this.containerSize[1], this.projSize[0], this.projSize[1]);
         var pageContentDims = StageView.getPageContentDims(pageContainerDims[0], pageContainerDims[1], this.pageSize[0], this.pageSize[1]);
 
-        //_setupContainer.call(this);
-        _setupStageBgSurface.call(this, pageContainerDims);
+        _setupStageContainerSurface.call(this, pageContainerDims);
         _initRootNode.call(this, pageContainerDims, pageContentDims);
         //_handleScroll.call(this);
         //_handleSwipe.call(this);
@@ -82,29 +81,7 @@ define(function(require, exports, module) {
         this._arrowData.breakpoints = newBreakpoints;
     };
 
-    function _setupContainer() {
-        var imageUrl = this.pageDesc.imageFill.rawImageURL;
-        // url encode '(' and ')'
-        if ((imageUrl.indexOf('(') >= 0) || (imageUrl.indexOf(')') >= 0)) {
-            imageUrl = imageUrl.split('(').join('%28');
-            imageUrl = imageUrl.split(')').join('%29');
-        }
-
-        this.containerBox = new ContainerSurface({
-            size: this.containerSize,
-            properties: {
-                //overflow:"hidden",
-                border: "2px solid rgba(255,255,255, .8)",
-                //borderRadius: "10px 0px 0px 10px",
-                backgroundImage: 'url(zres/' + imageUrl + ')'
-            }
-        });
-
-        this.add(this.containerBox);
-
-    }
-
-    function _setupStageBgSurface(pageContainerDims) {
+    function _setupStageContainerSurface(pageContainerDims) {
         ////单色填充
         var METCOLORFILLTYPE = 0;
         ////渐变填充
@@ -117,37 +94,91 @@ define(function(require, exports, module) {
         var classes = ['z1'];
 
         var containerSize = this.containerSize;
+        this.stageContainerSurface = new ContainerSurface({
+            size: [pageContainerDims[0], pageContainerDims[1]],
+            classes: classes,
+            properties :{
+                overflow: "hidden",
+                backgroundColor: "white",
+            }
+        });
+        var pageScale = pageContainerDims[2];
 
         if(this.pageDesc.fillType == METCOLORFILLTYPE) {
-            containerSize = [pageContainerDims[0], pageContainerDims[1]];
             var fillColor = UnitConverter.rgba2ColorString(this.pageDesc.colorFill.fillColor);
-            this.stageBgSurface = new Surface({
-                //size: [undefined, undefined] // Take up the entire view
-                size: containerSize, //this.containerSize,
-                classes: classes,
-                properties: {
-                    backgroundColor: fillColor
-                }
+            this.stageContainerSurface.setProperties({backgroundColor: fillColor});
+        }
+        else if(this.pageDesc.fillType == METGRADIENTFILLTYPE) {
+            var gf = this.pageDesc.gradientFill;
+            //{-888, 888}
+            var start_point = gf.startPoint;
+            {
+                start_point = start_point.replace(/[\{\}]/g, "");
+                start_point = start_point.split(",");
+                if(!ir instanceof Array)
+                    start_point = [0, 0];
+                else
+                    for(var i = 0; i < start_point.length; i++) start_point[i] = Number(start_point[i]) * pageScale;
+            }
+            //{-888, 888}
+            var end_point = gf.endPoint;
+            {
+                end_point = end_point.replace(/[\{\}]/g, "");
+                end_point = end_point.split(",");
+                if(!ir instanceof Array)
+                    end_point = [0, 0];
+                else
+                    for(var i = 0; i < end_point.length; i++) end_point[i] = Number(end_point[i]) * pageScale;
+            }
+            // sort gradientPoints's copy
+            var gps = [];
+            for(var i = 0; i < gf.gradientPoints.length; i++) {
+                var gp = gf.gradientPoints[i];
+                gps.push(gp);
+            }
+            gps.sort(function(obj1, obj2){
+                if(obj1.location > obj2.location)
+                    return 1;
+                else if(obj1.location < obj2.location)
+                    return -1;
             });
-        } else if(this.pageDesc.fillType == METIMAGEFILLTYPE) {
+            var bg_style = null;
+            if(gf.gradientType == 0)
+                bg_style = TextUtils.sprintf("%sgradient(linear, %d %d, %d %d", DebugUtils.browserPrefixes().css, start_point[0], start_point[1], end_point[0], end_point[1]);
+            else {
+                bg_style = TextUtils.sprintf("%sgradient(radial, %d %d, 0, %d %d, %d", DebugUtils.browserPrefixes().css, start_point[0], start_point[1], end_point[0], end_point[1], Math.max(pageContainerDims[0], pageContainerDims[1]));
+            }
+            for(var i = 0; i < gps.length; i++){
+                var gp = gps[i];
+                var color = UnitConverter.rgba2ColorString(gp.color);
+                if(i == 0)
+                    bg_style += ", from(" + color + ")";
+                else if(i == gps.length - 1)
+                    bg_style += ", to(" + color + "))";
+                else
+                    bg_style += TextUtils.sprintf(", color-stop(%f, %s)", gp.location, color);
+            }
+            this.stageContainerSurface.setProperties({background: bg_style,});
+        }
+        else if(this.pageDesc.fillType == METIMAGEFILLTYPE) {
             var fillImage = this.pageDesc.imageFill.rawImageURL;
-            var contentMode = this.pageDesc.imageFill.contentMode;
-            this.stageBgSurface = new BgImageSurface({
-                size: containerSize,
-                content: fillImage,
-                classes: classes,
-                sizeMode: BgImageSurface.SizeMode.ASPECTFILL,
-                properties: {
-                    backgroundColor: 'black'
-                }
-            });
-        } else {
-            this.stageBgSurface = new Surface({
-                size: containerSize,
-                classes: classes,
-                properties: {
-                    backgroundColor: 'gray'
-                }
+            // get imageRect
+            //"imageRect" : "{{-850.35943603515625, -0.00079511082731187344}, {1616.3837890625, 1048.1239013671875}}",
+            var ir = pageDesc.imageFill.imageRect;
+            ir = ir.replace(/[\{\}]/g, "");
+            ir = ir.split(",");
+            if(!ir instanceof Array)
+                ir = [0, 0, size[0] * pageScale, size[1] * pageScale];
+            else
+                for(var i = 0; i < ir.length; i++) ir[i] = Number(ir[i]) * pageScale;
+
+            this.stageContainerSurface.setProperties({
+                backgroundImage: TextUtils.sprintf("url('zres/%s')", pageDesc.imageFill.rawImageURL),
+                backgroundRepeat: "no-repeat",
+                backgroundAttachment: "relative",
+                backgroundPosition: TextUtils.sprintf("%dpx %dpx", ir[0], ir[1]),
+                backgroundSize: TextUtils.sprintf("%dpx %dpx", ir[2], ir[3]),
+                backgroundColor: 'black',
             });
         }
 
@@ -155,8 +186,8 @@ define(function(require, exports, module) {
             align: [0.5, 0.5],
         });
 
-        this.add(modifier).add(this.stageBgSurface);
-        this._eventOutput.subscribe(this.stageBgSurface);
+        this.add(modifier).add(this.stageContainerSurface);
+        this._eventOutput.subscribe(this.stageContainerSurface);
 
         this.on('click', function(data) {
             DebugUtils.log(this.pageId + " type =  stage view event click");
@@ -165,15 +196,6 @@ define(function(require, exports, module) {
 
     function _initRootNode(pageContainerDims, pageContentDims) {
         var classes = ['z2'];
-
-        var modifier = new Modifier({
-            align: [0.5, 0.5],
-        });
-
-        var container = new ContainerSurface({
-            size: [pageContainerDims[0], pageContainerDims[1]],
-            classes: classes,
-        });
 
         var rootModifier = new Modifier({
             size: this.pageSize,
@@ -186,11 +208,9 @@ define(function(require, exports, module) {
 
         var scrollView = new MetScrollview({paginated: false});
         scrollView.sequenceFrom([renderNode]);
-        scrollView.subscribe(container);
+        scrollView.subscribe(this.stageContainerSurface);
 
-        this.add(modifier).add(container);
-        container.add(scrollView);
-
+        this.stageContainerSurface.add(scrollView);
         this.rootNode = renderNode.add(rootModifier);
     }
 
@@ -219,7 +239,7 @@ define(function(require, exports, module) {
     //        {direction: GenericSync.DIRECTION_Y}
     //    );
     //
-    //    this.stageBgSurface.pipe(this.syncScroll);
+    //    this.stageContainerSurface.pipe(this.syncScroll);
     //
     //    this.syncScroll.on('update', function(data) {
     //        // Invert delta so scrolling up is positive.

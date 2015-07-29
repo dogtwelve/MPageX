@@ -10,11 +10,11 @@ define(function(require, exports, module) {
     var ContainerSurface    = require("famous/surfaces/ContainerSurface");
     var Transform           = require('famous/core/Transform');
     var ModifierChain       = require('famous/modifiers/ModifierChain');
-    var RenderController    = require("famous/views/RenderController");
     var TweenTransition     = require('famous/transitions/TweenTransition');
     var Timer               = require('famous/utilities/Timer');
     var Utility               = require('famous/utilities/Utility');
     var MetScrollview          = require('container/MetScrollview');
+    var RenderController    = require("famous/views/RenderController");
     var MetLightbox            = require('container/MetLightbox');
     var UnitConverter       = require('tools/UnitConverter');
     var MotionPath          = require('utils/MotionPath');
@@ -52,6 +52,8 @@ define(function(require, exports, module) {
         this.size = this.options.size;
         this.containerSize = this.options.containerSize;
         this.renderController = new RenderController();
+        // used for MetStateNode to display state keyframes
+        this.stateViewPlayer = null;
         this.timer = -1;
         this.nodeDesc = this.options.nodeDescription;
         //console.log(this.name + " containerSize(" + this.containerSize[0] + "," + this.containerSize[1] + ")");
@@ -121,177 +123,99 @@ define(function(require, exports, module) {
         this.yPosition += incrY;
     };
 
-    MetNodeView.prototype.initMetStateNode = function(holdersSync) {
-        _createBaseModifier.call(this);
+    MetNodeView.prototype.initMetSubNode = function(holdersSync, renderParent, nodeViewParent) {
+        renderParent.add(this.renderController);
 
-        var root = this.add(new Modifier({size: this.size})).add(this.modifierChain);
+        var isStateKeyframe = (this.type == "MetStateKeyframeNode");
 
-        if (this.mainSurface) {
-            //this._eventOutput.subscribe(this.mainSurface);
-            _subscribeEvent(this, this.mainSurface);
-            root.add(this.mainSurface);
-        }
-
-
-        ////children metnodes processing
-        var subMetNodes = this.metNodes;
-        var subRoot = root;
-
-        for(var metNode in subMetNodes) {
-            //this._eventOutput.subscribe(subMetNodes[metNode]);
-            _subscribeEvent(this, subMetNodes[metNode]);
-            subMetNodes[metNode].initMetSubNode(holdersSync, subRoot);
-        }
-
-        if(this.curAnim) {
-            this.curAnim.activeAnim();
-        }
-    }
-
-    MetNodeView.prototype.initMetSubNode = function(holdersSync, rootParent) {
         // Ensures metnode always has a position modifier
         _createBaseModifier.call(this);
+        var root = this;
+        if(isStateKeyframe) {
+            var containerSize = nodeViewParent ? nodeViewParent.size : [undefined, undefined];
+            var container = new ContainerSurface({size: containerSize});
+            root.add(container);
+            root = container;
 
-        var root = this.add(new Modifier({size: this.size})).add(this.modifierChain);
-
-        rootParent.add(this.renderController);
-
-        //this._eventInput.on('metview-click',function(data) {
-        //    if(this instanceof MetNodeView) {
-        //        DebugUtils.log(this.metNodeId + " on metview-click event from " + data.metNodeId);
-        //    } else if(this instanceof StageView) {
-        //        DebugUtils.log("StageView on metview-click event from " + data.metNodeId);
-        //    } else {
-        //        DebugUtils.log("other on metview-click event from " + data.metNodeId);
-        //    }
-        //
-        //}.bind(this));
-
-        //var classes = ['z2', 'backfaceVisibility'];
-
+            if (this.mainSurface) {
+                this.mainSurface.setOptions({
+                    size: containerSize
+                });
+            }
+        }
+        root = root.add(new Modifier({size: this.size})).add(this.modifierChain);
+        var chain = root;
         if(this.containerSurface) {
-            root.add(this.containerSurface);
+            chain.add(this.containerSurface);
+            chain = this.containerSurface;
         }
 
         if (this.mainSurface) {
-            //for(var holder in holdersSync) {
-            //    this.mainSurface.pipe(holdersSync[holder]);
-            //}
-
-            //this._eventOutput.subscribe(this.mainSurface);
             _subscribeEvent(this, this.mainSurface);
-            //this.mainSurface.pipe(rootParent._eventOutput);
-            if(this.containerSurface) {
-                this.containerSurface.add(this.mainSurface);
-            } else {
-                root.add(this.mainSurface);
-            }
-
-            //this.mainSurface.on("click", function(data){
-            //    //this.hideMetNode();
-            //    DebugUtils.log(this.metNodeId + " mainSurface event click");
-            //    //rootParent._eventOutput.trigger('metview-click', {metNodeId:this.metNodeId} );
-            //}.bind(this));
-
-
+            chain.add(this.mainSurface);
         }
 
-        if(this.floatingSurface){
-            var centerModifier = new Modifier({
-                size: this.floatingSurface.size,
-                align : [0.5, 0.5],
-                origin : [0.5, 0.5]
-            });
-
-            //this._eventOutput.subscribe(this.floatingSurface);
+        if(this.floatingSurface) {
             _subscribeEvent(this, this.floatingSurface);
-            //this.mainSurface.pipe(rootParent._eventOutput);
-            if(this.containerSurface) {
-                this.containerSurface.add(centerModifier).add(this.floatingSurface);
-            } else {
-                root.add(centerModifier).add(this.floatingSurface);
-            }
+            chain.add(this.floatingSurface);
         }
 
-        ////children metnodes processing
-        var subMetNodes = this.metNodes;
-        var subRoot = root;
+        // children metnodes processing
+        var arr = this.metNodes;
+        var rt = root;
 
         if(this.type === "MetStateNode") {
-            subRoot = _setStatePlayer.call(this, subRoot);
+            rt = _setStatePlayer.call(this, rt);
+        }
+        else if(this.type === "MetScrollNode") {
+            rt = _setScrollHolder.call(this, rt);
         }
 
-        if(this.type === "MetScrollNode") {
-            subRoot = _setScrollHolder.call(this, subRoot);
+        if(!isStateKeyframe)
+            this.showMetNode();
+
+        for(var i in arr) {
+            _subscribeEvent(this, arr[i]);
+            arr[i].initMetSubNode(holdersSync, rt, this);
         }
 
-
-        this.showMetNode();
-
-        for(var metNode in subMetNodes) {
-            //if(subMetNodes[metNode].type === "MetScrollNode")
-            //{
-            //    console.log("no subscribe MetScrollNode");
-            //} else {
-            //    this._eventOutput.subscribe(subMetNodes[metNode]);
-            //}
-            _subscribeEvent(this, subMetNodes[metNode]);
-
-            ////subMetNodes[metNode].pipe(subRoot);
-            //subMetNodes[metNode].initMetNode(holdersSync, subRoot);
-
-            if(this.type === "MetStateNode") {
-                subMetNodes[metNode].initMetStateNode(holdersSync);
-            } else {
-                subMetNodes[metNode].initMetSubNode(holdersSync, subRoot);
-            }
-        }
-
-        //if(this.type == "MetScrollNode") {
-        //    MetScrollview.sequenceFrom([subRoot]);
-        //}
-
-
-
-
+        // show according by initial
         if(this.type === "MetStateNode") {
             this.curStateIdx = this.nodeDesc.defaultState;
-            this.stateShowElapsed = 2000;
-            this.showState();
+            this.showState(false);
         }
-
-        if(this.type === "MetAnimNode" && (this.nodeDesc.autoplay || true)) {
-            if(!this.curAnim) {
+        else if(this.type === "MetAnimNode"){
+            if (!this.curAnim)
                 this.setKeyFrameAnim(this.nodeDesc.keyframes, this.nodeDesc.duration, this.nodeDesc.autoreverses);
-            }
-
-            this.curAnim.activeAnim();
+            if(this.nodeDesc.autoplay)
+                this.curAnim.activeAnim();
         }
     };
 
-    MetNodeView.prototype.showState = function() {
-        var originStateKeyframe = this.stateViewPlayer.renderables[this.stateViewPlayer.renderables.length - 1];
+    MetNodeView.prototype.showState = function(animated) {
+        var transition = animated ? null : {duration: 0};
         var stateKeyframe = this.metNodes[this.curStateIdx];
-        if(!this.stateViewPlayer.options.together)
-            this.stateViewPlayer.hide(originStateKeyframe, null, function(){
-                this.stateViewPlayer.show(stateKeyframe, null, null);
+        var player = this.stateViewPlayer;
+        if(!player.options.together)
+            player.hide(null, transition, function(){
+                player.show(stateKeyframe, transition, null);
             });
         else {
-            this.stateViewPlayer.hide(originStateKeyframe, null, null);
-            this.stateViewPlayer.show(stateKeyframe, null, null);
+            player.hide(null, transition, null);
+            player.show(stateKeyframe, transition, null);
         }
     };
 
     MetNodeView.prototype.showNextState = function() {
         var subMetNodes = this.metNodes;
         this.curStateIdx = (this.curStateIdx + 1) % subMetNodes.length;
-        this.showState();
+        this.showState(true);
     }
 
     MetNodeView.prototype.showPreState = function() {
         var subMetNodes = this.metNodes;
         this.curStateIdx = (this.curStateIdx + subMetNodes.length - 1) % subMetNodes.length;
-        this.showState();
+        this.showState(true);
     }
 
     MetNodeView.prototype.setActivated = function() {
@@ -318,32 +242,11 @@ define(function(require, exports, module) {
     };
 
     MetNodeView.prototype.showMetNode = function() {
-        this.renderController.show(this,
-            {
-                //curve:TweenTransition.Curves.linear,
-                duration: 0
-            }
-        );
-
-        //DebugUtils.log(this.name +
-        //" Size(" + this.size[0] + "," + this.size[1] + ") " +
-        //" zPosition=" + this.zPosition +
-        //" id_=" + this.metNodeId);
-
+        this.renderController.show(this, null, null);
     };
 
     MetNodeView.prototype.hideMetNode = function() {
-        this.renderController.hide(
-            {
-                //curve:TweenTransition.Curves.linear,
-                duration: 0
-            }
-            ,
-            function() {
-                this.showMetNode();
-                //now hide complete
-            }.bind(this)
-        );
+        this.renderController.hide(null, null);
     };
 
     MetNodeView.prototype.getEventDispatcher = function() {
@@ -351,14 +254,15 @@ define(function(require, exports, module) {
     };
 
     function _setStatePlayer(subRoot) {
-        var centerModifier = new Modifier({
-            size: this.size,
-            align : [0.5, 0.5],
-            origin : [0.5, 0.5]
-        });
+        var options = TransitionUtils.synthesizeLightBoxOptions(this.nodeDesc.transition, this.size, [1, 1]);
+        this.stateViewPlayer = new MetLightbox(options);
+        if(this.containerSurface) {
+            this.containerSurface.context.setPerspective(3000);
+            this.containerSurface.add(this.stateViewPlayer);
+        }
+        else
+            this.add(this.stateViewPlayer);
 
-        this.stateViewPlayer = new MetLightbox(TransitionUtils.synthesizeLightBoxOptions(this.nodeDesc.transition, this.size, [1, 1]));
-        this.containerSurface.add(this.stateViewPlayer);
         return subRoot;
     }
 
@@ -392,18 +296,43 @@ define(function(require, exports, module) {
     //};
 
     function _subscribeEvent(subscriber, src) {
-        if(src instanceof MetNodeView && src.getEventDispatcher()) {
-            subscriber.subscribe(src.getEventDispatcher()).subscribe(src);
-        } else {
-            subscriber.subscribe(src);
-        }
+        subscriber.subscribe(src);
     }
 
     function _setEventProcesser2Dispatcher() {
-        this.eventDispatcher = new EventDispatcher(_processEventBind.call(this));
+        //this.eventDispatcher = new EventDispatcher(function () {
+        //    return _processEventBind.apply(this, arguments);
+        //}.bind(this));
+
+
+        var sync = new GenericSync(
+            ['mouse', 'touch']
+        );
+
+        this._eventInput.pipe(sync);
+
+        //this.on('click', function (data) {
+        //    console.log("click " + this.metNodeId);
+        //}.bind(this));
+
+        sync.on('start', function(data) {
+            //console.log("sync start " + this.metNodeId + " " +  data.velocity);
+        }.bind(this));
+
+        sync.on('update', function(data) {
+            //console.log("sync update " + this.metNodeId + " " +  data.velocity);
+        }.bind(this));
+
+        sync.on('end', function(data) {
+            //console.log("sync end " + this.metNodeId + " " +  data.velocity);
+        }.bind(this));
+
+        this._eventInput.pipe(new EventDispatcher(function () {
+            return _processEventBind.apply(this, arguments);
+        }.bind(this))).pipe(this._eventOutput);
     }
 
-    function _processEventBind() {
+    function _processEventBind(type, data) {
         //[
         //    'click', 'mousedown', 'mousemove', 'mouseup', 'mouseleave',
         //    'touchstart', 'touchmove','touchend', 'touchcancel'
@@ -415,17 +344,17 @@ define(function(require, exports, module) {
         //        }.bind(this))
         //    }.bind(this))
 
+        if(type == 'click')
+            console.log("event type = " + type + " " + this.metNodeId + " _processEventBind type = " + this.type);
 
         //default, could be processed by downstream elements
+        if(this.eventProcessed === true) {
+            return true;
+        }
         return false;
     }
 
     function _listenToAction() {
-
-        //this.on("click", function(data){
-        //    DebugUtils.log(this.metNodeId + " type = " + this.type + " view event click");
-        //}.bind(this));
-
         ////anim node pause and resume temp test
         //if(this.type == "MetAnimNode") {
         //    this.on('click', function(data) {
@@ -438,19 +367,22 @@ define(function(require, exports, module) {
         //    }.bind(this));
         //}
 
+        //this.on('click', function(data) {
+        //    console.log(this.metNodeId + " type = " + this.type + " view event click");
+        //}.bind(this));
+
         if(this.type === "MetStateNode") {
             var sync = new GenericSync(
                 ['mouse', 'touch'],
                 {direction : GenericSync.DIRECTION_X}
             );
 
-            //this.on('click', function(data) {
-            //    DebugUtils.log(this.metNodeId + " type = " + this.type + " view event click");
-            //    this.showNextState();
-            //}.bind(this));
+            this.on('click', function(data) {
+                DebugUtils.log(this.metNodeId + " type = " + this.type + " view event click");
+                this.showNextState();
+            }.bind(this));
 
             this.pipe(sync);
-
 
             sync.on('start', function(data) {
                 //var currentPosition = this.pageViewPos.get();

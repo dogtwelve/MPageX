@@ -29,7 +29,7 @@ define(function(require, exports, module) {
     // current index in sections(level-2 pages)
     var currentSection = window._initSection || 0;
 
-    var renderController = new MetLightbox(TransitionUtils.synthesizeLightBoxOptions(0, [0, 0], [1, 1]));
+    var renderController = new MetLightbox({});
 
     function __resizeMetView(){
         var contextContainer = document.getElementById("met-view");
@@ -38,7 +38,7 @@ define(function(require, exports, module) {
         contextContainer.style.width = window.innerWidth + "px";
         contextContainer.style.height = window.innerHeight + "px";
         contextContainer.overflow = "hidden";
-        contextContainer.style.background="black";
+        contextContainer.style.background = "black";
         return contextContainer;
     }
 
@@ -56,12 +56,16 @@ define(function(require, exports, module) {
         Engine.on("resize",
             function() {
                 _resize();
+                var options = TransitionUtils.synthesizeLightBoxOptions(0, [0, 0], [0, 0]);
+                renderController.setOptions(options);
                 Utility.loadURL("zres/project.json", initApp);
             }
         );
         Engine.on("orientationchange",
             function(){
                 _resize();
+                var options = TransitionUtils.synthesizeLightBoxOptions(0, [0, 0], [0, 0]);
+                renderController.setOptions(options);
                 Utility.loadURL("zres/project.json", initApp);
             }
         );
@@ -144,14 +148,12 @@ define(function(require, exports, module) {
     function _showPages(together){
         var currentPage = _getPageAt(currentChapter, currentSection);
         var pageView = createPageView(currentPage);
-
-        var originPageView = renderController.renderables[renderController.renderables.length - 1];
         if(!together)
-            renderController.hide(originPageView, null, function(){
+            renderController.hide(null, null, function(){
                 renderController.show(pageView, null, null);
             });
         else {
-            renderController.hide(originPageView, null, null);
+            renderController.hide(null, null, null);
             renderController.show(pageView, null, null);
         }
     }

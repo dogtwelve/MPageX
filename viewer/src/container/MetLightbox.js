@@ -55,20 +55,25 @@ define(function(require, exports, module) {
     }
 
     MetLightbox.DEFAULT_OPTIONS = {
-        inTransform: Transform.scale(0.001, 0.001, 0.001),
-        inOpacity: 0,
-        inOrigin: [0.5, 0.5],
-        inAlign: [0.5, 0.5],
-        outTransform: Transform.scale(0.001, 0.001, 0.001),
-        outOpacity: 0,
-        outOrigin: [0.5, 0.5],
-        outAlign: [0.5, 0.5],
-        showTransform: Transform.identity,
+        inOpacity: 1,
+        outOpacity: 1,
         showOpacity: 1,
+
+        inOrigin: [0.5, 0.5],
+        outOrigin: [0.5, 0.5],
         showOrigin: [0.5, 0.5],
+
+        inAlign: [0.5, 0.5],
+        outAlign: [0.5, 0.5],
         showAlign: [0.5, 0.5],
-        inTransition: true,
-        outTransition: true,
+
+        inTransform: Transform.scale(1, 1, 1.00001),
+        outTransform: Transform.scale(1, 1, 1.00001),
+        showTransform: Transform.scale(1, 1, 1.00001),
+
+        inTransition: {duration: 0},
+        outTransition: {duration: 0},
+
         together: false,
     };
 

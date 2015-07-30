@@ -2233,73 +2233,155 @@ define(function(require, exports, module) {
 
 
     ////Intercepting link clicks in Famo.us
-    var Engine = require('famous/core/Engine');
+    //var Engine = require('famous/core/Engine');
+    //
+    //var Surface = require('famous/core/Surface');
+    //var Utility = require('famous/utilities/Utility');
+    //
+    //var mainContext = Engine.createContext();
+    //
+    //this.backSurface = new Surface({
+    //    size: [undefined, undefined],
+    //    content: ''
+    //});
+    //
+    //this.mySurface = new Surface({
+    //    size: [true, true],
+    //    content: '<a target="_blank" href="http://famo.us">This is a link</a>',
+    //    properties: {
+    //        backgroundColor: 'grey',
+    //        fontColor: 'white'
+    //    }
+    //});
+    //
+    //this.mySurface.clickNullifier = function (e) {
+    //    if (e.target && e.target.nodeName == 'A' && e.target.href) {
+    //        console.log('href', e.target.href);
+    //        this.mySurface.emit('href-clicked', {
+    //            data: {
+    //                href: e.target.href
+    //            }
+    //        })
+    //    }
+    //    e.preventDefault();
+    //    return false;
+    //}.bind(this);
+    //
+    //this.mySurface.on('deploy', function () {
+    //    console.log('onload',this);
+    //    // sets up the click function on the surface DOM object
+    //    this._currentTarget.onclick = this.clickNullifier;
+    //});
+    //
+    //this.mySurface.on('click', function (event) {
+    //    // event from the surface itself
+    //    console.log('mySurface Event Target',event.target);
+    //});
+    //
+    //this.mySurface.on('href-clicked', function (event) {
+    //    console.log(event.data);
+    //    // handle your code for the iframe
+    //    // not always doable in the case of 'X-Frame-Options' to 'SAMEORIGIN'
+    //    loadIframe.call(this, event.data.href);
+    //    // or loadURL like here. Note this needs CORS open on the href server
+    //    //Utility.loadURL(event.data.href, loadLink.bind(this));
+    //
+    //    // or choose to load just the href link somewhere
+    //    //this.backSurface.setContent(event.data.href);
+    //}.bind(this));
+    //
+    //function loadIframe(content) {
+    //    this.backSurface.setContent('<iframe src="' + content + '" frameborder="0" height="100%" width="100%"></iframe>');
+    //};
+    //
+    //function loadLink(content) {
+    //    this.backSurface.setContent(content);
+    //};
+    //
+    //mainContext.add(this.backSurface);
+    //mainContext.add(this.mySurface);
 
-    var Surface = require('famous/core/Surface');
-    var Utility = require('famous/utilities/Utility');
+    ////multi-surface event sync
+    var Engine = require("famous/core/Engine");
+    var Surface = require("famous/core/Surface");
+    var ScaleSync = require("famous/inputs/ScaleSync");
+    var Modifier  = require('famous/core/Modifier');
+    var Transform = require('famous/core/Transform');
 
     var mainContext = Engine.createContext();
 
-    this.backSurface = new Surface({
+    var start = 0;
+    var update = 0;
+    var end = 0;
+    var growShrink = "";
+    var scale = 1;
+
+    var scaleSync = new ScaleSync();
+    //Engine.pipe(scaleSync);
+
+    var contentTemplate = function() {
+        return "<div>Start Count: " + start + "</div>" +
+            "<div>End Count: " + end + "</div>" +
+            "<div>Update Count: " + update + "</div>" +
+            "<div>Scale factor: " + scale.toFixed(3) + "</div>" +
+            "<div>Scale Direction: " + growShrink + "</div>";
+    };
+
+    var surface = new Surface({
         size: [undefined, undefined],
-        content: ''
+        content: contentTemplate()
     });
 
-    this.mySurface = new Surface({
-        size: [true, true],
-        content: '<a target="_blank" href="http://famo.us">This is a link</a>',
+    scaleSync.on("start", function() {
+        start++;
+        surface.setContent(contentTemplate());
+    });
+
+    scaleSync.on("update", function(data) {
+        update++;
+        growShrink = data.velocity > 0 ? "Growing" : "Shrinking";
+        scale = data.scale;
+        surface.setContent(contentTemplate());
+    });
+
+    scaleSync.on("end", function() {
+        end++;
+        surface.setContent(contentTemplate());
+    });
+
+    surface.on('click', function() {
+        surface.setContent('get click')
+    })
+
+    mainContext.add(surface);
+
+    var mod1 = new Modifier({ transform: Transform.translate(100, 100, 0)});
+    var mod2 = new Modifier({ transform: Transform.translate(100, 300, 0)});
+
+    var aaa = new Surface({
+        size: [200, 200],
+        content: 'AAAAA',
         properties: {
-            backgroundColor: 'grey',
-            fontColor: 'white'
+            backgroundColor: 'blue'
         }
-    });
+    })
 
-    this.mySurface.clickNullifier = function (e) {
-        if (e.target && e.target.nodeName == 'A' && e.target.href) {
-            console.log('href', e.target.href);
-            this.mySurface.emit('href-clicked', {
-                data: {
-                    href: e.target.href
-                }
-            })
+
+    var bbb = new Surface({
+        size: [200, 200],
+        content: 'BBBB',
+        properties: {
+            backgroundColor: 'red'
         }
-        e.preventDefault();
-        return false;
-    }.bind(this);
+    })
 
-    this.mySurface.on('deploy', function () {
-        console.log('onload',this);
-        // sets up the click function on the surface DOM object
-        this._currentTarget.onclick = this.clickNullifier;
-    });
+    mainContext.add(mod1).add(aaa);
+    mainContext.add(mod2).add(bbb);
 
-    this.mySurface.on('click', function (event) {
-        // event from the surface itself
-        console.log('mySurface Event Target',event.target);
-    });
+    aaa.pipe(scaleSync);
+    bbb.pipe(scaleSync);
 
-    this.mySurface.on('href-clicked', function (event) {
-        console.log(event.data);
-        // handle your code for the iframe
-        // not always doable in the case of 'X-Frame-Options' to 'SAMEORIGIN'
-        loadIframe.call(this, event.data.href);
-        // or loadURL like here. Note this needs CORS open on the href server
-        //Utility.loadURL(event.data.href, loadLink.bind(this));
 
-        // or choose to load just the href link somewhere
-        //this.backSurface.setContent(event.data.href);
-    }.bind(this));
-
-    function loadIframe(content) {
-        this.backSurface.setContent('<iframe src="' + content + '" frameborder="0" height="100%" width="100%"></iframe>');
-    };
-
-    function loadLink(content) {
-        this.backSurface.setContent(content);
-    };
-
-    mainContext.add(this.backSurface);
-    mainContext.add(this.mySurface);
 
 
 });

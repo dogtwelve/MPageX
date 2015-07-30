@@ -303,10 +303,10 @@ define(function(require, exports, module) {
             }
 
             if(nodeDescription.cover === 1) {
-                videoParam += " poster=" + "image/BBB_480_Poster.jpg";
+                //videoParam += " poster=" + "image/BBB_480_Poster.jpg";
             }
 
-            newSurface.setContent(videoParam + " src=\"zres/" + videoURL + "\" width=" + size[0]+ "px" + " height=" + size[1]+ "px" + " </video>");
+            newSurface.setContent(videoParam + " src=\"" + videoURL + "\" width=" + size[0]+ "px" + " height=" + size[1]+ "px" + " </video>");
 
             newSurface.on("click", function() {
                 var video = document.getElementById(video_dom_id);

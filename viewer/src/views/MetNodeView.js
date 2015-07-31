@@ -22,6 +22,8 @@ define(function(require, exports, module) {
     var DebugUtils          = require('utils/DebugUtils');
     var StageView          = require('views/StageView');
     var EventDispatcher     = require('input/EventDispatcher');
+    var MetHook = require('actions/MetHook');
+    var MetPerform = require('actions/MetPerform');
 
     var TransitionUtils = require('utils/TransitionUtils');
 
@@ -249,6 +251,17 @@ define(function(require, exports, module) {
         this.renderController.hide(null, null);
     };
 
+    MetNodeView.prototype.isMetNodeShown = function() {
+        var array = this.renderController._renderables;
+        if(array instanceof Array) {
+            for (var i in array) {
+                if (array[i] === this)
+                    return true;
+            }
+        }
+        return false;
+    };
+
     MetNodeView.prototype.getEventDispatcher = function() {
         return this.eventDispatcher;
     };
@@ -267,16 +280,87 @@ define(function(require, exports, module) {
     }
 
     function _setScrollHolder(subRoot) {
-        var direction = this.nodeDesc.scrollDirection == 0 ? Utility.Direction.Y : Utility.Direction.X;
-        var scrollview = new MetScrollview({ direction: direction});
+        var isVert = this.nodeDesc.scrollDirection == 0;
+        var direction = isVert ? Utility.Direction.Y : Utility.Direction.X;
+        var scrollview = new MetScrollview({direction: direction});
         this.containerSurface.add(scrollview);
         var subMetNodes = this.metNodes;
-        subRoot = new View();
-        scrollview.sequenceFrom([subRoot]);
+        // calc contentSize for scroll
+        var sz = [this.size[0], this.size[1]];
+        var min_v = 0, max_v = 0;
+        for(var i = 0; i < subMetNodes.length; i++){
+            var snode = subMetNodes[i];
+            var v0 = 0, v1 = 0;
+            if(isVert){
+                v0 = snode.yPosition * snode.containerSize[1] - snode.size[1] * snode.originY;
+                v1 = v0 + snode.size[1];
+            }
+            else{
+                v0 = snode.xPosition * snode.containerSize[0] - snode.size[0] * snode.originX;
+                v1 = v0 + snode.size[0];
+            }
+            if(i == 0){
+                min_v = v0;
+                max_v = v1;
+            }
+            else{
+                min_v = Math.min(min_v, v0);
+                max_v = Math.max(max_v, v1);
+            }
+        }
+        sz[isVert ? 1 : 0] = max_v - min_v;
 
-        for(var metNode in subMetNodes) {
-            //scrollview.subscribe(subMetNodes[metNode]);
-            _subscribeEvent(scrollview, subMetNodes[metNode]);
+        subRoot = new View({size: sz});
+        scrollview.sequenceFrom([subRoot]);
+        var c_sz = sz[isVert ? 1 : 0];
+        var v_sz = this.size[isVert ? 1 : 0];
+        // setup footprints for scrollview
+        var footprints = this.nodeDesc.footprints;
+        var scroll_fts = [];
+        if(footprints.length > 0) {
+            for (var i = 0; i < footprints.length; i++) {
+                var ft = footprints[i];
+                scroll_fts.push(ft.f);
+            }
+        }
+        else {
+            for (var i = 0; ; i++) {
+                var f = i * v_sz + v_sz/2;
+                if (f >= 0 + v_sz/2 && f <= c_sz - v_sz/2)
+                    scroll_fts.push(f);
+                else
+                    break;
+            }
+        }
+        var no_first = true;
+        var no_last = true;
+        for(var i = 0; i < scroll_fts.length; i++){
+            if(no_first) {
+                if (scroll_fts[i] == 0 + v_sz/2) no_first = false;
+            }
+            if(no_last) {
+                if (scroll_fts[i] == c_sz - v_sz/2) no_last = false;
+            }
+        }
+        if(no_first) scroll_fts.unshift(0 + v_sz/2);
+        if(no_last) scroll_fts.push(c_sz - v_sz/2);
+        if(scroll_fts.length > 0){
+            scroll_fts.sort(function(val1, val2){
+                if(val1 > val2) return 1;
+                else if(val1 < val2) return -1;
+            });
+            var paging = this.nodeDesc.paging;
+            scrollview.setOptions({footprinted: paging == 1 || paging == 2,});
+            scrollview.setupFootprints(scroll_fts);
+        }
+
+        // contentOffset
+        scrollview.setOffset(-this.nodeDesc.contentOffset);
+
+        // events
+        for(var i in subMetNodes) {
+            //scrollview.subscribe(subMetNodes[i]);
+            _subscribeEvent(scrollview, subMetNodes[i]);
         }
 
         if(this.mainSurface) {
@@ -284,9 +368,32 @@ define(function(require, exports, module) {
             _subscribeEvent(scrollview, this.mainSurface);
         }
 
-        scrollview.on("click", function(data){
-            DebugUtils.log("scrollview event:" + data);
-        }.bind(this));
+        var _findFootprintByLocation = function(loc) {
+            for (var i = 0; i < footprints.length; i++) {
+                var ft = footprints[i];
+                if (loc == ft.f) return ft;
+            }
+            return null;
+        }
+
+        scrollview.on("onFootprint", function(data) {
+            var ft = _findFootprintByLocation(data.location);
+            if(null == ft) return;
+            for(var i = 0; i < ft.performs.length; i++){
+                var pf = new MetPerform();
+                pf.parseByDic(ft.performs[i]);
+                pf.execute();
+            }
+        });
+        scrollview.on("hookFootprint", function (data) {
+            var ft = _findFootprintByLocation(data.location);
+            if(null == ft) return;
+            for(var i = 0; i < ft.hooks.length; i++){
+                var hk = new MetHook();
+                hk.parseByDic(ft.hooks[i]);
+                hk.executeStep(1 - Math.min(1, Math.abs(data.offset*2/v_sz)));
+            }
+        });
 
         return subRoot;
     }

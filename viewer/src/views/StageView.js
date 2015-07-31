@@ -164,7 +164,7 @@ define(function(require, exports, module) {
             var fillImage = this.pageDesc.imageFill.rawImageURL;
             // get imageRect
             //"imageRect" : "{{-850.35943603515625, -0.00079511082731187344}, {1616.3837890625, 1048.1239013671875}}",
-            var ir = pageDesc.imageFill.imageRect;
+            var ir = this.pageDesc.imageFill.imageRect;
             ir = ir.replace(/[\{\}]/g, "");
             ir = ir.split(",");
             if(!ir instanceof Array)
@@ -173,7 +173,7 @@ define(function(require, exports, module) {
                 for(var i = 0; i < ir.length; i++) ir[i] = Number(ir[i]) * pageScale;
 
             this.stageContainerSurface.setProperties({
-                backgroundImage: TextUtils.sprintf("url('zres/%s')", pageDesc.imageFill.rawImageURL),
+                backgroundImage: TextUtils.sprintf("url('zres/%s')", this.pageDesc.imageFill.rawImageURL),
                 backgroundRepeat: "no-repeat",
                 backgroundAttachment: "relative",
                 backgroundPosition: TextUtils.sprintf("%dpx %dpx", ir[0], ir[1]),

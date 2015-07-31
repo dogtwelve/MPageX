@@ -23,7 +23,8 @@ define(function(require, exports, module) {
     var SpringStates = {
         NONE: 0,
         EDGE: 1,
-        PAGE: 2
+        PAGE: 2,
+        FOOTPRINT: 3,
     };
 
     /** @enum */
@@ -109,14 +110,19 @@ define(function(require, exports, module) {
         this._touchCount = 0;
         this._springState = SpringStates.NONE;
         this._onEdge = EdgeStates.NONE;
+        this._footprintSpringPosition = 0;
         this._pageSpringPosition = 0;
         this._edgeSpringPosition = 0;
         this._touchVelocity = 0;
         this._earlyEnd = false;
         this._needsPaginationCheck = false;
+        this._needsFootprintCheck = false;
         this._displacement = 0;
         this._totalShift = 0;
         this._cachedIndex = 0;
+
+        // footprints, must be sorted ascent
+        this._footprints = null;
 
         // subcomponent logic
         this._scroller.positionFrom(this.getPosition.bind(this));
@@ -146,15 +152,30 @@ define(function(require, exports, module) {
         edgePeriod: 300,
         edgeDamp: 1,
         margin: 1000,       // mostly safe
+
         paginated: false,
         pagePeriod: 500,
         pageDamp: 0.8,
         pageStopSpeed: 10,
         pageSwitchSpeed: 0.5,
+
+        footprinted: false,
+        footprintPeriod: 500,
+        footprintDamp: 0.8,
+        footpintStopSpeed: 10,
+        footprintSwitchSpeed: 0.5,
+
         speedLimit: 5,
         groupScroll: false,
         syncScale: 1
     };
+
+    function _arrayCopy(arr){
+        var array = [];
+        for(var i = 0; i < arr.length; i++)
+            array.push(arr[i]);
+        return array;
+    }
 
     function _handleStart(event) {
         this._touchCount = event.count;
@@ -217,6 +238,7 @@ define(function(require, exports, module) {
             this.setVelocity(velocity);
             this._touchVelocity = 0;
             this._needsPaginationCheck = true;
+            this._needsFootprintCheck = true;
         }
     }
 
@@ -246,6 +268,7 @@ define(function(require, exports, module) {
         this._particle.on('update', function(particle) {
             if (this._springState === SpringStates.NONE) _normalizeState.call(this);
             this._displacement = particle.position.x - this._totalShift;
+            _checkFootprints.call(this);
         }.bind(this));
 
         this._particle.on('end', function() {
@@ -268,6 +291,12 @@ define(function(require, exports, module) {
         var direction = this.options.direction;
         var nodeSize = node.getSize();
         return (!nodeSize) ? this._scroller.getSize()[direction] : nodeSize[direction];
+    }
+
+    function _viewSizeForDirection() {
+        var direction = this.options.direction;
+        var viewSize = this.getSize();
+        return (!viewSize) ? 0 : viewSize[direction];
     }
 
     function _handleEdge(edge) {
@@ -314,6 +343,90 @@ define(function(require, exports, module) {
         else _setSpring.call(this, 0, SpringStates.PAGE);
     }
 
+    function _handleFootprint(){
+        if (this._touchCount) return;
+        if (this._springState === SpringStates.EDGE) return;
+
+        if(!((this._footprints instanceof Array) && this._footprints.length > 0)) return;
+
+        var velocity = this.getVelocity();
+        if (Math.abs(velocity) >= this.options.footprintStopSpeed) return;
+
+        var position = this.getPosition();
+        var velocitySwitch = Math.abs(velocity) > this.options.footprintSwitchSpeed;
+
+        // parameters to determine when to switch
+        var nodeSize = _nodeSizeForDirection.call(this, this._node);
+        var viewSize = _viewSizeForDirection.call(this);
+        var fts = _arrayCopy(this._footprints);
+        fts = fts.filter(function(obj){
+            var val = obj.loc;
+            return (val >= 0 + viewSize/2 -.5 && val <= nodeSize - viewSize/2 +.5);
+        });
+
+        var loc_cur = -1, loc_prev = 0, loc_next = 0;
+        for(var i = 0; i < fts.length - 1; i++){
+            if(position >= fts[i].loc - viewSize/2 && position <= fts[i + 1].loc - viewSize/2){
+                loc_cur = fts[i].loc - viewSize/2;
+                loc_next = fts[i + 1].loc - viewSize/2;
+                if(i > 0)
+                    loc_prev = fts[i - 1].loc - viewSize/2;
+                else
+                    loc_prev = Math.max(0, loc_cur - viewSize/2);
+                break;
+            }
+        }
+        if(loc_cur == -1) return;
+
+        var positionNext = position > 0.5 * (loc_next + loc_cur);
+        var positionPrev = position < 0.5 * (loc_prev + loc_cur);
+
+        var velocityNext = velocity > 0;
+        var velocityPrev = velocity < 0;
+
+        this._needsFootprintCheck = false;
+
+        if ((positionNext && !velocitySwitch) || (velocitySwitch && velocityNext))
+            _setSpring.call(this, loc_next, SpringStates.FOOTPRINT);
+        else if (velocitySwitch && velocityPrev)
+            _setSpring.call(this, loc_prev, SpringStates.FOOTPRINT);
+        else
+            _setSpring.call(this, loc_cur, SpringStates.FOOTPRINT);
+    }
+
+    function _checkFootprints(){
+        if(!((this._footprints instanceof Array) && this._footprints.length > 0)) return;
+        // will compare self.contentOffset to footprints in following algo, the compare result may be
+        // bigger:3, smaller:2, near:1, init:0
+        var at_flags = [
+            //--- 0  1  2  3
+            /*0*/[0, 1, 0, 0],
+            /*1*/[0, 0, 0, 0],
+            /*2*/[0, 1, 0, 1],
+            /*3*/[0, 1, 1, 0],
+        ];
+        var epsilon = 1.0;
+        var viewSize = _viewSizeForDirection.call(this);
+        var off = this.getOffset();
+        for (var i = 0; i < this._footprints.length; i++) {
+            var ft = this._footprints[i];
+            var dist = off - (ft.loc - viewSize/2);
+            var oat = ft.at;
+            if (dist > epsilon)
+                ft.at = 3;
+            else if (dist < epsilon)
+                ft.at = 2;
+            else
+                ft.at = 1;
+            if(at_flags[oat][ft.at] == 1){
+                this._eventOutput.emit('onFootprint', {location: ft.loc, at: ft.at});
+            }
+            if(dist >= -viewSize/2 && dist <= viewSize/2){
+                this._eventOutput.emit('hookFootprint', {location: ft.loc, offset: dist});
+            }
+        }
+    }
+
     function _setSpring(position, springState) {
         var springOptions;
         if (springState === SpringStates.EDGE) {
@@ -330,6 +443,14 @@ define(function(require, exports, module) {
                 anchor: [this._pageSpringPosition, 0, 0],
                 period: this.options.pagePeriod,
                 dampingRatio: this.options.pageDamp
+            };
+        }
+        else if(springState === SpringStates.FOOTPRINT){
+            this._footprintSpringPosition = position;
+            springOptions = {
+                anchor: [this._footprintSpringPosition, 0, 0],
+                period: this.options.footprintPeriod,
+                dampingRatio: this.options.footprintDamp
             };
         }
 
@@ -481,6 +602,13 @@ define(function(require, exports, module) {
         return this._scroller.outputFrom.apply(this._scroller, arguments);
     };
 
+    MetScrollview.prototype.setupFootprints = function(arr){
+        var array = [];
+        for(var i = 0; i < arr.length; i++){
+            array.push({loc:arr[i], at:0});
+        }
+        this._footprints = array;
+    };
     /**
      * Returns the position associated with the MetScrollview instance's current node
      *  (generally the node currently at the top).
@@ -528,6 +656,7 @@ define(function(require, exports, module) {
      */
     MetScrollview.prototype.setPosition = function setPosition(x) {
         this._particle.setPosition1D(x);
+        _checkFootprints.call(this);
     };
 
     /**
@@ -572,6 +701,10 @@ define(function(require, exports, module) {
             if (options.direction === 'x') options.direction = Utility.Direction.X;
             else if (options.direction === 'y') options.direction = Utility.Direction.Y;
         }
+
+        // preprocess custom options
+        //if(!((options.footprints instanceof Array) && options.footprints.length > 0))
+        //    options.footprinted = false;
 
         if (options.groupScroll !== this.options.groupScroll) {
             if (options.groupScroll)
@@ -642,8 +775,10 @@ define(function(require, exports, module) {
      * @return {number} Render spec for this component
      */
     MetScrollview.prototype.render = function render() {
-        if (this.options.paginated && this._needsPaginationCheck) _handlePagination.call(this);
-
+        if(this.options.paginated && this._needsPaginationCheck)
+            _handlePagination.call(this);
+        else if(this.options.footprinted && this._needsFootprintCheck)
+            _handleFootprint.call(this);
         return this._scroller.render();
     };
 

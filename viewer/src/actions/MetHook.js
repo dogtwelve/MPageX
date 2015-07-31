@@ -4,13 +4,13 @@
 define(function (require, exports, module) {
     'use strict';
 
-    var Easing              = require('famous/transitions/Easing');
-    var TweenTransition     = require('famous/transitions/TweenTransition');
-    var Timer               = require("famous/utilities/Timer");
-    var MotionPath          = require('utils/MotionPath');
+    var Easing = require('famous/transitions/Easing');
+    var TweenTransition = require('famous/transitions/TweenTransition');
+    var Timer = require("famous/utilities/Timer");
+    var MotionPath = require('utils/MotionPath');
 
     /** @constructor */
-    function MetHook(){
+    function MetHook() {
         // # 操作ID - global unique
         this.id_ = "";
         // # 关联攻方
@@ -45,7 +45,7 @@ define(function (require, exports, module) {
         };
     };
 
-    MetHook.prototype.parseByDic = function(dic) {
+    MetHook.prototype.parseByDic = function (dic) {
         this.id_ = dic.id_ || "";
 
         this.source.nodeID = dic.source.nodeID || "";
@@ -61,10 +61,12 @@ define(function (require, exports, module) {
         this.target.mutual = dic.target.mutual || false;
     };
 
-    MetHook.prototype.execute = function(){
-        if(MetPerform.MetNodeActionPerformNone == this.performType)
-            return;
-        alert("hook fired!! LOL!!!");
+    MetHook.prototype.execute = function () {
+    }
+
+    // execute one hook step identified t
+    // where t is normalized in range [0,1].
+    MetHook.prototype.executeStep = function (t) {
     }
 
     module.exports = MetHook;

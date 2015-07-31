@@ -75,11 +75,10 @@ define(function(require, exports, module) {
 
         // node stroke
         var stroke = nodeDescription.nodeStroke;
-        var strokeAlpha = 0, strokeWidth = 0, strokeColor = "", strokeLineType = 0, strokeType = 0;
+        var strokeWidth = 0, strokeColor = "", strokeLineType = 0, strokeType = 0;
         if(null != stroke){
             strokeWidth = stroke.strokeWidth;
             if(0 != strokeWidth){
-                strokeAlpha = stroke.strokeAlpha;
                 strokeColor = UnitConverter.rgba2ColorString(stroke.strokeColor);
                 strokeLineType = stroke.strokeLineType;
                 strokeType = stroke.strokeType;
@@ -282,6 +281,28 @@ define(function(require, exports, module) {
                     //backgroundColor: 'gray'
                 }
             });
+        }
+
+        if(type === "AudioNode") {
+            var audioURL = "zres/" + nodeDescription.audioURL;
+            newSurface = new Surface({
+                //src: videoURL,
+                size: size,
+                classes: classes
+            });
+            var audio_dom_id = "audio-" + nodeDescription.id_;
+            var audioParam = "<audio id=" + audio_dom_id;
+
+            if(nodeDescription.autoplay === 1) {
+                audioParam += " autoplay ";
+            }
+
+            if(nodeDescription.loop === 1) {
+                audioParam += " loop ";
+            }
+
+            newSurface.setContent(audioParam + " src=\"" + audioURL + "\" </audio>");
+
         }
 
         if(type === "VideoNode") {
@@ -798,13 +819,30 @@ define(function(require, exports, module) {
         //    newNode.setKeyFrameAnim(nodeDescription.keyframes, nodeDescription.duration, nodeDescription.autoreverses);
         //}
 
-
         var subMetNodes = nodeDescription.nodes;
+        // adjust scrollNode's children by scrollNode.contentOffset
+        if(type == "MetScrollNode"){
+            var direction = nodeDescription.scrollDirection;
+            var contentOffset = nodeDescription.contentOffset;
+            for(var i in subMetNodes) {
+                var node = subMetNodes[i];
+                if(direction == 0)
+                    node.positionY -= contentOffset;
+                else
+                    node.positionX -= contentOffset;
+            }
+            var footprints = nodeDescription.footprints;
+            for(var i in footprints){
+                var ft = footprints[i];
+                if(direction == 0)
+                    ft.f -= contentOffset;
+                else
+                    ft.f -= contentOffset;
+            }
+        }
         var curMetPosZ = zPosition;
-        for(var subMetNodenode in subMetNodes) {
-            var newSubNode = this.makeMetNode(
-                subMetNodes[subMetNodenode],
-                size, curMetPosZ);
+        for(var i in subMetNodes) {
+            var newSubNode = this.makeMetNode(subMetNodes[i], size, curMetPosZ);
             newNode.addSubMetNode(newSubNode.metNode, newSubNode.zPos);
             curMetPosZ = newSubNode.zPos;
         }
@@ -999,6 +1037,13 @@ define(function(require, exports, module) {
 
     MetNodeFactory.prototype.getMetNode = function(metNodeId) {
         return this.metNodesFromFactory[metNodeId];
+    };
+
+    var _instance = null;
+    MetNodeFactory.sharedInstance = function () {
+        if(!_instance)
+            _instance = new MetNodeFactory();
+        return _instance;
     };
 
     module.exports = MetNodeFactory;

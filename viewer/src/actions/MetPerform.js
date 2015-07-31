@@ -4,10 +4,7 @@
 define(function (require, exports, module) {
 	'use strict';
 
-	var Easing = require('famous/transitions/Easing');
-	var TweenTransition = require('famous/transitions/TweenTransition');
 	var Timer = require("famous/utilities/Timer");
-	var MotionPath = require('utils/MotionPath');
 	var MetNodeFactory = require('tools/MetNodeFactory');
 
 	/** @constructor */
@@ -66,7 +63,8 @@ define(function (require, exports, module) {
 	};
 
 	MetPerform.prototype.execute = function () {
-		var nodeFactory = MetNodeFactory.sharedInstance();
+        return;
+		var nodeFactory = MetNodeFactoryInstance;
 
 		// 空执行
 		if (MetPerform.MetNodeActionPerformNone == this.performType)

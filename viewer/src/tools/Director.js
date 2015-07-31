@@ -12,7 +12,7 @@ define(function(require, exports, module) {
     }
 
     Director.prototype.populateStage = function(stage, nodeDescriptions) {
-        var nodeFactory = MetNodeFactory.sharedInstance();
+        var nodeFactory = MetNodeFactoryInstance;
         var stageMetnodes = {};
         this.metnodes[stage.pageId] = stageMetnodes;
         //var stageMetnodes = this.metnodes[stage.pageId];

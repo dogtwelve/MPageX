@@ -167,14 +167,11 @@ define(function(require, exports, module) {
         var arr = this.metNodes;
         var rt = root;
 
-        if(this.type === "MetStateNode") {
+        if(this.type === "MetStateNode" || this.type === "ButtonNode") {
             rt = _setStatePlayer.call(this, rt);
         }
         else if(this.type === "MetScrollNode") {
             rt = _setScrollHolder.call(this, rt);
-        }
-        else if(this.type === "ButtonNode") {
-            rt = _setButtonHolder.call(this, rt);
         }
 
         if(!isStateKeyframe)

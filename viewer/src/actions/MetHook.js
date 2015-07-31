@@ -4,10 +4,8 @@
 define(function (require, exports, module) {
     'use strict';
 
-    var Easing = require('famous/transitions/Easing');
-    var TweenTransition = require('famous/transitions/TweenTransition');
     var Timer = require("famous/utilities/Timer");
-    var MotionPath = require('utils/MotionPath');
+    var MetNodeFactory = require('tools/MetNodeFactory');
 
     /** @constructor */
     function MetHook() {
@@ -62,11 +60,44 @@ define(function (require, exports, module) {
     };
 
     MetHook.prototype.execute = function () {
+        return;
+        var nodeFactory = MetNodeFactoryInstance;
+        var src_nodeView = nodeFactory.getMetNode(this.source.nodeID);
+        var dst_nodeView = nodeFactory.getMetNode(this.target.nodeID);
+        if(!src_nodeView || !dst_nodeView)
+            ;
+
+        // means MetScrollNode.contentOffset hook
+        if(src_nodeView.type == "MetScrollNode") {
+        }
     }
 
     // execute one hook step identified t
     // where t is normalized in range [0,1].
     MetHook.prototype.executeStep = function (t) {
+        return;
+        var nodeFactory = MetNodeFactoryInstance;
+        var src_nodeView = nodeFactory.getMetNode(this.source.nodeID);
+        var dst_nodeView = nodeFactory.getMetNode(this.target.nodeID);
+        if(!src_nodeView || !dst_nodeView)
+            ;
+
+        // means MetScrollNode.footprint.f hook
+        if(src_nodeView.type == "MetScrollNode") {
+            if(dst_nodeView.type == "MetAnimNode"){
+            }
+            else if(dst_nodeView.type == "MetStateNode"){
+            }
+            else console.log("hook not dealled for TARGET " + dst_nodeView.type);
+        }
+        // means MetAnimNode.keyframe hook
+        else if(src_nodeView.type == "MetAnimNode"){
+        }
+        // means MetStateNode.keyframe hook
+        else if(src_nodeView.type == "MetStateNode"){
+        }
+        // others
+        else console.log("hook not dealled for SOURCE " + src_nodeView.type);
     }
 
     module.exports = MetHook;

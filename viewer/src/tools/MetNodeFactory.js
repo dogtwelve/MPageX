@@ -25,11 +25,21 @@ define(function(require, exports, module) {
     var TransformUtils = require('utils/TransformUtils');
 
     var MetNodeAction = require('actions/MetNodeAction');
-
+    var _Instance = null;
     function MetNodeFactory() {
-          // Container to store created actors by name.
-          this.metNodesFromFactory = {};
+
+        // Container to store created actors by name.
+        this.metNodesFromFactory = {};
+
     }
+    function GetMetNodeFactory() {
+        if(_Instance == null) {
+            _Instance = new MetNodeFactory();
+        }
+        return _Instance;
+    }
+    //MetNodeFactory.prototype.Instance = _Instance;
+    window.MetNodeFactoryInstance = _Instance == null? GetMetNodeFactory():_Instance;
 
     MetNodeFactory.prototype.makeMetNode = function(nodeDescription, containerSize, zPosition) {
 
@@ -1042,12 +1052,10 @@ define(function(require, exports, module) {
         return this.metNodesFromFactory[metNodeId];
     };
 
-    var _instance = null;
-    MetNodeFactory.sharedInstance = function () {
-        if(!_instance)
-            _instance = new MetNodeFactory();
-        return _instance;
-    };
-
+    ////var _instance = null;
+    //MetNodeFactory.sharedInstance = function () {
+    //    return _Instancenstance;
+    //};
+    //GetMetNodeFactory();
     module.exports = MetNodeFactory;
 });

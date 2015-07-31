@@ -16,6 +16,7 @@ define(function(require, exports, module) {
     var MetScrollview          = require('container/MetScrollview');
     var RenderController    = require("famous/views/RenderController");
     var MetLightbox            = require('container/MetLightbox');
+    var MetButton           = require('container/MetButton');
     var UnitConverter       = require('tools/UnitConverter');
     var MotionPath          = require('utils/MotionPath');
     var KeyFrameAnim        = require('animations/KeyFrameAnim');
@@ -172,6 +173,9 @@ define(function(require, exports, module) {
         else if(this.type === "MetScrollNode") {
             rt = _setScrollHolder.call(this, rt);
         }
+        else if(this.type === "ButtonNode") {
+            rt = _setButtonHolder.call(this, rt);
+        }
 
         if(!isStateKeyframe)
             this.showMetNode();
@@ -186,11 +190,19 @@ define(function(require, exports, module) {
             this.curStateIdx = this.nodeDesc.defaultState;
             this.showState(false);
         }
+        else if(this.type === "ButtonNode") {
+            this.curStateIdx = this.nodeDesc.defaultSelected ? 1 : 0;
+            this.showState(false);
+        }
         else if(this.type === "MetAnimNode"){
-            if (!this.curAnim)
+            if (!this.curAnim) {
                 this.setKeyFrameAnim(this.nodeDesc.keyframes, this.nodeDesc.duration, this.nodeDesc.autoreverses);
-            if(this.nodeDesc.autoplay)
-                this.curAnim.activeAnim();
+            }
+            this.curAnim.activeAnim();
+            if(!this.nodeDesc.autoplay) {
+                this.curAnim.pauseAnim();
+            }
+
         }
     };
 
@@ -268,6 +280,20 @@ define(function(require, exports, module) {
 
     function _setStatePlayer(subRoot) {
         var options = TransitionUtils.synthesizeLightBoxOptions(this.nodeDesc.transition, this.size, [1, 1]);
+        this.stateViewPlayer = new MetLightbox(options);
+        if(this.containerSurface) {
+            this.containerSurface.context.setPerspective(3000);
+            this.containerSurface.add(this.stateViewPlayer);
+        }
+        else
+            this.add(this.stateViewPlayer);
+
+        return subRoot;
+    }
+
+
+    function _setButtonHolder(subRoot) {
+        var options = TransitionUtils.synthesizeLightBoxOptions(0, this.size, [1, 1]);
         this.stateViewPlayer = new MetLightbox(options);
         if(this.containerSurface) {
             this.containerSurface.context.setPerspective(3000);
@@ -462,34 +488,48 @@ define(function(require, exports, module) {
     }
 
     function _listenToAction() {
-        ////anim node pause and resume temp test
-        //if(this.type == "MetAnimNode") {
-        //    this.on('click', function(data) {
-        //        DebugUtils.log(this.metNodeId + " type = " + this.type + " view event click");
-        //        if(this.curAnim.isPaused() === true) {
-        //            this.curAnim.resumeAnim();
-        //        } else {
-        //            this.curAnim.pauseAnim();
-        //        }
-        //    }.bind(this));
-        //}
+        var sync = new GenericSync(
+            ['mouse', 'touch'],
+            {direction : GenericSync.DIRECTION_X}
+        );
 
-        //this.on('click', function(data) {
-        //    console.log(this.metNodeId + " type = " + this.type + " view event click");
-        //}.bind(this));
+        this.pipe(sync);
+
+        if(this.type === "ButtonNode") {
+            this.on('click', function(data) {
+                //DebugUtils.log(this.metNodeId + " type = " + this.type + " view event click");
+                this.showNextState();
+
+                if(this.curStateIdx === 0) {
+                    //on state
+                    DebugUtils.log(this.metNodeId + " button off");
+                } else {
+                    //off state
+                    DebugUtils.log(this.metNodeId + " button on");
+
+                }
+            }.bind(this));
+        }
+
+        ////anim node pause and resume temp test
+        if(this.type == "MetAnimNode") {
+            this.on('click', function(data) {
+                DebugUtils.log(this.metNodeId + " type = " + this.type + " view event click");
+                if(this.curAnim.isPaused() === true) {
+                    this.curAnim.resumeAnim();
+                } else {
+                    this.curAnim.pauseAnim();
+                }
+            }.bind(this));
+        }
 
         if(this.type === "MetStateNode") {
-            var sync = new GenericSync(
-                ['mouse', 'touch'],
-                {direction : GenericSync.DIRECTION_X}
-            );
+
 
             this.on('click', function(data) {
                 DebugUtils.log(this.metNodeId + " type = " + this.type + " view event click");
                 this.showNextState();
             }.bind(this));
-
-            this.pipe(sync);
 
             sync.on('start', function(data) {
                 //var currentPosition = this.pageViewPos.get();

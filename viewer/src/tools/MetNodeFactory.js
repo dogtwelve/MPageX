@@ -262,7 +262,10 @@ define(function(require, exports, module) {
             });
 
         }
-        if(type === "MetScrollNode" || type === "MetStateNode" || type === "MetAnimNode"){
+        if(type === "MetScrollNode"
+            || type === "MetStateNode"
+            || type === "MetAnimNode"
+            || type === "ButtonNode"){
             //var imageUrl = "image\/386705-winter-solstice.jpg";
             //// url encode '(' and ')'
             //if ((imageUrl.indexOf('(') >= 0) || (imageUrl.indexOf(')') >= 0)) {

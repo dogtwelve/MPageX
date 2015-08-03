@@ -244,5 +244,5 @@
 		}    
 	};
  
-    module.exports = DoublyLinkedList;
+	module.exports = DoublyLinkedList;
 });

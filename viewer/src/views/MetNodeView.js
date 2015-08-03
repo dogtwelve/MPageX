@@ -23,8 +23,8 @@ define(function(require, exports, module) {
     var DebugUtils          = require('utils/DebugUtils');
     var StageView          = require('views/StageView');
     var EventDispatcher     = require('input/EventDispatcher');
-    var MetHook = require('actions/MetHook');
-    var MetPerform = require('actions/MetPerform');
+	var MetHook = require('actions/MetHook');
+	var MetPerform = require('actions/MetPerform');
 
     var TransitionUtils = require('utils/TransitionUtils');
 

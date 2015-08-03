@@ -5,7 +5,11 @@ define(function (require, exports, module) {
 	'use strict';
 
 	var Timer = require("famous/utilities/Timer");
-	var MetNodeFactory = require('tools/MetNodeFactory');
+	var MetNodeFactory = null;
+	require(["tools/MetNodeFactory"], function(mod){
+		MetNodeFactory = mod;
+	});
+
 
 	/** @constructor */
 	function MetPerform() {
@@ -63,8 +67,8 @@ define(function (require, exports, module) {
 	};
 
 	MetPerform.prototype.execute = function () {
-        return;
-		var nodeFactory = MetNodeFactoryInstance;
+		if(!MetNodeFactory) return;
+		var nodeFactory = MetNodeFactory.sharedInstance();
 
 		// 空执行
 		if (MetPerform.MetNodeActionPerformNone == this.performType)

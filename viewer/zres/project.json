@@ -1,0 +1,27 @@
+{
+  "specialForMobile" : 0,
+  "grade1TransitionStyle" : 3,
+  "class" : "MetProject",
+  "marginRight" : 36,
+  "pageIDs" : [
+    "59AC55C8-4CD5-4F63-81D9-BD3C1D682CBE",
+    "53E53961-057B-4C20-86EB-11617BF319BD",
+    "0225D3F3-98F9-46FD-88CA-FBB0F15B1F89"
+  ],
+  "currentPageID" : "0225D3F3-98F9-46FD-88CA-FBB0F15B1F89",
+  "marginLock" : 0,
+  "name" : "0731样板工程",
+  "marginLeft" : 36,
+  "marginBottom" : 36,
+  "toolVersion" : "1.0.0",
+  "marginTop" : 36,
+  "metVersion" : "1.0.0",
+  "height" : 1024,
+  "width" : 768,
+  "coverPage" : 1,
+  "direction" : 1,
+  "desc" : "Free Project",
+  "exportType" : 0,
+  "author" : "Free Author",
+  "grade2TransitionStyle" : 2
+}

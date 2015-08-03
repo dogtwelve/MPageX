@@ -26,6 +26,10 @@ define(function (require, exports, module) {
     };
 
     KeyFrameAnim.prototype.activeAnim = function() {
+		if(this.keyFramesCount <= 1) {
+			//null anim
+			return;
+		}
         this.stopAnim();
         this.readyAnim();
         this.animTimer = Timer.setInterval(function(){this.updateAnim();}.bind(this), this.elapsed);
@@ -133,10 +137,11 @@ define(function (require, exports, module) {
     KeyFrameAnim.prototype.goNextKeyFrame = function() {
         this.curAnimFrameIdx ++;
         this.curFrameTime = this.keyFrames[this.curAnimFrameIdx].time * 1000;
-        this.curveFn = EasingUtils.easingFuncBy(this.keyFrames[this.curAnimFrameIdx].easing);
+        //this.curveFn = EasingUtils.easingFuncBy(this.keyFrames[this.curAnimFrameIdx].easing);
 
-        if(this.curAnimFrameIdx < (this.keyFramesCount - 2)) {
+        if(this.curAnimFrameIdx < (this.keyFramesCount - 1)) {
             this.nextFrameTime = this.keyFrames[this.curAnimFrameIdx + 1].time * 1000;
+			this.curveFn = EasingUtils.easingFuncBy(this.keyFrames[this.curAnimFrameIdx + 1].easing);
         } else {
             this.nextFrameTime = this.totalAnimTime;
         }

@@ -303,11 +303,13 @@ define(function(require, exports, module) {
 				audioParam += " loop ";
 			}
 
-			newSurface.setContent(audioParam + " src=\"" + audioURL + "\" </audio>");
+			newSurface.setContent(audioParam + " src=\"" + audioURL + "\"> </audio>");
 
 		}
 
 		if(type === "VideoNode") {
+			////test link
+			////var videoURL = "http://www.broken-links.com/tests/media/BBB_480_HB.mp4";
 			var videoURL = "zres/" + nodeDescription.videoURL;
 			newSurface = new Surface({
 				//src: videoURL,
@@ -329,7 +331,7 @@ define(function(require, exports, module) {
 				//videoParam += " poster=" + "image/BBB_480_Poster.jpg";
 			}
 
-			newSurface.setContent(videoParam + " src=\"" + videoURL + "\" width=" + size[0]+ "px" + " height=" + size[1]+ "px" + " </video>");
+			newSurface.setContent(videoParam + " src=\"" + videoURL + "\" width=" + size[0]+ "px" + " height=" + size[1]+ "px" + "></video>");
 
 			newSurface.on("click", function() {
 				var video = document.getElementById(video_dom_id);

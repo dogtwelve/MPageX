@@ -5,12 +5,12 @@ define(function (require, exports, module) {
     'use strict';
 
     var MetNodeFactory = null;
-    require(['tools/MetNodeFactory'], function (data) {
-        MetNodeFactory = data;
+    require(['tools/MetNodeFactory'], function (m) {
+        MetNodeFactory = m;
     });
     var MetNodeAction = null;
-    require(['actions/MetNodeAction'], function (data) {
-        MetNodeAction = data;
+    require(['actions/MetNodeAction'], function (m) {
+        MetNodeAction = m;
     });
     var Timer = require("famous/utilities/Timer");
 
@@ -129,9 +129,9 @@ define(function (require, exports, module) {
             var stateAnim = nodeView.curStateAnim;
             var a = stateAnim.curStateIdx;
             var b = stateAnim.totalStates - 1;
-            b = Math.floor(t * b + 0.5);
-            if (b != a) {
-                stateAnim.showState(b, true);
+            var c = Math.min(b, Math.max(0, Math.floor(t * b + 0.5)));
+            if (c != a) {
+                stateAnim.showState(c, true);
             }
         }
         else if (MetNodeAction.hasSlideOneInActions(nodeView.nodeActions)) {
@@ -198,12 +198,12 @@ define(function (require, exports, module) {
     };
 
     MetHook.prototype.getSrcNodeView = function () {
-        var nodeFactory = MetNodeFactory;
+        var nodeFactory = MetNodeFactory.sharedInstance();
         return nodeFactory.getMetNode(this.source.nodeID);
     };
 
     MetHook.prototype.getDstNodeView = function () {
-        var nodeFactory = MetNodeFactory;
+        var nodeFactory = MetNodeFactory.sharedInstance();
         return nodeFactory.getMetNode(this.target.nodeID);
     };
 
@@ -387,7 +387,7 @@ define(function (require, exports, module) {
         if (index != -1) __activeNodeIDS.splice(index, 1);
 
         // 被明确标记Inactive的节点, 顺便停止自动播放
-        var nodeFactory = MetNodeFactory;
+        var nodeFactory = MetNodeFactory.sharedInstance();
         var nodeView = nodeFactory.getMetNode(node_id);
         if (nodeView.type == "MetAnimNode") {
             if (!nodeView.curKeyframeAnim.isPaused())

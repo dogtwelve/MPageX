@@ -9,7 +9,7 @@ define(function(require, exports, module) {
 	var ImageSurface = require('famous/surfaces/ImageSurface');
 	var RenderController = require('famous/views/RenderController');
 	var MetLightbox = require("container/MetLightbox");
-
+	var OverlayView = require('views/OverlayView');
 	var StageView = require('views/StageView');
 	var Director = require('tools/Director');
 	var Transform = require('famous/core/Transform');
@@ -516,6 +516,11 @@ define(function(require, exports, module) {
 		// asynscronized load chapters, will trigger a serials operation about loading pages
         var arr = project.pageIDs || [];
 		_loadChapters(arr);
+		var overlay = OverlayView({
+			containerSize: context.getSize(),
+			projSize: [project.width, project.height]
+		})
+		overlayController.add(overlay);
 	}
 
 	function createPageView(page){
@@ -541,14 +546,14 @@ define(function(require, exports, module) {
     _resize();
     context.add(renderController);
 	context.add(overlayController);
-	overlayController.add(new Surface({
-		size: [100,100],
-		//content: name,
-		classes: ['z2'],
-			properties: {
-				border: '1px dashed rgb(210, 208, 203)'
-			}
-	}));
+	//overlayController.add(new Surface({
+	//	size: [100,100],
+	//	//content: name,
+	//	classes: ['z2'],
+	//		properties: {
+	//			border: '1px dashed rgb(210, 208, 203)'
+	//		}
+	//}));
 
     // TODO: show loading animation during project loading?
     Utility.loadURL("zres/project.json", initApp);

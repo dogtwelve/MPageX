@@ -60,7 +60,7 @@ define(function (require, exports, module) {
     KeyFrameAnim.prototype.stopAnim = function() {
         this.actor.resetMetNodePosAdjustZ();
         if(this.animTimer) {
-            Timer.clear(this.animTimer);
+            MetTimer.clear(this.animTimer);
             delete this.animTimer;
         }
     };
@@ -68,7 +68,7 @@ define(function (require, exports, module) {
     KeyFrameAnim.prototype.pauseAnim = function() {
         this.isPause = true;
         if(this.animTimer) {
-            Timer.clear(this.animTimer);
+			MetTimer.clear(this.animTimer);
             delete this.animTimer;
         }
     };

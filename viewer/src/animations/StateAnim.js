@@ -279,22 +279,22 @@ define(function (require, exports, module) {
                 // prev chapter
                 if (delta[1 - gestureDirection] > vsize[1 - gestureDirection] / 3) {
                     if (null != prev_stateView) {
-                        __stateChangeCommit(prev_stateView, curr_stateView, next_stateView, 1, -1, 1, 0, 1, 1, gestureTransition);
                         if(rewind)
                             self_.curStateIdx = (self_.curStateIdx + self_.actor.metNodes.length - 1) % self_.actor.metNodes.length;
                         else
                             self_.curStateIdx--;
+                        __stateChangeCommit(prev_stateView, curr_stateView, next_stateView, 1, -1, 1, 0, 1, 1, gestureTransition);
                         changed = true;
                     }
                 }
                 // next chapter
                 else if (delta[1 - gestureDirection] < -vsize[1 - gestureDirection] / 3) {
                     if (null != next_stateView) {
-                        __stateChangeCommit(next_stateView, prev_stateView, curr_stateView, -1, 1, -1, -1, -1, 0, gestureTransition);
                         if(rewind)
                             self_.curStateIdx = (self_.curStateIdx + 1) % self_.actor.metNodes.length;
                         else
                             self_.curStateIdx++;
+                        __stateChangeCommit(next_stateView, prev_stateView, curr_stateView, -1, 1, -1, -1, -1, 0, gestureTransition);
                         changed = true;
                     }
                 }

@@ -23,6 +23,7 @@ define(function(require, exports, module) {
 
 	var project = {};
 	var pages = {};
+	var overlaps = {};
 	var chapterPageIDs = [];
 	var sectionPageIDs = [];
 	// current index in chapters(level-1 pages)
@@ -55,31 +56,6 @@ define(function(require, exports, module) {
 		__resizeMetView();
 	}
 
-    //获取当前文档的缩放比例
-    function detectZoom (){
-        var ratio = 0,
-            screen = window.screen,
-            ua = navigator.userAgent.toLowerCase();
-
-        if (window.devicePixelRatio !== undefined) {
-            ratio = window.devicePixelRatio;
-        }
-        else if (~ua.indexOf('msie')) {
-            if (screen.deviceXDPI && screen.logicalXDPI) {
-                ratio = screen.deviceXDPI / screen.logicalXDPI;
-            }
-        }
-        else if (window.outerWidth !== undefined && window.innerWidth !== undefined) {
-            ratio = window.outerWidth / window.innerWidth;
-        }
-
-        if (ratio){
-            ratio = Math.round(ratio * 100);
-        }
-
-        return ratio;
-    }
-
 	function _init(){
 		var contextContainer = __resizeMetView();
 		//create the new one
@@ -89,7 +65,6 @@ define(function(require, exports, module) {
 		Engine.on("resize",
 			function() {
 				_resize();
-                var zoom = detectZoom();
 				var options = TransitionUtils.synthesizeLightBoxOptions(0, [0, 0], [0, 0]);
 				renderController.setOptions(options);
 				Utility.loadURL("zres/project.json", initApp);

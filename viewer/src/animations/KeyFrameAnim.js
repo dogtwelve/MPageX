@@ -4,10 +4,15 @@
 define(function (require, exports, module) {
     'use strict';
 
-    var Timer               = require("famous/utilities/Timer");
+    var MetTimer               = require("utils/MetTimer");
 
     var MotionPath = require('utils/MotionPath');
     var EasingUtils = require('utils/EasingUtils');
+
+    var MetNodeAction = null;
+    require(['actions/MetNodeAction'], function (data) {
+        MetNodeAction = data;
+    });
 
     /** @constructor */
     function KeyFrameAnim(actor){
@@ -18,21 +23,28 @@ define(function (require, exports, module) {
         this.curAnimTime = 0;
         this.nextFrameTime = 0;
         this.totalAnimTime = actor.nodeDesc.duration * 1000;
-        this.initOffsetX = 0;
-        this.initOffsetY = 0;
         this.loopCount = 0;
         this.isPause = false;
 		this.intervaTimer = 0;
 		this.isReversePlay = false;
+
+        this.initOffsetX = 0;
+        this.initOffsetY = 0;
+        this.x_path = null;
+        this.y_path = null;
+        this.curveArgs = null;
+        this.initTangent = null;
+
+        this.keyframeConfigs = MetNodeAction.parseKeyframesFromArray(actor.nodeDesc.keyframes);
     };
 
-	KeyFrameAnim.ANIMFPS = 35; //framerate per frame
+	KeyFrameAnim.ANIMFPS = 25; //framerate per frame
 	KeyFrameAnim.MPFTIME = Math.floor(1000/KeyFrameAnim.ANIMFPS); //// Milliseconds per frame (1000/FPS)
 
     KeyFrameAnim.prototype.activeAnim = function() {
         this.stopAnim();
         this.readyAnim();
-        this.animTimer = Timer.setInterval(function(){this.updateAnim();}.bind(this), KeyFrameAnim.MPFTIME);
+        this.animTimer = MetTimer.setInterval(function(elapse){this.updateAnim(elapse);}.bind(this), KeyFrameAnim.MPFTIME);
     };
 
     KeyFrameAnim.prototype.readyAnim = function() {
@@ -44,7 +56,6 @@ define(function (require, exports, module) {
     KeyFrameAnim.prototype.startAnim = function(startFrame) {
         this.gotoKeyFrame(startFrame);
     };
-
 
     KeyFrameAnim.prototype.stopAnim = function() {
         this.actor.resetMetNodePosAdjustZ();
@@ -64,7 +75,7 @@ define(function (require, exports, module) {
 
     KeyFrameAnim.prototype.resumeAnim = function() {
         this.isPause = false;
-        this.animTimer = Timer.setInterval(function(){this.updateAnim();}.bind(this), KeyFrameAnim.MPFTIME);
+        this.animTimer = MetTimer.setInterval(function(elapse){this.updateAnim(elapse);}.bind(this), KeyFrameAnim.MPFTIME);
     };
 
     KeyFrameAnim.prototype.isPaused = function() {
@@ -78,7 +89,7 @@ define(function (require, exports, module) {
         var posStartX = curFrameDesc.positionX;
         var posStartY = curFrameDesc.positionY;
 
-        if(this.curAnimFrameIdx === 0) {
+        if (this.curAnimFrameIdx === 0) {
             this.initOffsetX = posStartX;
             this.initOffsetY = posStartY;
         }
@@ -104,6 +115,13 @@ define(function (require, exports, module) {
         this.x_path.bezierCurveTo(ctrl_ptA.x, ctrl_ptB.x, posNextX);
         this.y_path.bezierCurveTo(ctrl_ptA.y, ctrl_ptB.y, posNextY);
 
+        this.curveArgs = [posStartX, posStartY, ctrl_ptA.x, ctrl_ptA.y, ctrl_ptB.x, ctrl_ptB.y, posNextX, posNextY];
+        // 如果设置了随动转向则记录初始角度, 今儿后续逻辑会进行随动
+        if (this.actor.nodeDesc.autoRotate) {
+            if (null == this.initTangent) {
+                this.initTangent = __tangentAt.call(this, 0);
+            }
+        }
     };
 
     KeyFrameAnim.prototype.readyScale = function() {
@@ -165,25 +183,34 @@ define(function (require, exports, module) {
     };
 
     KeyFrameAnim.prototype.gotoKeyFrame = function(f) {
-        //if (this.curAnimFrameIdx == f) return;
+        var changed = this.curAnimFrameIdx != f;
 
         this.curAnimFrameIdx = f;
-        this.curFrameTime = this.keyFrames[this.curAnimFrameIdx].time * 1000;
+        this.curFrameTime = Math.floor(this.keyFrames[this.curAnimFrameIdx].time * 1000);
         this.curveFn = EasingUtils.easingFuncBy(this.keyFrames[this.curAnimFrameIdx].easing);
 
         if (this.curAnimFrameIdx < (this.keyFramesCount - 1)) {
-            this.nextFrameTime = this.keyFrames[this.curAnimFrameIdx + 1].time * 1000;
+            this.nextFrameTime = Math.floor(this.keyFrames[this.curAnimFrameIdx + 1].time * 1000);
 			//now according to data, easing be in next fame info, may it'll be adjusted later
 			this.curveFn = EasingUtils.easingFuncBy(this.keyFrames[this.curAnimFrameIdx + 1].easing);
         }
         else {
-            this.nextFrameTime = this.keyFrames[this.keyFramesCount - 1].time * 1000;
+            this.nextFrameTime = Math.floor(this.keyFrames[this.keyFramesCount - 1].time * 1000);
         }
         if (this.curAnimFrameIdx < this.keyFramesCount - 1) {
             this.readyDisplacement();
             this.readyScale();
             this.readyRotation();
             this.readyOpacity();
+        }
+
+        // execute keyframe performs
+        if(changed) {
+            var cfg = this.keyframeConfigs[this.curAnimFrameIdx];
+            for (var i = 0; i < cfg.performs.length; i++) {
+                var pf = cfg.performs[i];
+                pf.execute();
+            }
         }
     };
 
@@ -218,8 +245,12 @@ define(function (require, exports, module) {
             this.actor.setMetNodeRotateY(this.startRotationY + (changeRotY * process));
         }
         var changeRotZ = this.destRotationZ - this.startRotationZ;
-        if(changeRotZ) {
-            this.actor.setMetNodeRotateZ(this.startRotationZ + (changeRotZ * process));
+        var deltaRotZ = 0;
+        if(null != this.initTangent) {
+            deltaRotZ = __tangentAt.call(this, process) - this.initTangent;
+        }
+        if(changeRotZ || deltaRotZ) {
+            this.actor.setMetNodeRotateZ(this.startRotationZ + (changeRotZ * process) + deltaRotZ);
         }
 
         //calculate current opacity
@@ -227,9 +258,42 @@ define(function (require, exports, module) {
         if(changeOpacity !== 0) {
             this.actor.setMetNodeOpacity(this.startOpacity + (changeOpacity * process));
         }
-    };
 
-    KeyFrameAnim.prototype.updateAnim = function() {
+        // execute keyframe hooking!
+        var cfg = this.keyframeConfigs[this.curAnimFrameIdx];
+        for (var i = 0; i < cfg.hooks.length; i++) {
+            var hk = cfg.hooks[i];
+            hk.executeStep(process);
+        }
+    }
+
+    function __tangentAt(parameter){
+        if(null == this.curveArgs) return 0;
+        // start, ctrlA, ctrlB, end
+        var point_xs = [this.curveArgs[0], this.curveArgs[2], this.curveArgs[4], this.curveArgs[6]];
+        var point_ys = [this.curveArgs[1], this.curveArgs[3], this.curveArgs[5], this.curveArgs[7]];
+        var left_xs = [point_xs[0], 0, 0, 0];
+        var left_ys = [point_ys[0], 0, 0, 0];
+        var right_xs = [0, 0, 0, point_xs[3]];
+        var right_ys = [0, 0, 0, point_ys[3]];
+
+        for(var k = 1; k <= 3; k++){
+            for(var i = 0; i <= (3 - k); i++){
+                point_xs[i] = (1.0 - parameter) * point_xs[i] + parameter * point_xs[i + 1];
+                point_ys[i] = (1.0 - parameter) * point_ys[i] + parameter * point_ys[i + 1];
+            }
+
+            left_xs[k] = point_xs[0];
+            left_ys[k] = point_ys[0];
+
+            right_xs[3 - k] = point_xs[3 - k];
+            right_ys[3 - k] = point_ys[3 - k];
+        }
+        var angle = Math.atan2(right_ys[1] - left_ys[2], right_xs[1] - left_xs[2]);
+        return angle;
+    }
+
+    KeyFrameAnim.prototype.updateAnim = function(elapse) {
         if(this.isPause) {
             return;
         }
@@ -247,9 +311,9 @@ define(function (require, exports, module) {
 		var isAnimEnd = false;
 
 		if(this.isReversePlay) {
-			this.curAnimTime -= KeyFrameAnim.MPFTIME;
+			this.curAnimTime -= elapse;
 
-			var starttime = this.keyFrames[0].time * 1000;
+			var starttime = Math.floor(this.keyFrames[0].time * 1000);
 			if(this.curAnimTime <= starttime) {
 				this.curAnimTime = starttime;
 				isAnimEnd = true;
@@ -259,8 +323,8 @@ define(function (require, exports, module) {
 			}
 
 		} else {
-			this.curAnimTime += KeyFrameAnim.MPFTIME;
-			var endtime = this.keyFrames[this.keyFramesCount - 1].time * 1000;
+			this.curAnimTime += elapse;
+			var endtime = Math.floor(this.keyFrames[this.keyFramesCount - 1].time * 1000);
 			if(this.curAnimTime >= endtime) {
 				this.curAnimTime = endtime;
 				isAnimEnd = true;
@@ -303,10 +367,10 @@ define(function (require, exports, module) {
 				}
 
 				if(this.isReversePlay) {
-					this.curAnimTime = this.keyFrames[this.keyFramesCount - 1].time * 1000;
+					this.curAnimTime = Math.floor(this.keyFrames[this.keyFramesCount - 1].time * 1000);
 					this.startAnim(this.keyFramesCount - 2);
 				} else {
-					this.curAnimTime = this.keyFrames[0].time * 1000;
+					this.curAnimTime = Math.floor(this.keyFrames[0].time * 1000);
 					this.startAnim(0);
 				}
             } else {

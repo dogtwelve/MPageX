@@ -55,7 +55,6 @@ define(function(require, exports, module) {
 	};
 
 	function _initRootNode() {
-		var classes = ['z2'];
 
 		var rootModifier = new Modifier({
 			size: this.pageSize,

@@ -516,7 +516,7 @@ define(function(require, exports, module) {
 		// asynscronized load chapters, will trigger a serials operation about loading pages
         var arr = project.pageIDs || [];
 		_loadChapters(arr);
-		var overlay = OverlayView({
+		var overlay = new OverlayView({
 			containerSize: context.getSize(),
 			projSize: [project.width, project.height]
 		})

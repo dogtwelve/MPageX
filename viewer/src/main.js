@@ -4,8 +4,10 @@ define(function(require, exports, module) {
 	var Engine = require('famous/core/Engine');
 	var Utility = require('famous/utilities/Utility');
     var MetEventHandler = require('tools/MetEventHandler');
+	var RenderNode = require('famous/core/RenderNode');
 	var Surface = require('famous/core/Surface');
 	var ImageSurface = require('famous/surfaces/ImageSurface');
+	var RenderController = require('famous/views/RenderController');
 	var MetLightbox = require("container/MetLightbox");
 
 	var StageView = require('views/StageView');
@@ -37,6 +39,7 @@ define(function(require, exports, module) {
 	var sectionChangeDirection = 0;
 
 	var renderController = new MetLightbox({});
+	var overlayController = new RenderNode();
 	function __resizeMetView() {
         var contextContainer = document.getElementById("met-view");
         var width = window.innerWidth + "px";
@@ -537,6 +540,15 @@ define(function(require, exports, module) {
     // create the main context
     _resize();
     context.add(renderController);
+	context.add(overlayController);
+	overlayController.add(new Surface({
+		size: [100,100],
+		//content: name,
+		classes: ['z2'],
+			properties: {
+				border: '1px dashed rgb(210, 208, 203)'
+			}
+	}));
 
     // TODO: show loading animation during project loading?
     Utility.loadURL("zres/project.json", initApp);

@@ -497,6 +497,22 @@ define(function(require, exports, module) {
 
 		project = JSON.parse(data);
 
+		var overlay = OverlayView.OverlayViewFactory.getInstance();//OverlayView.getInstance();
+		overlay.setOpt({
+			containerSize: context.getSize(),
+			projSize: [project.width, project.height]
+		});
+
+		overlayController.add(overlay);
+		overlay.add(new Surface({
+			size: [100, 100],
+			//content: name,
+			classes: ['z2'],
+			properties: {
+				border: '1px dashed rgb(210, 208, 203)'
+			}
+		}));
+
 		// 确定操作换章、换节的操作方向
 		var _isDirectionTransition = function(t){
 			return t == 2 || t == 3 || t == 4 || t == 5;
@@ -516,11 +532,6 @@ define(function(require, exports, module) {
 		// asynscronized load chapters, will trigger a serials operation about loading pages
         var arr = project.pageIDs || [];
 		_loadChapters(arr);
-		var overlay = new OverlayView({
-			containerSize: context.getSize(),
-			projSize: [project.width, project.height]
-		})
-		overlayController.add(overlay);
 	}
 
 	function createPageView(page){

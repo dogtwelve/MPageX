@@ -22,19 +22,28 @@ define(function(require, exports, module) {
 	var DebugUtils = require('utils/DebugUtils');
 	var TextUtils = require('utils/TextUtils');
 
-	GenericSync.register({
-		'mouse': MouseSync,
-		'touch': TouchSync,
-		'scroll': ScrollSync
-	});
+	//using Singleton JavaScript Module Pattern
+	var OverlayViewFactory = (function () {
+		var instance;
+
+		function createInstance() {
+			var object = new OverlayView();
+			return object;
+		}
+
+		return {
+			getInstance: function () {
+				if (!instance) {
+					instance = createInstance();
+				}
+				return instance;
+			}
+		};
+	})();
 
 	function OverlayView() {
-		View.apply(this, arguments);
-		this.projSize = this.options.projSize;
-		this.pageSize = this.options.pageSize;
-		this.containerSize = this.options.containerSize;
 
-		_initRootNode.call(this);
+		View.apply(this, arguments);
 	}
 
 	OverlayView.DEFAULT_OPTIONS = {
@@ -73,9 +82,16 @@ define(function(require, exports, module) {
 		return Math.min(scaleX, scaleY);
 	}
 
+	OverlayView.prototype.setOpt = function(opt) {
+		var overlay = OverlayViewFactory.getInstance();
+		overlay.setOptions(opt);
+	}
+
+
 	function _subscribeEvent(subscriber, src) {
 		subscriber.subscribe(src);
 	}
 
 	module.exports = OverlayView;
+	module.exports.OverlayViewFactory = OverlayViewFactory;
 });

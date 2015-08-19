@@ -44,7 +44,6 @@ define(function(require, exports, module) {
 	function OverlayView() {
 
 		View.apply(this, arguments);
-		//_initRootNode.call(this);
 	}
 
 	OverlayView.DEFAULT_OPTIONS = {

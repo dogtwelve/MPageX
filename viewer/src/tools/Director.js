@@ -42,14 +42,6 @@ define(function(require, exports, module) {
 			if(curNode.nodeDesc.nodeSubordinate === "met_node_subordinate_screen_02468") {
 				var overlay = OverlayView.OverlayViewFactory.getInstance();
 				overlay.addMetNode(curNode);
-				//overlay.add(new Surface({
-				//		size: [100, 100],
-				//		//content: name,
-				//		classes: ['z2'],
-				//		properties: {
-				//			border: '1px dashed rgb(210, 208, 203)'
-				//		}
-				//	}));
 			} else {
 				stage.addMetNode(curNode);
 			}

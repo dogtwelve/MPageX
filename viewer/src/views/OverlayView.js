@@ -44,7 +44,7 @@ define(function(require, exports, module) {
 	function OverlayView() {
 
 		View.apply(this, arguments);
-		_initRootNode.call(this);
+		//_initRootNode.call(this);
 	}
 
 	OverlayView.DEFAULT_OPTIONS = {
@@ -64,17 +64,15 @@ define(function(require, exports, module) {
 		_subscribeEvent(this, newNode);
 	};
 
-	function _initRootNode() {
+	OverlayView.prototype.initRootNode = function() {
 
-		//var rootModifier = new Modifier({
-		//	origin: [0.5, 0],
-		//	align: [0.5, 0],
-		//});
+		var pageScale = OverlayView.getPageContainerScale(this.containerSize[0], this.containerSize[1], this.projSize[0], this.projSize[1]);
+		var modifier = new Modifier({
+			align: [0.5, 0.5],
+			transform: Transform.scale(pageScale, pageScale, 1),
+		});
 
-		var renderNode = new RenderNode();
-
-		this.add(renderNode);
-		this.rootNode = renderNode;
+		this.rootNode = this.add(modifier);
 	}
 
 	OverlayView.getPageContainerScale = function(viewportW, viewportH, origW, origH){
@@ -86,7 +84,7 @@ define(function(require, exports, module) {
 	OverlayView.prototype.setOpt = function(opt) {
 		var overlay = OverlayViewFactory.getInstance();
 		overlay.setOptions(opt);
-		this.pageSize = opt.pageSize;
+		this.projSize = opt.projSize;
 		this.containerSize = opt.containerSize;
 	}
 

@@ -505,6 +505,8 @@ define(function(require, exports, module) {
 			projSize: [project.width, project.height]
 		});
 
+		overlay.initRootNode();
+
 		overlayController.add(overlay);
 
 		//overlay.add(new Surface({

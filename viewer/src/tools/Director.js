@@ -41,7 +41,7 @@ define(function(require, exports, module) {
             var curNode = stageMetnodes[nodeToStage];
 			if(curNode.nodeDesc.nodeSubordinate === "met_node_subordinate_screen_02468") {
 				var overlay = OverlayView.OverlayViewFactory.getInstance();
-				overlay.addMetNode(curNode);
+				overlay.addMetNode(curNode, stage.pageSize);
 			} else {
 				stage.addMetNode(curNode);
 			}

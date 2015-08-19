@@ -44,6 +44,7 @@ define(function(require, exports, module) {
 	function OverlayView() {
 
 		View.apply(this, arguments);
+		this.overlays = {};
 	}
 
 	OverlayView.DEFAULT_OPTIONS = {
@@ -58,10 +59,27 @@ define(function(require, exports, module) {
 	OverlayView.prototype = Object.create(View.prototype);
 	OverlayView.prototype.constructor = OverlayView;
 
-	OverlayView.prototype.addMetNode = function(newNode) {
-		newNode.initMetSubNode([/*this.syncScroll, this.syncSwipe*/], this.rootNode);
+	OverlayView.prototype.addMetNode = function(newNode, pageSize) {
+		if(this.overlays[newNode.metNodeId]) {
+			return;
+
+		}
+
+		var rootModifier = new Modifier({
+			size: pageSize,
+			origin: [0.5, 0],
+			align: [0.5, 0]
+		});
+
+		newNode.initMetSubNode([/*this.syncScroll, this.syncSwipe*/], this.rootNode.add(rootModifier));
 		_subscribeEvent(this, newNode);
+
+		this.overlays[newNode.metNodeId] = newNode;
 	};
+
+	OverlayView.prototype.clearMetNodes = function() {
+		this.overlays.clear();
+	}
 
 	OverlayView.prototype.initRootNode = function() {
 
@@ -85,6 +103,21 @@ define(function(require, exports, module) {
 		overlay.setOptions(opt);
 		this.projSize = opt.projSize;
 		this.containerSize = opt.containerSize;
+	}
+
+	OverlayView.prototype.onPageChanged = function(pageId) {
+		for(var overlay in this.overlays) {
+			var element = this.overlays[overlay];
+			_setOverlayVisible(element, pageId);
+		}
+	}
+
+	function _setOverlayVisible(overlay, pageId) {
+		if(overlay.nodeDesc.overlayPages && overlay.nodeDesc.overlayPages.indexOf(pageId) != -1) {
+			overlay.showMetNode();
+		} else {
+			overlay.hideMetNode();
+		}
 	}
 
 

@@ -398,6 +398,8 @@ define(function(require, exports, module) {
                     Engine.removeListener("mouseup", _on_up);
                     Engine.removeListener("touchend", _on_up);
 
+					var overlay = OverlayView.OverlayViewFactory.getInstance();
+					overlay.onPageChanged(winner.pageId);
                     _setupPageEventHandling(winner);
                 }
 
@@ -499,24 +501,13 @@ define(function(require, exports, module) {
 
 
 		var overlay = OverlayView.OverlayViewFactory.getInstance();
-
 		overlay.setOpt({
 			containerSize: context.getSize(),
 			projSize: [project.width, project.height]
 		});
-
 		overlay.initRootNode();
-
 		overlayController.add(overlay);
 
-		//overlay.add(new Surface({
-		//	size: [100, 100],
-		//	//content: name,
-		//	classes: ['z2'],
-		//	properties: {
-		//		border: '1px dashed rgb(210, 208, 203)'
-		//	}
-		//}));
 
 		// 确定操作换章、换节的操作方向
 		var _isDirectionTransition = function(t){

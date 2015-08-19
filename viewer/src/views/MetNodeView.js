@@ -170,7 +170,7 @@ define(function(require, exports, module) {
 
         // children metnodes processing
         var arr = this.metNodes;
-        var rt = root;
+        var rt = chain;
 
         if(this.type === "MetScrollNode") {
             rt = _setScrollHolder.call(this, rt);

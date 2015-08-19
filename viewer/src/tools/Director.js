@@ -1,11 +1,14 @@
 define(function(require, exports, module) {
     'use strict';
+	var Surface = require('famous/core/Surface');
+	var StageView          = require('views/StageView');
+	var MetNodeView          = require('views/MetNodeView');
+	var OverlayView = require('views/OverlayView');
+	var DebugUtils          = require('utils/DebugUtils');
     var MetNodeFactory = require('tools/MetNodeFactory');
     var ActionFactory      = require('tools/ActionFactory');
     var UnitConverter      = require('tools/UnitConverter');
-    var StageView          = require('views/StageView');
-    var MetNodeView          = require('views/MetNodeView');
-    var DebugUtils          = require('utils/DebugUtils');
+
 
     function Director() {
         this.metnodes = {}; // Collection of nodes by name.
@@ -36,7 +39,20 @@ define(function(require, exports, module) {
 
         for (var nodeToStage in stageMetnodes) {
             var curNode = stageMetnodes[nodeToStage];
-            stage.addMetNode(curNode);
+			if(curNode.nodeDesc.nodeSubordinate === "met_node_subordinate_screen_02468") {
+				var overlay = OverlayView.OverlayViewFactory.getInstance();
+				overlay.addMetNode(curNode);
+				//overlay.add(new Surface({
+				//		size: [100, 100],
+				//		//content: name,
+				//		classes: ['z2'],
+				//		properties: {
+				//			border: '1px dashed rgb(210, 208, 203)'
+				//		}
+				//	}));
+			} else {
+				stage.addMetNode(curNode);
+			}
         }
 
     };

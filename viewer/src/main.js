@@ -497,21 +497,24 @@ define(function(require, exports, module) {
 
 		project = JSON.parse(data);
 
-		var overlay = OverlayView.OverlayViewFactory.getInstance();//OverlayView.getInstance();
+
+		var overlay = OverlayView.OverlayViewFactory.getInstance();
+
 		overlay.setOpt({
 			containerSize: context.getSize(),
 			projSize: [project.width, project.height]
 		});
 
 		overlayController.add(overlay);
-		overlay.add(new Surface({
-			size: [100, 100],
-			//content: name,
-			classes: ['z2'],
-			properties: {
-				border: '1px dashed rgb(210, 208, 203)'
-			}
-		}));
+
+		//overlay.add(new Surface({
+		//	size: [100, 100],
+		//	//content: name,
+		//	classes: ['z2'],
+		//	properties: {
+		//		border: '1px dashed rgb(210, 208, 203)'
+		//	}
+		//}));
 
 		// 确定操作换章、换节的操作方向
 		var _isDirectionTransition = function(t){
@@ -557,14 +560,6 @@ define(function(require, exports, module) {
     _resize();
     context.add(renderController);
 	context.add(overlayController);
-	//overlayController.add(new Surface({
-	//	size: [100,100],
-	//	//content: name,
-	//	classes: ['z2'],
-	//		properties: {
-	//			border: '1px dashed rgb(210, 208, 203)'
-	//		}
-	//}));
 
     // TODO: show loading animation during project loading?
     Utility.loadURL("zres/project.json", initApp);

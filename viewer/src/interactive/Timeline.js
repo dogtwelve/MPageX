@@ -52,13 +52,10 @@ define(function (require, exports, module) {
 
             switch (self.outputType) {
                 case (self.outputTypeEnum.Z_SCROLLER):
-                    //console.log(offset);
                     return Transform.translate(0, -offset / 1.5, -offset);
                 case (self.outputTypeEnum.X_SCROLLER):
-                    //console.log(offset);
                     return Transform.translate(offset, 0, 0);
                 case (self.outputTypeEnum.X_SCROLLER_EX):
-                    //console.log(offset);
                     return Transform.translate(offset / 3, 0, 0);
                 case (self.outputTypeEnum.CAROUSEL):
                     return Transform.moveThen([0, 0, 600], Transform.rotateY((3.14 * 2.0 / (self.data.length * self.surfaceW)) * offset));

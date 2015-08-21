@@ -82,7 +82,6 @@ define(function(require, exports, module) {
 
                 //var name = 'Scrollster';
                 //if(name === this.actor.name) {
-                //    console.log(this.actor.name + ' MoveToModifier(' + posX + ','+ posY + ')');
                 //}
 
                 return Transform.translate(posX, posY, this.actor.zPosition);
@@ -97,7 +96,6 @@ define(function(require, exports, module) {
         //        // } else {
         //        //     return undefined;
         //        // }
-        //        //console.log("Position(" + this.actor.xPosition + "," + this.actor.yPosition + ")");
         //        return [this.actor.xPosition, this.actor.yPosition];
         //    }.bind(this)
         //};

@@ -43,6 +43,9 @@ define(function (require, exports, module) {
 
     function _initStateViewPlayer(actor) {
         var options = TransitionUtils.synthesizeLightBoxOptions(actor.nodeDesc.transition, actor.size, [1, 1]);
+        if(options.transition){
+            options.transition.duration = actor.nodeDesc.duration;
+        }
         this.stateViewPlayer = new MetLightbox(options);
         if (actor.containerSurface) {
             actor.containerSurface.context.setPerspective(3000);
@@ -75,16 +78,16 @@ define(function (require, exports, module) {
         var _on_down = function (e) {
             e.preventDefault();
             if (renderController.renderables.length > 1) return;
-            fromPos = [e.clientX || e.changedTouches[0].clientX, e.clientY || e.changedTouches[0].clientY];
+            fromPos = TransformUtils.absolutePos4Event(e);
         };
         // move
         var _on_move = function (e) {
             e.preventDefault();
 
             if (null == fromPos) return;
-            var toPos = [e.clientX || e.changedTouches[0].clientX, e.clientY || e.changedTouches[0].clientY];
-            var delta = [toPos[0] - fromPos[0], toPos[1] - fromPos[1]];
             var trans = TransformUtils.transformFromElement(surface._currentTarget, document.body);
+            var toPos = TransformUtils.absolutePos4Event(e);
+            var delta = [toPos[0] - fromPos[0], toPos[1] - fromPos[1]];
             delta = TransformUtils.vectorApplyTransform(delta, trans);
 
             // 移动足够多距离16px, 开始判断手势方向
@@ -222,8 +225,8 @@ define(function (require, exports, module) {
         var _on_up = function (e) {
             e.preventDefault();
             if (null == fromPos) return;
-            var toPos = [e.clientX || e.changedTouches[0].clientX, e.clientY || e.changedTouches[0].clientY];
             var trans = TransformUtils.transformFromElement(surface._currentTarget, document.body);
+            var toPos = TransformUtils.absolutePos4Event(e);
             if(e.type == "mouseout"){
                 var lpos = TransformUtils.pointApplyTransform(toPos, trans);
                 if (!(lpos[0] < 0 || lpos[1] < 0 || lpos[0] > vsize[0] || lpos[1] > vsize[1])) return;
@@ -395,32 +398,56 @@ define(function (require, exports, module) {
 
     StateAnim.prototype.showNextState = function () {
         var subMetNodes = this.actor.metNodes;
-        var idx = 0;
-        if (rewind)
-            idx = (this.curStateIdx + 1) % subMetNodes.length;
-        else if (this.curStateIdx < subMetNodes.length - 1)
-            idx = this.curStateIdx + 1;
+        var idx = (this.curStateIdx + 1) % subMetNodes.length;
         this.showState(idx, true);
     };
 
     StateAnim.prototype.showPreState = function () {
         var subMetNodes = this.actor.metNodes;
-        var idx = 0;
-        if (rewind)
-            idx = (this.curStateIdx + subMetNodes.length - 1) % subMetNodes.length;
-        else if (this.curStateIdx > 0)
-            idx = this.curStateIdx - 1;
+        var idx = (this.curStateIdx + subMetNodes.length - 1) % subMetNodes.length;
         this.showState(idx, true);
     };
 
     StateAnim.prototype.autoPlay = function () {
         this.stopPlay();
-        this.animTimer = Timer.setInterval(
-            function () {
-                this.showNextState();
-            }.bind(this),
-            this.actor.duration || 1000
-        );
+        // don't need play for only-1-states
+        var subMetNodes = this.actor.metNodes;
+        if(subMetNodes.length <= 1) return;
+        var delay = this.actor.nodeDesc.delay || 0;
+        var duration = this.actor.nodeDesc.duration || 1;
+        var interval = this.actor.nodeDesc.interval || 0;
+        var autoreverses = this.actor.nodeDesc.autoreverses;
+        var endlessLoop = this.actor.nodeDesc.endlessLoop;
+        var repeatCount = this.actor.nodeDesc.repeatCount || 1;
+        // 正向播放还是逆向播放
+        var normal = true;
+        var _start = function () {
+            this.animTimer = Timer.setInterval(
+                _play.bind(this),
+                Math.floor((duration + interval) * 1000)
+            );
+        };
+        var defaultState = this.actor.nodeDesc.defaultState || 0;
+        var play_count = 0;
+        var _play = function () {
+            if(autoreverses) {
+                if (normal) {
+                    if (this.curStateIdx >= subMetNodes.length - 1) normal = false;
+                }
+                else {
+                    if (this.curStateIdx <= 0) normal = true;
+                }
+            }
+            if (normal)
+                this.showNextState(true);
+            else
+                this.showPreState(true);
+            if (!endlessLoop && defaultState == this.curStateIdx) {
+                if (play_count++ >= repeatCount - 1)
+                    this.stopPlay();
+            }
+        };
+        this.animTimer = Timer.setTimeout(_start.bind(this), delay * 1000);
     };
 
     StateAnim.prototype.stopPlay = function () {

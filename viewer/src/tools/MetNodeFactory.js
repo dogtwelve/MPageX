@@ -201,10 +201,7 @@ define(function(require, exports, module) {
         }
 
         //below is for debug info
-        if (type === "MetNode"
-        //|| type === "MetStateNode"
-        //|| type === "MetScrollNode"
-        ) {
+        if (type === "MetNode") {
             newSurface = new Surface({
                 size: size,
                 //content: name,
@@ -217,7 +214,9 @@ define(function(require, exports, module) {
         if (type === "MetScrollNode"
             || type === "MetStateNode"
             || type === "MetAnimNode"
-            || type === "ButtonNode") {
+            || type === "ButtonNode"
+            || type === "AudioNode"
+            || type === "VideoNode") {
             //var imageUrl = "image\/386705-winter-solstice.jpg";
             //// url encode '(' and ')'
             //if ((imageUrl.indexOf('(') >= 0) || (imageUrl.indexOf(')') >= 0)) {
@@ -238,62 +237,29 @@ define(function(require, exports, module) {
             });
         }
 
-        if (type === "AudioNode") {
+        if ("AudioNode" === type) {
             var audioURL = "zres/" + nodeDescription.audioURL;
-            newSurface = new Surface({
-                //src: videoURL,
-                size: size,
-                classes: classes
-            });
             var audio_dom_id = "audio-" + nodeDescription.id_;
             var audioParam = "<audio id=" + audio_dom_id;
-
-            if (nodeDescription.autoplay === 1) {
-                audioParam += " autoplay ";
-            }
-
-            if (nodeDescription.loop === 1) {
-                audioParam += " loop ";
-            }
-
-            newSurface.setContent(audioParam + " src=\"" + audioURL + "\" </audio>");
+            var audioSurface = new Surface({
+                size: size,
+                content: audioParam + " src=\"" + audioURL + "\" </audio>",
+            });
+            newContainerSurface.add(audioSurface);
         }
 
-        if (type === "VideoNode") {
+        if ("VideoNode" == type) {
             var videoURL = "zres/" + nodeDescription.videoURL;
-            newSurface = new Surface({
-                //src: videoURL,
-                size: size,
-                classes: classes
-            });
             var video_dom_id = "video-" + nodeDescription.id_;
             var videoParam = "<video id='" + video_dom_id + "' webkit-playsinline";
-
-            if (nodeDescription.autoplay === 1) {
-                videoParam += " autoplay ";
-            }
-
             if (nodeDescription.showCtrls === 1) {
                 videoParam += " controls ";
             }
-
-            if (nodeDescription.cover === 1) {
-                //videoParam += " poster=" + "image/BBB_480_Poster.jpg";
-            }
-
-            newSurface.setContent(videoParam + " src='" + videoURL + "' width='" + size[0] + "px'" + " height='" + size[1] + "px'>" + " </video>");
-
-            newSurface.on("click", function () {
-                var video = document.getElementById(video_dom_id);
-
-                if (newSurface.videoPlay === true) {
-                    video.pause();
-                    newSurface.videoPlay = false;
-                } else {
-                    video.play();
-                    newSurface.videoPlay = true;
-                }
-            })
+            var videoSurface = new Surface({
+                size: size,
+                content: videoParam + " src='" + videoURL + "' width='" + size[0] + "px'" + " height='" + size[1] + "px'>" + " </video>",
+            });
+            newContainerSurface.add(videoSurface);
         }
 
         if (type === "WebNode") {
@@ -392,7 +358,6 @@ define(function(require, exports, module) {
                     //}
                 });
             }
-
         }
 
         newNode.addSurface(newSurface);
@@ -403,7 +368,6 @@ define(function(require, exports, module) {
             var _on_down = function (e) {
                 e.preventDefault();
                 MetHook.flagActiveNodeID(id);
-                if (type == "MetAnimNode") MetHook.flagInactiveNodeID(id);
             };
             newNode.on("mousedown", _on_down);
             newNode.on("touchstart", _on_down);
@@ -416,435 +380,471 @@ define(function(require, exports, module) {
                 obj.registerHooks();
                 // 播放(autoplay)
                 if (MetNodeAction.MetNodeActionTypeAuto == obj.actionType) {
-                    Timer.after(function () {
-                        obj.executePerforms();
-                    }, 0);
+                    (function () {
+                        var act = obj;
+                        Timer.after(function () {
+                            act.executePerforms();
+                        }, 0);
+                    })();
                 }
                 // 点击(tap)
                 else if (MetNodeAction.MetNodeActionTypeTap == obj.actionType) {
-                    var _click = function (e) {
-                        if (type == "MetAnimNode") {
-                            if (!newNode.nodeDesc.autoplay)
-                                ;
-                            else if (newNode.curKeyframeAnim.isPaused() === true)
-                                newNode.curKeyframeAnim.resumeAnim();
-                            else
-                                newNode.curKeyframeAnim.pauseAnim();
-                        }
-                        else if (type == "MetStateNode") {
-                            if (!newNode.nodeDesc.autoplay)
-                                ;
-                            else if (!newNode.curStateAnim.isPlaying())
-                                newNode.curStateAnim.autoPlay();
-                            else
-                                newNode.curStateAnim.stopPlay();
-                        }
-                        else if (type == "ButtonNode") {
-                            newNode.curStateAnim.showNextState();
-                            if (newNode.curStateAnim.curStateIdx === 0) {
-                                //on state
-                                DebugUtils.log(id + " button off");
+                    (function() {
+                        var act = obj;
+                        var _click = function (e) {
+                            if (type == "MetAnimNode") {
+                                if (newNode.curKeyframeAnim.isPaused() === true)
+                                    newNode.curKeyframeAnim.resumeAnim();
+                                else
+                                    newNode.curKeyframeAnim.pauseAnim();
                             }
-                            else {
-                                //off state
-                                DebugUtils.log(id + " button on");
+                            else if (type == "MetStateNode") {
+                                if(nodeDescription.autoplay) {
+                                    if (!newNode.curStateAnim.isPlaying())
+                                        newNode.curStateAnim.autoPlay();
+                                    else
+                                        newNode.curStateAnim.stopPlay();
+                                }
+                                else
+                                    newNode.curStateAnim.showNextState();
                             }
-                        }
-                        obj.executePerforms();
-                    };
-                    newNode.on("click", _click);
+                            else if (type == "ButtonNode") {
+                                newNode.curStateAnim.showNextState();
+                            }
+                            else if (type == "AudioNode") {
+                                newNode.curStateAnim.showNextState();
+                                var audio_dom_id = "audio-" + nodeDescription.id_;
+                                var audio = document.getElementById(audio_dom_id);
+                                if (newNode.curStateAnim.curStateIdx == 1)
+                                    audio.play();
+                                else
+                                    audio.pause();
+                            }
+                            else if (type == "VideoNode") {
+                                var cover = newNode.metNodes[0];
+                                var video_dom_id = "video-" + nodeDescription.id_;
+                                var video = document.getElementById(video_dom_id);
+                                if (newContainerSurface.videoPlay === true) {
+                                    video.pause();
+                                    newContainerSurface.videoPlay = false;
+                                    cover.setMetNodeOpacity(1);
+                                }
+                                else {
+                                    video.play();
+                                    newContainerSurface.videoPlay = true;
+                                    cover.setMetNodeOpacity(0);
+                                }
+                            }
+                            act.executePerforms();
+                        };
+                        newNode.on("click", _click);
+                    })();
                 }
                 // 双击(doubleTap)
                 else if (MetNodeAction.MetNodeActionTypeDoubleTap == obj.actionType) {
+                    (function () {
+                        var act = obj;
+                    })();
                 }
                 // 长按(longTap)
                 else if (MetNodeAction.MetNodeActionTypeLongTap == obj.actionType) {
+                    (function () {
+                        var act = obj;
+                    })();
                 }
                 // 缩放(zoom)
                 else if (MetNodeAction.MetNodeActionTypeZoom == obj.actionType) {
-                    obj.executePerforms();
-                    var act = obj;
-                    var min_factor = act.f1 || .5;
-                    var max_factor = act.f2 || 2;
+                    (function() {
+                        var act = obj;
+                        act.executePerforms();
+                        var min_factor = act.f1 || .5;
+                        var max_factor = act.f2 || 2;
 
-                    var init_distance = null;
-                    var curr_distance = null;
+                        var init_distance = null;
+                        var curr_distance = null;
 
-                    // down
-                    var _on_down = function (e) {
-                        e.preventDefault();
-                        if (e.changedTouches.length >= 2) {
-                            var x0 = e.changedTouches[0].clientX, y0 = e.changedTouches[0].clientY;
-                            var x1 = e.changedTouches[1].clientX, y1 = e.changedTouches[1].clientY;
-                            init_distance = Math.sqrt((x1 - x0) * (x1 - x0) + (y1 - y0) * (y1 - y0));
-                        }
-                        else
+                        // down
+                        var _on_down = function (e) {
+                            e.preventDefault();
+                            if (e.changedTouches.length >= 2) {
+                                var x0 = e.changedTouches[0].clientX, y0 = e.changedTouches[0].clientY;
+                                var x1 = e.changedTouches[1].clientX, y1 = e.changedTouches[1].clientY;
+                                init_distance = Math.sqrt((x1 - x0) * (x1 - x0) + (y1 - y0) * (y1 - y0));
+                            }
+                            else
+                                init_distance = null;
+                        };
+                        newNode.on("touchstart", _on_down);
+
+                        // move
+                        var _on_move = function (e) {
+                            e.preventDefault();
+                            if (null == init_distance)
+                                return;
+                            if (e.changedTouches.length >= 2) {
+                                var x0 = e.changedTouches[0].clientX, y0 = e.changedTouches[0].clientY;
+                                var x1 = e.changedTouches[1].clientX, y1 = e.changedTouches[1].clientY;
+                                curr_distance = Math.sqrt((x1 - x0) * (x1 - x0) + (y1 - y0) * (y1 - y0));
+                                alert(curr_distance);
+                            }
+                            else
+                                curr_distance = null;
+                        };
+                        newNode.on("touchmove", _on_move);
+
+                        // up
+                        var _on_up = function (e) {
+                            e.preventDefault();
+                            if (null != init_distance && null != curr_distance) {
+                                act.executePerforms();
+                            }
                             init_distance = null;
-                    };
-                    newNode.on("touchstart", _on_down);
-
-                    // move
-                    var _on_move = function (e) {
-                        e.preventDefault();
-                        if (null == init_distance)
-                            return;
-                        if (e.changedTouches.length >= 2) {
-                            var x0 = e.changedTouches[0].clientX, y0 = e.changedTouches[0].clientY;
-                            var x1 = e.changedTouches[1].clientX, y1 = e.changedTouches[1].clientY;
-                            curr_distance = Math.sqrt((x1 - x0) * (x1 - x0) + (y1 - y0) * (y1 - y0));
-                            alert(curr_distance);
-                        }
-                        else
                             curr_distance = null;
-                    };
-                    newNode.on("touchmove", _on_move);
-
-                    // up
-                    var _on_up = function (e) {
-                        e.preventDefault();
-                        if (null != init_distance && null != curr_distance) {
-                            act.executePerforms();
-                        }
-                        init_distance = null;
-                        curr_distance = null;
-                    };
-                    newNode.on("touchcancel", _on_up);
-                    newNode.on("touchend", _on_up);
+                        };
+                        newNode.on("touchcancel", _on_up);
+                        newNode.on("touchend", _on_up);
+                    })();
                 }
                 // 拖拽(drag)
                 else if (MetNodeAction.MetNodeActionTypeDrag == obj.actionType) {
-                    var act = obj;
-                    var fromX = Math.min(act.f1, act.f2), toX = Math.max(act.f1, act.f2);
-                    var fromY = Math.min(act.f3, act.f4), toY = Math.max(act.f3, act.f4);
-                    var dir = act.i1; // TODO: 处理方向相关
+                    (function() {
+                        var act = obj;
+                        var fromX = Math.min(act.f1, act.f2), toX = Math.max(act.f1, act.f2);
+                        var fromY = Math.min(act.f3, act.f4), toY = Math.max(act.f3, act.f4);
+                        var dir = act.i1; // TODO: 处理方向相关
 
-                    var fromPos = null, toPos = [];
+                        var fromPos = null, toPos = [];
 
-                    // down
-                    var _on_down = function (e) {
-                        e.preventDefault();
-                        fromPos = [e.clientX || e.changedTouches[0].clientX, e.clientY || e.changedTouches[0].clientY];
-                    };
-                    newNode.on("mousedown", _on_down);
-                    newNode.on("touchstart", _on_down);
+                        // down
+                        var _on_down = function (e) {
+                            e.preventDefault();
+                            fromPos = TransformUtils.absolutePos4Event(e);
+                        };
+                        newNode.on("mousedown", _on_down);
+                        newNode.on("touchstart", _on_down);
 
-                    // move
-                    var _on_move = function (e) {
-                        e.preventDefault();
-                        if (null == fromPos)
-                            return;
-                        toPos = [e.clientX || e.changedTouches[0].clientX, e.clientY || e.changedTouches[0].clientY];
+                        // move
+                        var _on_move = function (e) {
+                            e.preventDefault();
+                            if (null == fromPos)
+                                return;
+                            var trans = TransformUtils.transformFromElement(newSurface._currentTarget, document.body);
+                            toPos = TransformUtils.absolutePos4Event(e);
+                            var delta = [toPos[0] - fromPos[0], toPos[1] - fromPos[1]];
+                            delta = TransformUtils.vectorApplyTransform(delta, trans);
 
-                        var delta = [toPos[0] - fromPos[0], toPos[1] - fromPos[1]];
-                        var _self = newSurface._currentTarget;
-                        var trans = TransformUtils.transformFromElement(_self, document.body);
-                        delta = TransformUtils.vectorApplyTransform(delta, trans);
+                            var me_trans = Transform.rotateZ(newNode.rotationZ);
+                            delta = TransformUtils.vectorApplyTransform(delta, me_trans);
 
-                        var me_trans = Transform.rotateZ(newNode.rotationZ);
-                        delta = TransformUtils.vectorApplyTransform(delta, me_trans);
+                            var px = newNode.xPosition * newNode.containerSize[0] + delta[0];
+                            var py = newNode.yPosition * newNode.containerSize[1] + delta[1];
+                            if (px < fromX) px = fromX; else if (px > toX) px = toX;
+                            if (py < fromY) py = fromY; else if (py > toY) py = toY;
+                            newNode.xPosition = px / newNode.containerSize[0];
+                            newNode.yPosition = py / newNode.containerSize[1];
 
-                        var px = newNode.xPosition * newNode.containerSize[0] + delta[0];
-                        var py = newNode.yPosition * newNode.containerSize[1] + delta[1];
-                        if (px < fromX) px = fromX; else if (px > toX) px = toX;
-                        if (py < fromY) py = fromY; else if (py > toY) py = toY;
-                        newNode.xPosition = px / newNode.containerSize[0];
-                        newNode.yPosition = py / newNode.containerSize[1];
+                            fromPos = toPos;
+                        };
+                        newNode.on("mousemove", _on_move);
+                        newNode.on("touchmove", _on_move);
 
-                        fromPos = toPos;
-                    };
-                    newNode.on("mousemove", _on_move);
-                    newNode.on("touchmove", _on_move);
-
-                    // up
-                    var _on_up = function (e) {
-                        e.preventDefault();
-                        if (null != fromPos) {
-                            act.executePerforms();
-                        }
-                        fromPos = null;
-                    };
-                    newNode.on("mouseout", _on_up);
-                    newNode.on("touchcancel", _on_up);
-                    newNode.on("mouseup", _on_up);
-                    newNode.on("touchend", _on_up);
+                        // up
+                        var _on_up = function (e) {
+                            e.preventDefault();
+                            if (null != fromPos) {
+                                act.executePerforms();
+                            }
+                            fromPos = null;
+                        };
+                        newNode.on("mouseout", _on_up);
+                        newNode.on("touchcancel", _on_up);
+                        newNode.on("mouseup", _on_up);
+                        newNode.on("touchend", _on_up);
+                    })();
                 }
                 // 滚动
                 else if (MetNodeAction.MetNodeActionTypeScroll == obj.actionType) {
+                    (function () {
+                        var act = obj;
+                    })();
                 }
                 // 猛滑
                 else if (MetNodeAction.MetNodeActionTypeSlide == obj.actionType) {
-                    var act = obj;
-                    var toX = act.f2, toY = act.f4;
-                    var dir = act.i1; // TODO: 处理方向相关
-                    var easing = act.i2;
-                    var fromPos = null, toPos = [];
+                    (function() {
+                        var act = obj;
+                        var toX = act.f2, toY = act.f4;
+                        var easing = act.i2;
+                        var fromPos = null, toPos = [];
 
-                    // down
-                    var _on_down = function (e) {
-                        e.preventDefault();
-                        fromPos = [e.clientX || e.changedTouches[0].clientX, e.clientY || e.changedTouches[0].clientY];
-                    };
-                    newSurface.on("mousedown", _on_down);
-                    newSurface.on("touchstart", _on_down);
+                        // down
+                        var _on_down = function (e) {
+                            e.preventDefault();
+                            fromPos = TransformUtils.absolutePos4Event(e);
+                        };
+                        newSurface.on("mousedown", _on_down);
+                        newSurface.on("touchstart", _on_down);
 
-                    // move
-                    var _on_move = function (e) {
-                        e.preventDefault();
-                        if (null == fromPos)
-                            return;
-                        toPos = [e.clientX || e.changedTouches[0].clientX, e.clientY || e.changedTouches[0].clientY];
+                        // move
+                        var _on_move = function (e) {
+                            e.preventDefault();
+                            if (null == fromPos)
+                                return;
 
-                        var delta = [toPos[0] - fromPos[0], toPos[1] - fromPos[1]];
-                        var _self = newSurface._currentTarget;
-                        var trans = TransformUtils.transformFromElement(_self, document.body);
-                        delta = TransformUtils.vectorApplyTransform(delta, trans);
+                            var trans = TransformUtils.transformFromElement(newSurface._currentTarget, document.body);
+                            toPos = TransformUtils.absolutePos4Event(e);
+                            var delta = [toPos[0] - fromPos[0], toPos[1] - fromPos[1]];
+                            delta  = TransformUtils.vectorApplyTransform(delta, trans);
 
-                        var me_trans = Transform.rotateZ(newNode.rotationZ);
-                        delta = TransformUtils.vectorApplyTransform(delta, me_trans);
+                            var me_trans = Transform.rotateZ(newNode.rotationZ);
+                            delta = TransformUtils.vectorApplyTransform(delta, me_trans);
 
-                        newNode.xPosition += delta[0] / newNode.containerSize[0];
-                        newNode.yPosition += delta[1] / newNode.containerSize[1];
+                            newNode.xPosition += delta[0] / newNode.containerSize[0];
+                            newNode.yPosition += delta[1] / newNode.containerSize[1];
 
-                        fromPos = toPos;
-                    };
-                    newSurface.on("mousemove", _on_move);
-                    newSurface.on("touchmove", _on_move);
+                            fromPos = toPos;
+                        };
+                        newSurface.on("mousemove", _on_move);
+                        newSurface.on("touchmove", _on_move);
 
-                    // up
-                    var _on_up = function (e) {
-                        e.preventDefault();
-                        if (null != fromPos) {
-                            var fromPosition = [newNode.xPosition, newNode.yPosition];
-                            var toPosition = [toX / newNode.containerSize[0], toY / newNode.containerSize[1]];
-                            var ef = EasingUtils.easingFuncBy(easing);
-                            var ticks = 20;
-                            for (var i = 0; i < ticks; i++) {
-                                var process = ef((i + 1) / ticks);
-                                var pos = [
-                                    fromPosition[0] + (toPosition[0] - fromPosition[0]) * process,
-                                    fromPosition[1] + (toPosition[1] - fromPosition[1]) * process,
-                                ];
-                                Timer.after(
-                                    function (finished) {
-                                        newNode.xPosition = this.pos[0];
-                                        newNode.yPosition = this.pos[1];
-                                        if (finished) {
-                                            act.executePerforms();
-                                        }
-                                    }.bind({"pos": pos}, i === ticks - 1),
-                                    i
-                                );
+                        // up
+                        var _on_up = function (e) {
+                            e.preventDefault();
+                            if (null != fromPos) {
+                                var fromPosition = [newNode.xPosition, newNode.yPosition];
+                                var toPosition = [toX / newNode.containerSize[0], toY / newNode.containerSize[1]];
+                                var ef = EasingUtils.easingFuncBy(easing);
+                                var ticks = 20;
+                                for (var i = 0; i < ticks; i++) {
+                                    var process = ef((i + 1) / ticks);
+                                    var pos = [
+                                        fromPosition[0] + (toPosition[0] - fromPosition[0]) * process,
+                                        fromPosition[1] + (toPosition[1] - fromPosition[1]) * process,
+                                    ];
+                                    Timer.after(
+                                        function (finished) {
+                                            newNode.xPosition = this.pos[0];
+                                            newNode.yPosition = this.pos[1];
+                                            if (finished) {
+                                                act.executePerforms();
+                                            }
+                                        }.bind({"pos": pos}, i === ticks - 1),
+                                        i
+                                    );
+                                }
                             }
-                        }
-                        fromPos = null;
-                    };
-                    newSurface.on("mouseout", _on_up);
-                    newSurface.on("touchcancel", _on_up);
-                    newSurface.on("mouseup", _on_up);
-                    newSurface.on("touchend", _on_up);
+                            fromPos = null;
+                        };
+                        newSurface.on("mouseout", _on_up);
+                        newSurface.on("touchcancel", _on_up);
+                        newSurface.on("mouseup", _on_up);
+                        newSurface.on("touchend", _on_up);
+                    })();
                 }
                 // 涂抹
                 else if (MetNodeAction.MetNodeActionTypeErase == obj.actionType) {
-                    var act = obj;
-                    var radius = Math.floor(act.f1);
-                    var percent = act.f2;
+                    (function() {
+                        var act = obj;
+                        var radius = Math.floor(act.f1);
+                        var percent = act.f2;
 
-                    var _resetAll = function () {
-                        var ctx = newSurface.getContext('2d');
-                        switch (filltype) {
-                            case METIMAGEFILLTYPE:
-                            {
-                                var imageObj = new Image();
-                                imageObj.src = "zres/" + nodeDescription.imageFill.rawImageURL;
-                                imageObj.onload = function () {
+                        var _resetAll = function () {
+                            var ctx = newSurface.getContext('2d');
+                            switch (filltype) {
+                                case METIMAGEFILLTYPE:
+                                {
+                                    var imageObj = new Image();
+                                    imageObj.src = "zres/" + nodeDescription.imageFill.rawImageURL;
+                                    imageObj.onload = function () {
+                                        ctx.save();
+                                        setJPath(ctx, jpath);
+                                        ctx.clip();
+                                        ctx.drawImage(imageObj, 0, 0, ctx.canvas.width, ctx.canvas.height);
+                                        ctx.restore();
+                                    };
+                                }
+                                    break;
+                                case METCOLORFILLTYPE:
+                                case METGRADIENTFILLTYPE:
+                                {
                                     ctx.save();
                                     setJPath(ctx, jpath);
                                     ctx.clip();
-                                    ctx.drawImage(imageObj, 0, 0, ctx.canvas.width, ctx.canvas.height);
+                                    ctx.fillStyle = fillColor;
+                                    ctx.fill();
                                     ctx.restore();
-                                };
+                                }
+                                    break;
                             }
-                                break;
-                            case METCOLORFILLTYPE:
-                            case METGRADIENTFILLTYPE:
-                            {
-                                ctx.save();
-                                setJPath(ctx, jpath);
-                                ctx.clip();
-                                ctx.fillStyle = fillColor;
-                                ctx.fill();
-                                ctx.restore();
+                        };
+
+                        var _eraseAll = function () {
+                            var ctx = newSurface.getContext('2d');
+                            ctx.save();
+                            ctx.clearRect(0, 0, size[0], size[1]);
+                            ctx.restore();
+                        };
+
+                        var canvas_tick = 0;
+                        var needDraw = false;
+                        var finished = false;
+                        var fromPos = [];
+
+                        var _checkCleanedPercent = function (ctx) {
+                            if (finished)
+                                return;
+                            var cw = ctx.canvas.width, ch = ctx.canvas.height;
+                            var data = ctx.getImageData(0, 0, cw, ch);
+                            data = data.data;
+                            // check if cleaned enough
+                            var needed = cw * ch * percent;
+                            var cleaned = 0;
+                            for (var i = 0; i < data.length; i += 4) {
+                                if (data[i + 3] === 0) cleaned++;
+                                if (cleaned >= needed) break;
                             }
-                                break;
-                        }
-                    };
+                            if (cleaned >= needed) {
+                                finished = true;
+                                _eraseAll();
+                                act.executePerforms();
+                            }
+                        };
 
-                    var _eraseAll = function () {
-                        var ctx = newSurface.getContext('2d');
-                        ctx.save();
-                        ctx.clearRect(0, 0, size[0], size[1]);
-                        ctx.restore();
-                    };
+                        newSurface.render = function render() {
+                            if (canvas_tick > 1) return this.id;
+                            if (canvas_tick === 1) _resetAll();
+                            canvas_tick++;
 
-                    var canvas_tick = 0;
-                    var needDraw = false;
-                    var finished = false;
-                    var fromPos = [];
+                            return this.id;
+                        };
 
-                    var _checkCleanedPercent = function (ctx) {
-                        if (finished)
-                            return;
-                        var cw = ctx.canvas.width, ch = ctx.canvas.height;
-                        var data = ctx.getImageData(0, 0, cw, ch);
-                        data = data.data;
-                        // check if cleaned enough
-                        var needed = cw * ch * percent;
-                        var cleaned = 0;
-                        for (var i = 0; i < data.length; i += 4) {
-                            if (data[i + 3] === 0) cleaned++;
-                            if (cleaned >= needed) break;
-                        }
-                        if (cleaned >= needed) {
-                            finished = true;
-                            _eraseAll();
-                            act.executePerforms();
-                        }
-                    };
+                        // down
+                        var _on_down = function (e) {
+                            e.preventDefault();
+                            if (canvas_tick <= 1)
+                                return;
 
-                    newSurface.render = function render() {
-                        if (canvas_tick > 1) return this.id;
-                        if (canvas_tick === 1) _resetAll();
-                        canvas_tick++;
+                            var _self = newSurface._currentTarget;
+                            var trans = TransformUtils.transformFromElement(_self, e.srcElement);
+                            fromPos = TransformUtils.relativePos4Event(e);
+                            fromPos = TransformUtils.pointApplyTransform(fromPos, trans);
+                            needDraw = true;
+                        };
+                        newSurface.on("mousedown", _on_down);
+                        newSurface.on("touchstart", _on_down);
 
-                        return this.id;
-                    };
+                        // move
+                        var _on_move = function (e) {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            if (!needDraw)
+                                return;
 
-                    // down
-                    var _on_down = function (e) {
-                        e.preventDefault();
-                        if (canvas_tick <= 1)
-                            return;
+                            var _self = newSurface._currentTarget;
+                            var trans = TransformUtils.transformFromElement(_self, e.srcElement);
+                            var toPos = TransformUtils.relativePos4Event(e);
+                            toPos = TransformUtils.pointApplyTransform(toPos, trans);
 
-                        var _self = newSurface._currentTarget;
-                        var trans = TransformUtils.transformFromElement(_self, document.body);
-                        fromPos = [e.clientX || e.changedTouches[0].clientX, e.clientY || e.changedTouches[0].clientY];
-                        fromPos = TransformUtils.pointApplyTransform(fromPos, trans);
-                        needDraw = true;
-                    };
-                    newSurface.on("mousedown", _on_down);
-                    newSurface.on("touchstart", _on_down);
+                            var ctx = newSurface.getContext('2d');
 
-                    // move
-                    var _on_move = function (e) {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        if (!needDraw)
-                            return;
+                            ctx.save();
+                            ctx.beginPath();
 
-                        var _self = newSurface._currentTarget;
-                        var trans = TransformUtils.transformFromElement(_self, document.body);
-                        var toPos = [e.clientX || e.changedTouches[0].clientX, e.clientY || e.changedTouches[0].clientY];
-                        toPos = TransformUtils.pointApplyTransform(toPos, trans);
+                            var angle = Math.atan2(toPos[1] - fromPos[1], toPos[0] - fromPos[0]);
+                            ctx.arc(fromPos[0], fromPos[1], radius, angle - Math.PI / 2, angle + Math.PI / 2, true);
+                            ctx.arc(toPos[0], toPos[1], radius, angle - Math.PI * 3 / 2, angle - Math.PI / 2, true);
+                            ctx.closePath();
 
-                        var ctx = newSurface.getContext('2d');
+                            ctx.clip();
+                            ctx.clearRect(Math.min(fromPos[0], toPos[0]) - radius, Math.min(fromPos[1], toPos[1]) - radius, Math.abs(toPos[0] - fromPos[0]) + radius * 2, Math.abs(toPos[1] - fromPos[1]) + radius * 2);
+                            ctx.restore();
 
-                        ctx.save();
-                        ctx.beginPath();
+                            fromPos = toPos;
+                        };
+                        newSurface.on("mousemove", _on_move);
+                        newSurface.on("touchmove", _on_move);
 
-                        var angle = Math.atan2(toPos[1] - fromPos[1], toPos[0] - fromPos[0]);
-                        ctx.arc(fromPos[0], fromPos[1], radius, angle - Math.PI / 2, angle + Math.PI / 2, true);
-                        ctx.arc(toPos[0], toPos[1], radius, angle - Math.PI * 3 / 2, angle - Math.PI / 2, true);
-                        ctx.closePath();
+                        // cancel
+                        var _on_cancel = function (e) {
+                            e.preventDefault();
 
-                        ctx.clip();
-                        ctx.clearRect(Math.min(fromPos[0], toPos[0]) - radius, Math.min(fromPos[1], toPos[1]) - radius, Math.abs(toPos[0] - fromPos[0]) + radius * 2, Math.abs(toPos[1] - fromPos[1]) + radius * 2);
-                        ctx.restore();
+                            if (!needDraw) return;
+                            needDraw = false;
+                            // check if cleaned enough
+                            var ctx = newSurface.getContext('2d');
+                            _checkCleanedPercent(ctx);
+                        };
+                        newSurface.on("mouseout", _on_cancel);
+                        newSurface.on("touchcancel", _on_cancel);
 
-                        fromPos = toPos;
-                    };
-                    newSurface.on("mousemove", _on_move);
-                    newSurface.on("touchmove", _on_move);
-
-                    // cancel
-                    var _on_cancel = function (e) {
-                        e.preventDefault();
-
-                        if (!needDraw) return;
-                        needDraw = false;
-                        // check if cleaned enough
-                        var ctx = newSurface.getContext('2d');
-                        _checkCleanedPercent(ctx);
-                    };
-                    newSurface.on("mouseout", _on_cancel);
-                    newSurface.on("touchcancel", _on_cancel);
-
-                    // up
-                    var _on_up = function (e) {
-                        e.preventDefault();
-                        needDraw = false;
-                        // check if cleaned enough
-                        var ctx = newSurface.getContext('2d');
-                        _checkCleanedPercent(ctx);
-                    };
-                    newSurface.on("mouseup", _on_up);
-                    newSurface.on("touchend", _on_up);
+                        // up
+                        var _on_up = function (e) {
+                            e.preventDefault();
+                            needDraw = false;
+                            // check if cleaned enough
+                            var ctx = newSurface.getContext('2d');
+                            _checkCleanedPercent(ctx);
+                        };
+                        newSurface.on("mouseup", _on_up);
+                        newSurface.on("touchend", _on_up);
+                    })();
                 }
                 // 重力感应(gravity)
                 else if (MetNodeAction.MetNodeActionTypeGravity == obj.actionType) {
                     if (!window.DeviceMotionEvent) {
-                        console.log('亲，你的浏览器不支持DeviceMotionEvent哦~');
+                        DebugUtils.log('亲，你的浏览器不支持DeviceMotionEvent哦~');
                         continue;
                     }
+                    (function() {
+                        var act = obj;
+                        var fromX = Math.min(act.f1, act.f2), toX = Math.max(act.f1, act.f2);
+                        var fromY = Math.min(act.f3, act.f4), toY = Math.max(act.f3, act.f4);
+                        var gravity = act.f5;
 
-                    var act = obj;
-                    var fromX = Math.min(act.f1, act.f2), toX = Math.max(act.f1, act.f2);
-                    var fromY = Math.min(act.f3, act.f4), toY = Math.max(act.f3, act.f4);
-                    var gravity = act.f5;
+                        var px = newNode.xPosition * newNode.containerSize[0];
+                        var py = newNode.yPosition * newNode.containerSize[1];
 
-                    var px = newNode.xPosition * newNode.containerSize[0];
-                    var py = newNode.yPosition * newNode.containerSize[1];
+                        var physics = new PhysicsEngine();
+                        var rectBody = new Rectangle({
+                            position: [px, py, 0],
+                            origin: [.5, .5],
+                            size: size
+                        });
+                        physics.addBody(rectBody);
 
-                    var physics = new PhysicsEngine();
-                    var rectBody = new Rectangle({
-                        position: [px, py, 0],
-                        origin: [.5, .5],
-                        size: size
-                    });
-                    physics.addBody(rectBody);
+                        var walls = new Walls({
+                            align: [fromX / newNode.containerSize[0], fromY / newNode.containerSize[1]],
+                            origin: [0, 0],
+                            size: [toX - fromX, toY - fromY],
+                            sides: Walls.TWO_DIMENSIONAL
+                        });
+                        var gravity = new VectorField({
+                            strength: 0.0001,
+                            direction: [0, 0, 0],
+                            field: VectorField.FIELDS.LINEAR
+                        });
+                        physics.attach([walls.components[0], walls.components[1], walls.components[2], walls.components[3], gravity], rectBody);
 
-                    var walls = new Walls({
-                        align: [fromX / newNode.containerSize[0], fromY / newNode.containerSize[1]],
-                        origin: [0, 0],
-                        size: [toX - fromX, toY - fromY],
-                        sides: Walls.TWO_DIMENSIONAL
-                    });
-                    var gravity = new VectorField({
-                        strength: 0.0001,
-                        direction: [0, 0, 0],
-                        field: VectorField.FIELDS.LINEAR
-                    });
-                    physics.attach([walls.components[0], walls.components[1], walls.components[2], walls.components[3], gravity], rectBody);
+                        Timer.every(function () {
+                            var modifier = newNode.baseModifier;
+                            if (modifier) {
+                                modifier.setTransform(rectBody.getTransform());
+                            }
+                        }, 60);
 
-                    Timer.every(function () {
-                        var modifier = newNode.baseModifier;
-                        if (modifier) {
-                            modifier.setTransform(rectBody.getTransform());
-                        }
-                    }, 60);
+                        var _on_device_motion = function (eventData) {
+                            var acceleration = eventData.accelerationIncludingGravity;
+                            var facingUp = -1;
+                            if (acceleration.z > 0) {
+                                facingUp = +1;
+                            }
+                            var tiltLR = Math.round(((acceleration.x) / 9.81) * -90);
+                            var tiltFB = Math.round(((acceleration.y + 9.81) / 9.81) * 90 * facingUp);
 
-                    var _on_device_motion = function (eventData) {
-                        var acceleration = eventData.accelerationIncludingGravity;
-                        var facingUp = -1;
-                        if (acceleration.z > 0) {
-                            facingUp = +1;
-                        }
-                        var tiltLR = Math.round(((acceleration.x) / 9.81) * -90);
-                        var tiltFB = Math.round(((acceleration.y + 9.81) / 9.81) * 90 * facingUp);
-
-                        var rotation = "rotate(" + tiltLR + "deg) rotate3d(1,0,0, " + (tiltFB) + "deg)";
-                        newSurface.setContent(rotation);
-                    };
-                    window.addEventListener('devicemotion', _on_device_motion, false);
+                            var rotation = "rotate(" + tiltLR + "deg) rotate3d(1,0,0, " + (tiltFB) + "deg)";
+                            newSurface.setContent(rotation);
+                        };
+                        window.addEventListener('devicemotion', _on_device_motion, false);
+                    })();
                 }
             }
         }
@@ -873,7 +873,7 @@ define(function(require, exports, module) {
         for (var i in nodeDescription.nodes)
             subMetNodes[i] = nodeDescription.nodes[i];
         // reverse sort stateNode's children
-        if (type == "MetStateNode")
+        if (type == "MetStateNode" || type == "AudioNode" || type == "VideoNode" || type == "ButtonNode" || type == "WebNode")
             subMetNodes.reverse();
         // adjust scrollNode's children by scrollNode.contentOffset
         else if (type == "MetScrollNode") {

@@ -5,12 +5,10 @@ define(function (require, exports, module) {
     'use strict';
 
     var DebugUtils = {};
+
     DebugUtils.log = function(){
-        for(var i in arguments){
-            var v = arguments[i];
-            console.log(v);
-        }
-    }
+        console.log.apply(console, arguments);
+    };
 
     var _brower_prefix = null;
     DebugUtils.browserPrefixes = function() {
@@ -28,7 +26,7 @@ define(function (require, exports, module) {
             css: '-' + pre + '-',
             js: pre[0].toUpperCase() + pre.substr(1)
         };
-    }
+    };
 
     module.exports = DebugUtils;
 });

@@ -1,32 +1,33 @@
 define(function(require, exports, module) {
     'use strict';
+    var DebugUtils = require('utils/DebugUtils');
 
     var UnitConverter = {};
 
     UnitConverter.ratioXtoPixels = function(ratioX, containerX) {
         if(!containerX) {
-            console.log("ratioXtoPixels error!");
+            DebugUtils.log("ratioXtoPixels error!");
         }
         return ratioX * containerX;
     };
 
     UnitConverter.ratioYtoPixels = function(ratioY, containerY) {
         if(!containerY) {
-            console.log("ratioYtoPixels error!");
+            DebugUtils.log("ratioYtoPixels error!");
         }
       return ratioY * containerY;
     };
 
     UnitConverter.pixelsToRatioX = function(pixels, containerX) {
         if(!containerX) {
-            console.log("pixelsToRatioX error!");
+            DebugUtils.log("pixelsToRatioX error!");
         }
         return pixels / containerX;
     };
 
     UnitConverter.pixelsToRatioY = function(pixels, containerY) {
         if(!containerY) {
-            console.log("pixelsToRatioY error!");
+            DebugUtils.log("pixelsToRatioY error!");
         }
         return pixels / containerY;
     };
@@ -41,21 +42,21 @@ define(function(require, exports, module) {
 
     UnitConverter.percentageToPixelsX = function(percentage, containerX) {
         if(!containerX) {
-            console.log("percentageToPixelsX error!");
+            DebugUtils.log("percentageToPixelsX error!");
         }
         return Math.round(UnitConverter.ratioXtoPixels(percentage / 100, containerX));
     };
 
     UnitConverter.percentageToPixelsY = function(percentage, containerY) {
         if(!containerY) {
-            console.log("percentageToPixelsY error!");
+            DebugUtils.log("percentageToPixelsY error!");
         }
         return Math.round(UnitConverter.ratioYtoPixels(percentage / 100, containerY));
     };
 
     UnitConverter._unitsToPixels = function(initial, containerSize) {
         if(!containerSize) {
-            console.log("_unitsToPixels error!");
+            DebugUtils.log("_unitsToPixels error!");
         }
         var result =[];
         for (var i = 0; i <= 1; i++) {

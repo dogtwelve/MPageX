@@ -125,23 +125,19 @@ define(function(require, exports, module) {
     //
     function pinchRecognizer(element, options)
     {
-        //console.log("pinchRecognizer");
         var sync = new _PinchSync();
 
         element.pipe(sync);
 
         sync.on("start", function(data) {
-            //console.log("start");
             _mustReturnFunction(options.touchesBegan)(data);
         });
 
         sync.on("update", function(data) {
-            //console.log("update");
             _mustReturnFunction(options.touchesMoved)(data);
         });
 
         sync.on("end", function(data) {
-            //console.log("end");
             _mustReturnFunction(options.touchesEnded)(data);
         });
     }
@@ -382,13 +378,9 @@ define(function(require, exports, module) {
     //
     //function tapCallback(event_data)
     //{
-    //    console.log("tapRecognizer recognized a tap");
-    //    console.log(event_data);
     //}
     //
     //function longPressCallback(event_data)
     //{
-    //    console.log("longPressRecognizer recognized a longPress");
-    //    console.log(event_data);
     //}
 });

@@ -139,7 +139,7 @@ define(function(require, exports, module) {
         // Ensures metnode always has a position modifier
         _createBaseModifier.call(this);
         var root = this;
-        if(isStateKeyframe) {
+        if (isStateKeyframe) {
             var containerSize = nodeViewParent ? nodeViewParent.size : [undefined, undefined];
             var container = new ContainerSurface({size: containerSize});
             root.add(container);
@@ -153,7 +153,7 @@ define(function(require, exports, module) {
         }
         root = root.add(new Modifier({size: this.size})).add(this.modifierChain);
         var chain = root;
-        if(this.containerSurface) {
+        if (this.containerSurface) {
             chain.add(this.containerSurface);
             chain = this.containerSurface;
         }
@@ -163,7 +163,7 @@ define(function(require, exports, module) {
             chain.add(this.mainSurface);
         }
 
-        if(this.floatingSurface) {
+        if (this.floatingSurface) {
             _subscribeEvent(this, this.floatingSurface);
             chain.add(this.floatingSurface);
         }
@@ -172,43 +172,48 @@ define(function(require, exports, module) {
         var arr = this.metNodes;
         var rt = chain;
 
-        if(this.type === "MetScrollNode") {
+        if (this.type === "MetScrollNode") {
             rt = _setScrollHolder.call(this, rt);
         }
 
-        if(!isStateKeyframe)
+        if (!isStateKeyframe && this.nodeDesc.visible) {
             this.showMetNode();
+        }
 
-        for(var i in arr) {
+        for (var i in arr) {
             _subscribeEvent(this, arr[i]);
             arr[i].initMetSubNode(holdersSync, rt, this);
         }
 
         // show according by initial
-        if(this.type === "MetStateNode") {
-            if (!this.curStateAnim) {
+        if (this.type === "MetStateNode") {
+            if (!this.curStateAnim)
                 this.curStateAnim = new StateAnim(this, this.nodeDesc.defaultState);
-
-            }
-            this.curStateAnim.showState(false);
-            if (this.nodeDesc.autoplay) {
+            this.curStateAnim.showState(this.curStateAnim.curStateIdx, false);
+            if (this.nodeDesc.autoplay)
                 this.curStateAnim.autoPlay();
-            }
         }
-        else if(this.type === "ButtonNode") {
-            if (!this.curStateAnim) {
+        else if (this.type === "ButtonNode") {
+            if (!this.curStateAnim)
                 this.curStateAnim = new StateAnim(this, this.nodeDesc.defaultSelected ? 1 : 0);
-            }
-            this.curStateAnim.showState(false);
+            this.curStateAnim.showState(this.curStateAnim.curStateIdx, false);
         }
-        else if(this.type === "MetAnimNode"){
-            if (!this.curKeyframeAnim) {
+        else if (this.type === "AudioNode") {
+            if (!this.curStateAnim)
+                this.curStateAnim = new StateAnim(this, 0);
+            this.curStateAnim.showState(this.curStateAnim.curStateIdx, false);
+        }
+        else if (this.type === "VideoNode") {
+            if (!this.curStateAnim)
+                this.curStateAnim = new StateAnim(this, 0);
+            this.curStateAnim.showState(this.curStateAnim.curStateIdx, false);
+        }
+        else if (this.type === "MetAnimNode") {
+            if (!this.curKeyframeAnim)
                 this.curKeyframeAnim = new KeyFrameAnim(this, this.nodeDesc.duration, this.nodeDesc.keyframes, this.nodeDesc.endlessLoop);
-            }
             this.curKeyframeAnim.activeAnim();
-            if(!this.nodeDesc.autoplay) {
+            if (!this.nodeDesc.autoplay)
                 this.curKeyframeAnim.pauseAnim();
-            }
         }
     };
 
@@ -361,20 +366,16 @@ define(function(require, exports, module) {
 
         this._eventInput.pipe(sync);
 
-        //this.on('click', function (data) {
-        //    console.log("click " + this.metNodeId);
-        //}.bind(this));
-
         sync.on('start', function(data) {
-            //console.log("sync start " + this.metNodeId + " " +  data.velocity);
+            //DebugUtils.log("sync start " + this.metNodeId + " " +  data.velocity);
         }.bind(this));
 
         sync.on('update', function(data) {
-            //console.log("sync update " + this.metNodeId + " " +  data.velocity);
+            //DebugUtils.log("sync update " + this.metNodeId + " " +  data.velocity);
         }.bind(this));
 
         sync.on('end', function(data) {
-            //console.log("sync end " + this.metNodeId + " " +  data.velocity);
+            //DebugUtils.log("sync end " + this.metNodeId + " " +  data.velocity);
         }.bind(this));
 
         this._eventInput.pipe(new EventDispatcher(function () {
@@ -395,7 +396,7 @@ define(function(require, exports, module) {
         //    }.bind(this))
 
         if(type == 'click')
-            console.log("event type = " + type + " " + this.metNodeId + " _processEventBind type = " + this.type);
+            DebugUtils.log("event type = " + type + " " + this.metNodeId + " _processEventBind type = " + this.type);
 
         //default, could be processed by downstream elements
         if(this.eventProcessed === true) {

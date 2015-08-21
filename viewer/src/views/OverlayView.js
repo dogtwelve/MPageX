@@ -114,9 +114,13 @@ define(function(require, exports, module) {
 
 	function _setOverlayVisible(overlay, pageId) {
 		if(overlay.nodeDesc.overlayPages && overlay.nodeDesc.overlayPages.indexOf(pageId) != -1) {
-			overlay.showMetNode();
+			if(!overlay.isMetNodeShown()) {
+				overlay.showMetNode();
+			}
 		} else {
-			overlay.hideMetNode();
+			if(overlay.isMetNodeShown()) {
+				overlay.hideMetNode();
+			}
 		}
 	}
 

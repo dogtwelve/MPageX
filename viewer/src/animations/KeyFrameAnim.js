@@ -38,7 +38,7 @@ define(function (require, exports, module) {
         this.keyframeConfigs = MetNodeAction.parseKeyframesFromArray(actor.nodeDesc.keyframes);
     };
 
-	KeyFrameAnim.ANIMFPS = 25; //framerate per frame
+	KeyFrameAnim.ANIMFPS = 60; //framerate per frame
 	KeyFrameAnim.MPFTIME = Math.floor(1000/KeyFrameAnim.ANIMFPS); //// Milliseconds per frame (1000/FPS)
 
     KeyFrameAnim.prototype.activeAnim = function() {
@@ -227,37 +227,28 @@ define(function (require, exports, module) {
 
         //calculate current scale
         var changeScaleX = this.destScaleX - this.startScaleX;
-        if(changeScaleX !== 0) {
-            this.actor.setMetNodeScaleX(this.startScaleX + (changeScaleX * process));
-        }
+        this.actor.setMetNodeScaleX(this.startScaleX + (changeScaleX * process));
+
         var changeScaleY = this.destScaleY - this.startScaleY;
-        if(changeScaleY !== 0) {
-            this.actor.setMetNodeScaleY(this.startScaleY + (changeScaleY * process));
-        }
+        this.actor.setMetNodeScaleY(this.startScaleY + (changeScaleY * process));
 
         //calculate current rotation
         var changeRotX = this.destRotationX - this.startRotationX;
-        if(changeRotX) {
-            this.actor.setMetNodeRotateX(this.startRotationX + (changeRotX * process));
-        }
+        this.actor.setMetNodeRotateX(this.startRotationX + (changeRotX * process));
+
         var changeRotY = this.destRotationY - this.startRotationY;
-        if(changeRotY) {
-            this.actor.setMetNodeRotateY(this.startRotationY + (changeRotY * process));
-        }
+        this.actor.setMetNodeRotateY(this.startRotationY + (changeRotY * process));
+
         var changeRotZ = this.destRotationZ - this.startRotationZ;
         var deltaRotZ = 0;
         if(null != this.initTangent) {
             deltaRotZ = __tangentAt.call(this, process) - this.initTangent;
         }
-        if(changeRotZ || deltaRotZ) {
-            this.actor.setMetNodeRotateZ(this.startRotationZ + (changeRotZ * process) + deltaRotZ);
-        }
+        this.actor.setMetNodeRotateZ(this.startRotationZ + (changeRotZ * process) + deltaRotZ);
 
         //calculate current opacity
         var changeOpacity = this.destOpacity - this.startOpacity;
-        if(changeOpacity !== 0) {
-            this.actor.setMetNodeOpacity(this.startOpacity + (changeOpacity * process));
-        }
+        this.actor.setMetNodeOpacity(this.startOpacity + (changeOpacity * process));
 
         // execute keyframe hooking!
         var cfg = this.keyframeConfigs[this.curAnimFrameIdx];

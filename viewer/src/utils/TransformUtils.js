@@ -175,5 +175,24 @@ define(function (require, exports, module) {
         return [vector[0] - zero[0], vector[1] - zero[1], vector[2] - zero[2]];
     }
 
+    TransformUtils.relativePos4Event = function(e){
+        var x = 0, y = 0;
+        if('offsetX' in e)
+            x = e.offsetX;
+        else
+            x = e.changedTouches[0].offsetX;
+        if('offsetY' in e)
+            y = e.offsetY;
+        else
+            y = e.changedTouches[0].offsetY;
+        return [x, y];
+    }
+
+    TransformUtils.absolutePos4Event = function(e){
+        var pos = TransformUtils.relativePos4Event(e);
+        var trans = TransformUtils.transformFromElement(document.body, e.srcElement);
+        return TransformUtils.pointApplyTransform(pos, trans);
+    }
+
     module.exports = TransformUtils;
 });

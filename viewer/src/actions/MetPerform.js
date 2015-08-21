@@ -8,6 +8,7 @@ define(function (require, exports, module) {
     var MetNodeFactory = require(['tools/MetNodeFactory'], function (m) {
         MetNodeFactory = m;
     });
+    var DebugUtils = require('utils/DebugUtils');
     var Modifier = require('famous/core/Modifier');
     var Surface = require('famous/core/Surface');
 
@@ -139,24 +140,28 @@ define(function (require, exports, module) {
                 _keyframeAnim.isPause == true ? _keyframeAnim.resumeAnim() : _keyframeAnim.pauseAnim();
             }
             else if (nodeView.type === "VideoNode") {
-                var video = document.getElementById("video-" + this.targetID);
-                if (nodeView.mainSurface.videoPlay === true) {
+                var cover = nodeView.metNodes[0];
+                var video_dom_id = "video-" + this.targetID;
+                var video = document.getElementById(video_dom_id);
+                if (nodeView.containerSurface.videoPlay === true) {
                     video.pause();
-                    nodeView.mainSurface.videoPlay = false;
-                } else {
+                    nodeView.containerSurface.videoPlay = false;
+                    cover.setMetNodeOpacity(1);
+                }
+                else{
                     video.play();
-                    nodeView.mainSurface.videoPlay = true;
+                    nodeView.containerSurface.videoPlay = true;
+                    cover.setMetNodeOpacity(0);
                 }
             }
             else if (nodeView.type === "AudioNode") {
-                var video = document.getElementById("audio-" + this.targetID);
-                if (nodeView.mainSurface.videoPlay === true) {
-                    video.pause();
-                    nodeView.mainSurface.videoPlay = false;
-                } else {
-                    video.play();
-                    nodeView.mainSurface.videoPlay = true;
-                }
+                nodeView.curStateAnim.showNextState();
+                var audio_dom_id = "audio-" + this.targetID;
+                var audio = document.getElementById(audio_dom_id);
+                if (nodeView.curStateAnim.curStateIdx == 1)
+                    audio.play();
+                else
+                    audio.pause();
             }
             else if (nodeView.type == "MetStateNode") {
                 var curStateAnim = nodeView.curStateAnim;
@@ -176,8 +181,7 @@ define(function (require, exports, module) {
                 ;
             else if (nodeView.type == "MetStateNode") {
                 var curStateAnim = nodeView.curStateAnim;
-                curStateAnim.curStateIdx = Number(this.longLongParam);
-                curStateAnim.showState(false);
+                curStateAnim.showState(Number(this.longLongParam), false);
             }
         }
         // 页面跳转, page_number, nil
@@ -264,7 +268,7 @@ define(function (require, exports, module) {
             }
         }
         else
-            console.log("wrong perform!! LOL!!!");
+            DebugUtils.log("wrong perform!! LOL!!!");
     }
 
     module.exports = MetPerform;

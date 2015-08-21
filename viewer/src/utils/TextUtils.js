@@ -230,7 +230,7 @@ define(function (require, exports, module) {
             else if (m = /^\x25(?:(\d+)\$)?(\+)?(0|'[^$])?(-)?(\d+)?(?:\.(\d+))?([b-fosuxX])/.exec(f)) {
                 if (((a = arguments[m[1] || i++]) == null) || (a == undefined)) {
                     a = 0;
-                    console.log('Too few arguments. make do with 0 here.');
+                    DebugUtils.log('Too few arguments. make do with 0 here.');
                 }
                 if (/[^s]/.test(m[7]) && (typeof(a) != 'number')) {
                    // throw('Expecting number but found ' + typeof(a));
